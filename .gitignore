@@ -1,0 +1,123 @@
+##############################################
+# .gitignore — EngMaster Android Client (FE)
+# Java / Gradle / Android Studio
+##############################################
+
+##################################
+# 1. FILE NHẠY CẢM (QUAN TRỌNG NHẤT)
+##################################
+
+# local.properties: chứa đường dẫn Android SDK, và THƯỜNG được dùng
+# để lưu các key nhạy cảm (Maps API Key, X-API-Key split-parts, ...)
+# TUYỆT ĐỐI không commit.
+local.properties
+
+# Keystore dùng để ký (sign) app release — nếu lộ, kẻ tấn công có thể
+# giả mạo app signature (bypass lớp bảo mật X-App-Signature ở BE)
+*.jks
+*.keystore
+!debug.keystore
+keystore.properties
+signing.properties
+key.properties
+
+# File chứa API Key, secret key, JWT secret... nếu bạn tách riêng
+# ra khỏi code (thay vì hardcode + split như kế hoạch đề ra)
+apikeys.properties
+apikey.properties
+secrets.properties
+secrets.xml
+api_keys.xml
+config.properties
+
+# Google OAuth 2.0 / Firebase — file chứa Client ID, Client Secret
+google-services.json
+google-services-*.json
+client_secret*.json
+oauth_client*.json
+
+# File môi trường (nếu dùng để lưu biến local khi build/test)
+.env
+.env.local
+.env.*.local
+*.env
+
+# Google Maps / các service key khác nếu để riêng file XML
+res/values/google_maps_api.xml
+res/values/api_keys.xml
+
+##################################
+# 2. GRADLE / BUILD
+##################################
+*.iml
+.gradle/
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+output-metadata.json
+
+##################################
+# 3. ANDROID STUDIO / INTELLIJ
+##################################
+.idea/*
+!.idea/codeStyles/
+!.idea/runConfigurations/
+*.iws
+*.ipr
+.navigation/
+captures/
+.externalNativeBuild
+.cxx
+
+##################################
+# 4. PROGUARD / R8
+##################################
+# Mapping file dùng để deobfuscate crash log — chứa cấu trúc nội bộ
+# của app, không nên public, nhưng vẫn nên lưu trữ riêng (không lên git)
+mapping.txt
+seeds.txt
+usage.txt
+
+##################################
+# 5. LOG / DEBUG / TEST
+##################################
+*.log
+hs_err_pid*
+/build/reports/
+/build/test-results/
+*.hprof
+
+##################################
+# 6. HỆ ĐIỀU HÀNH
+##################################
+.DS_Store
+Thumbs.db
+desktop.ini
+
+##################################
+# 7. KHÁC
+##################################
+# File backup tự động của Android Studio
+*.bak
+*~
+
+# Freeline
+freeline.py
+freeline/
+freeline_project_description.json
+
+# Version control system khác (nếu lỡ dính vào)
+vcs.xml
