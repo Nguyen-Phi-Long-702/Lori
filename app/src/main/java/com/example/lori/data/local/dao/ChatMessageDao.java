@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.lori.data.local.entity.ChatMessage;
 
@@ -23,4 +24,6 @@ public interface ChatMessageDao {
 
     @Delete
     void deleteMessage(ChatMessage message);
+    @Update
+    void updateMessage(ChatMessage message);
 }

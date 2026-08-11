@@ -1,5 +1,6 @@
 package com.example.lori.data.local.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -12,11 +13,10 @@ public class GrammarExample {
     @ColumnInfo(name = "lesson_id")
     public int lessonId;
 
-    @ColumnInfo(name = "sentence_en")
-    public String sentenceEn;
-
-    @ColumnInfo(name = "sentence_vi")
-    public String sentenceVi;
+    @NonNull
+    @ColumnInfo(name = "sentence_en") public String sentenceEn;
+    @NonNull
+    @ColumnInfo(name = "sentence_vi") public String sentenceVi;
 
     @ColumnInfo(name = "is_correct")
     public boolean isCorrect;

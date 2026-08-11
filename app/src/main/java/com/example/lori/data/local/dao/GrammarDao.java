@@ -34,4 +34,9 @@ public interface GrammarDao {
 
     @Delete
     void deleteLesson(GrammarLesson lesson);
+    @Update
+    void updateExample(GrammarExample example);
+
+    @Delete
+    void deleteExample(GrammarExample example);
 }

@@ -1,5 +1,6 @@
 package com.example.lori.data.local.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -11,10 +12,10 @@ public class ChatMessage {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
+    @NonNull
     public String role;
-
+    @NonNull
     public String content;
-
     @ColumnInfo(name = "image_path")
     public String imagePath;
 

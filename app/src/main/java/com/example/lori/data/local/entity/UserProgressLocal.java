@@ -1,5 +1,6 @@
 package com.example.lori.data.local.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -11,13 +12,12 @@ public class UserProgressLocal {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
-    @ColumnInfo(name = "item_type")
-    public String itemType;
-
+    @NonNull
+    @ColumnInfo(name = "item_type") public String itemType;
     @ColumnInfo(name = "item_id")
     public int itemId;
 
-    public String status;
+    @NonNull public String status;
 
     @ColumnInfo(name = "correct_count")
     public int correctCount;
