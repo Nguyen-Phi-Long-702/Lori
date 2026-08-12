@@ -19,6 +19,7 @@ public class ChatMessage {
     @ColumnInfo(name = "image_path")
     public String imagePath;
 
+    @NonNull
     public Date timestamp;
 
     @ColumnInfo(name = "is_error")
