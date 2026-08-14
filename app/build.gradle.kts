@@ -30,8 +30,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
@@ -49,6 +49,9 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
 
+    // Lifecycle (ViewModel + LiveData) — khai báo tường minh cho MVVM
+    implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-livedata:2.8.7")
 
     // Retrofit + OkHttp
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
@@ -67,8 +70,10 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment:2.8.0")
     implementation("androidx.navigation:navigation-ui:2.8.0")
 
-    // ExoPlayer
-    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    // AndroidX Media3 (thay thế ExoPlayer2 đã deprecated)
+    implementation("androidx.media3:media3-exoplayer:1.10.0")
+    implementation("androidx.media3:media3-ui:1.10.0")
+    implementation("androidx.media3:media3-common:1.10.0")
 
     // CameraX
     implementation("androidx.camera:camera-core:1.3.4")
