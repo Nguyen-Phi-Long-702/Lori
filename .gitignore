@@ -1,12 +1,3 @@
-##############################################
-# .gitignore — EngMaster Android Client (FE)
-# Java / Gradle / Android Studio
-##############################################
-
-##################################
-# 1. FILE NHẠY CẢM (QUAN TRỌNG NHẤT)
-##################################
-
 # local.properties: chứa đường dẫn Android SDK, và THƯỜNG được dùng
 # để lưu các key nhạy cảm (Maps API Key, X-API-Key split-parts, ...)
 # TUYỆT ĐỐI không commit.
