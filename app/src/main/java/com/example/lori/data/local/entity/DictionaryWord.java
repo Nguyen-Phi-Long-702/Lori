@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey;
 public class DictionaryWord {
 
     @PrimaryKey
-    public int id;
+    public Integer id;
 
     @NonNull
     public String word;

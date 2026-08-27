@@ -20,7 +20,6 @@ public class Topic {
     @ColumnInfo(name = "icon_url")
     public String iconUrl;
 
-    @NonNull
     public String level;
 
     @ColumnInfo(name = "word_count")

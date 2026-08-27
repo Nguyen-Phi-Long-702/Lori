@@ -1,3 +1,39 @@
 <resources>
     <string name="app_name">Lori</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Trang chủ</string>
+    <string name="nav_study">Học tập</string>
+    <string name="nav_exam">Đề thi</string>
+    <string name="nav_dictionary">Tra cứu</string>
+    <string name="nav_profile">Tôi</string>
+
+    <!-- Home Dashboard -->
+    <string name="home_topics_label">Chủ đề</string>
+    <string name="home_words_label">Từ vựng</string>
+    <string name="home_lessons_label">Bài ngữ pháp</string>
+    <string name="home_progress_title">Bắt đầu hành trình học tập của bạn</string>
+    <string name="home_progress_subtitle">Chưa có tiến độ — hãy học bài đầu tiên!</string>
+    <string name="home_cta_button">Bắt đầu học ngay →</string>
+
+    <!-- Placeholder cho 4 tab chưa tới ngày làm -->
+    <string name="stub_study">Học tập\n(hoàn thiện ở Ngày 3-4 và Ngày 5)</string>
+    <string name="stub_exam">Đề thi\n(hoàn thiện ở Sprint 3 – Tuần 7)</string>
+    <string name="stub_dictionary">Tra cứu\n(hoàn thiện ở Ngày 6)</string>
+    <string name="stub_profile">Tôi\n(hoàn thiện ở Ngày 5)</string>
+
+    <!-- Splash -->
+    <string name="splash_tagline">Học tiếng Anh mỗi ngày</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Bỏ qua</string>
+    <string name="onboarding_next">Tiếp tục →</string>
+    <string name="onboarding_title_1">67 chủ đề từ vựng</string>
+    <string name="onboarding_desc_1">Flashcard lật, phát âm chuẩn, học theo chủ đề gần gũi đời sống — mọi lúc, kể cả khi không có mạng.</string>
+    <string name="onboarding_title_2">Từ điển 118.000+ từ</string>
+    <string name="onboarding_desc_2">Tra cứu tức thời, hoàn toàn offline. Không cần chờ mạng, không giới hạn số lần tra.</string>
+    <string name="onboarding_title_3">Premium: Đề thi &amp; AI Tutor</string>
+    <string name="onboarding_desc_3">Nâng cấp Premium để luyện đề TOEIC/IELTS, học cùng AI English Tutor cá nhân hóa, nhận diện ảnh.</string>
+    <string name="onboarding_title_4">Dữ liệu của bạn được bảo vệ</string>
+    <string name="onboarding_desc_4">Dữ liệu học tập luôn được bảo vệ. Không chia sẻ thông tin ngoài ý muốn của bạn.</string>
 </resources>
