@@ -22,6 +22,7 @@ import com.google.android.material.button.MaterialButton;
 import java.util.ArrayList;
 import java.util.List;
 
+//Màn hình giới thiệu ứng dụng khi người dùng mở app lần đầu
 public class OnboardingActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager;
@@ -36,6 +37,7 @@ public class OnboardingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_onboarding);
 
         View root = findViewById(R.id.onboardingRoot);
+        //Đảm bảo nội dung onboarding không bị che bởi các thanh hệ thống
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
@@ -54,6 +56,7 @@ public class OnboardingActivity extends AppCompatActivity {
         buildDots();
         updateDots(0);
 
+        //Cập nhật trạng thái các chấm theo slide hiện tại
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -61,6 +64,7 @@ public class OnboardingActivity extends AppCompatActivity {
             }
         });
 
+        //Chuyển sang slide tiếp theo hoặc kết thúc onboarding ở slide cuối
         btnNext.setOnClickListener(v -> {
             int current = viewPager.getCurrentItem();
             if (current < slideCount - 1) {
@@ -70,9 +74,11 @@ public class OnboardingActivity extends AppCompatActivity {
             }
         });
 
+        //Bỏ qua onboarding và chuyển thẳng vào màn hình chính
         tvSkip.setOnClickListener(v -> finishOnboarding());
     }
 
+    //Khởi tạo nội dung các slide onboarding
     private List<OnboardingSlide> buildSlides() {
         List<OnboardingSlide> list = new ArrayList<>();
         list.add(new OnboardingSlide(R.drawable.ic_ob_topics, R.string.onboarding_title_1, R.string.onboarding_desc_1));
@@ -82,6 +88,7 @@ public class OnboardingActivity extends AppCompatActivity {
         return list;
     }
 
+    //Tạo các chấm tương ứng với số lượng slide
     private void buildDots() {
         dotsContainer.removeAllViews();
         int sizePx = dpToPx(8);
@@ -94,11 +101,12 @@ public class OnboardingActivity extends AppCompatActivity {
             dotsContainer.addView(dot);
         }
     }
-
+    //Chuyển đổi kích thước từ dp sang pixel
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 
+    //Cập nhật trạng thái của các chấm theo slide hiện tại
     private void updateDots(int selected) {
         for (int i = 0; i < dotsContainer.getChildCount(); i++) {
             ImageView dot = (ImageView) dotsContainer.getChildAt(i);
@@ -106,6 +114,7 @@ public class OnboardingActivity extends AppCompatActivity {
         }
     }
 
+    //Đánh dấu onboarding đã hoàn thành và chuyển sang màn hình chính
     private void finishOnboarding() {
         SharedPreferences prefs = getSharedPreferences(SplashActivity.PREFS_NAME, MODE_PRIVATE);
         prefs.edit().putBoolean(SplashActivity.KEY_IS_FIRST_LAUNCH, false).apply();

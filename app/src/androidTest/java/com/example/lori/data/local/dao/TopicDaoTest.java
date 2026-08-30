@@ -28,6 +28,7 @@ public class TopicDaoTest {
     @Before
     public void createDb() {
         Context context = ApplicationProvider.getApplicationContext();
+        //Dùng db inmemory để test độc lập với dữ liệu thật
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
@@ -36,6 +37,7 @@ public class TopicDaoTest {
 
     @After
     public void closeDb() throws IOException {
+        //Đóng db sau khi test để giải phóng tài nguyên
         db.close();
     }
 
@@ -49,6 +51,7 @@ public class TopicDaoTest {
 
         topicDao.insertAll(Collections.singletonList(topic));
 
+        //Kiểm tra topic được lưu và truy vấn đúng theo id
         Topic result = topicDao.getTopicById(1);
         assertEquals("Animals", result.name);
         assertEquals("beginner", result.level);
@@ -67,6 +70,7 @@ public class TopicDaoTest {
         saved.wordCount = 80;
         topicDao.update(saved);
 
+        //Đảm bảo topic cập nhật đúng trong database
         Topic updated = topicDao.getTopicById(1);
         assertEquals(80, updated.wordCount);
     }
@@ -83,6 +87,7 @@ public class TopicDaoTest {
         Topic saved = topicDao.getTopicById(1);
         topicDao.delete(saved);
 
+        //Đảm bảo topic không còn tồn tại sau khi xóa
         Topic afterDelete = topicDao.getTopicById(1);
         assertEquals(null, afterDelete);
     }

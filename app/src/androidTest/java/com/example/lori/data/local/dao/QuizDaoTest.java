@@ -30,6 +30,7 @@ public class QuizDaoTest {
     @Before
     public void createDb() {
         Context context = ApplicationProvider.getApplicationContext();
+        //Dùng db inmemory để test độc lập với dữ liệu thật
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
@@ -38,6 +39,7 @@ public class QuizDaoTest {
 
     @After
     public void closeDb() throws IOException {
+        //Đóng db sau khi test để giải phóng tài nguyên
         db.close();
     }
 
@@ -54,6 +56,7 @@ public class QuizDaoTest {
 
         quizDao.insertVocabQuizzes(Collections.singletonList(quiz));
 
+        //Kiểm tra quiz được lưu và truy vấn đúng theo topic
         List<VocabQuiz> result = quizDao.getVocabQuizByTopic(1);
         assertEquals(1, result.size());
         assertEquals("A", result.get(0).correctAnswer);
@@ -72,6 +75,7 @@ public class QuizDaoTest {
 
         quizDao.insertGrammarQuizzes(Collections.singletonList(quiz));
 
+        //Kiểm tra quiz được lưu và truy vấn đúng theo bài học
         List<GrammarQuiz> result = quizDao.getGrammarQuizByLesson(1);
         assertEquals(1, result.size());
         assertEquals("B", result.get(0).correctAnswer);
@@ -93,6 +97,7 @@ public class QuizDaoTest {
         saved.question = "New question";
         quizDao.updateVocabQuiz(saved);
 
+        //Đảm bảo quiz được cập nhật sau update
         VocabQuiz updated = quizDao.getVocabQuizByTopic(2).get(0);
         assertEquals("New question", updated.question);
     }
@@ -112,6 +117,7 @@ public class QuizDaoTest {
         GrammarQuiz saved = quizDao.getGrammarQuizByLesson(3).get(0);
         quizDao.deleteGrammarQuiz(saved);
 
+        //Đảm bảo quiz đã bị xóa và không còn kết quả khi truy vấn lại
         List<GrammarQuiz> result = quizDao.getGrammarQuizByLesson(3);
         assertEquals(0, result.size());
     }

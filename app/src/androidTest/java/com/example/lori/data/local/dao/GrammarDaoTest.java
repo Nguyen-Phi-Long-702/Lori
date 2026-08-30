@@ -31,6 +31,7 @@ public class GrammarDaoTest {
     @Before
     public void createDb() {
         Context context = ApplicationProvider.getApplicationContext();
+        //Dùng db inmemory để test độc lập với dữ liệu thật
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
@@ -39,6 +40,7 @@ public class GrammarDaoTest {
 
     @After
     public void closeDb() throws IOException {
+        //Đóng db sau khi test để giải phóng tài nguyên
         db.close();
     }
 
@@ -54,6 +56,7 @@ public class GrammarDaoTest {
         grammarDao.insertLessons(Collections.singletonList(lesson));
 
         GrammarLesson result = grammarDao.getLessonById(1);
+        //Đảm bảo bài học được lưu và truy vấn đúng theo id
         assertEquals("Present Simple", result.title);
     }
 
@@ -68,6 +71,7 @@ public class GrammarDaoTest {
         grammarDao.insertLessons(Collections.singletonList(lesson));
 
         List<GrammarLesson> result = getOrAwaitValue(grammarDao.getAllLessons());
+        //Đảm bảo danh sách bài học chứa dữ liệu vừa thêm
         assertEquals(1, result.size());
     }
 
@@ -89,6 +93,7 @@ public class GrammarDaoTest {
         grammarDao.insertExamples(Collections.singletonList(example));
 
         List<GrammarExample> result = getOrAwaitValue(grammarDao.getExamplesByLesson(1));
+        //Đảm bảo ví dụ được liên kết đúng với bài học
         assertEquals(1, result.size());
         assertEquals("I will go.", result.get(0).sentenceEn);
     }
@@ -108,9 +113,10 @@ public class GrammarDaoTest {
         grammarDao.updateLesson(saved);
 
         GrammarLesson updated = grammarDao.getLessonById(1);
+        //Kiểm tra dữ liệu bài học được cập nhật đúng
         assertEquals("Tóm tắt bài học", updated.summary);
 
         grammarDao.deleteLesson(updated);
-        // Sau khi xóa, getLessonById(1) không còn dòng nào (Room trả về null với query đơn)
+        //Room trả về null khi truy vấn một bản ghi đã bị xóa
     }
 }

@@ -31,6 +31,7 @@ public class TopicWordDaoTest {
     @Before
     public void createDb() {
         Context context = ApplicationProvider.getApplicationContext();
+        //Dùng db inmemory để test độc lập với dữ liệu thật
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
@@ -39,6 +40,7 @@ public class TopicWordDaoTest {
 
     @After
     public void closeDb() throws IOException {
+        //Đóng db sau khi test để giải phóng tài nguyên
         db.close();
     }
 
@@ -51,6 +53,7 @@ public class TopicWordDaoTest {
 
         topicWordDao.insertAll(Collections.singletonList(word));
 
+        //Kiểm tra từ được lưu và truy vấn đúng theo id
         TopicWord result = topicWordDao.getWordById(1);
         assertEquals("apple", result.word);
         assertEquals("quả táo", result.meaning);
@@ -64,6 +67,7 @@ public class TopicWordDaoTest {
         word.meaning = "quả chuối";
         topicWordDao.insertAll(Collections.singletonList(word));
 
+        //Kiểm tra danh sách từ được trả về đúng theo topic
         List<TopicWord> result = getOrAwaitValue(topicWordDao.getWordsByTopic(5));
 
         assertEquals(1, result.size());
@@ -82,6 +86,7 @@ public class TopicWordDaoTest {
         saved.meaning = "con mèo con";
         topicWordDao.update(saved);
 
+        //Đảm bảo từ cập nhật trong database
         TopicWord updated = topicWordDao.getWordById(1);
         assertEquals("con mèo con", updated.meaning);
     }
@@ -97,6 +102,7 @@ public class TopicWordDaoTest {
         TopicWord saved = topicWordDao.getWordById(1);
         topicWordDao.delete(saved);
 
+        //Đảm bảo từ không còn tồn tại sau khi xóa
         assertNull(topicWordDao.getWordById(1));
     }
 }

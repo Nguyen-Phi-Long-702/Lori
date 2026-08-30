@@ -1,14 +1,12 @@
 <resources>
     <string name="app_name">Lori</string>
 
-    <!-- Bottom Navigation -->
     <string name="nav_home">Trang chủ</string>
     <string name="nav_study">Học tập</string>
     <string name="nav_exam">Đề thi</string>
     <string name="nav_dictionary">Tra cứu</string>
     <string name="nav_profile">Tôi</string>
 
-    <!-- Home Dashboard -->
     <string name="home_topics_label">Chủ đề</string>
     <string name="home_words_label">Từ vựng</string>
     <string name="home_lessons_label">Bài ngữ pháp</string>
@@ -16,16 +14,12 @@
     <string name="home_progress_subtitle">Chưa có tiến độ — hãy học bài đầu tiên!</string>
     <string name="home_cta_button">Bắt đầu học ngay →</string>
 
-    <!-- Placeholder cho 4 tab chưa tới ngày làm -->
-    <string name="stub_study">Học tập\n(hoàn thiện ở Ngày 3-4 và Ngày 5)</string>
     <string name="stub_exam">Đề thi\n(hoàn thiện ở Sprint 3 – Tuần 7)</string>
     <string name="stub_dictionary">Tra cứu\n(hoàn thiện ở Ngày 6)</string>
     <string name="stub_profile">Tôi\n(hoàn thiện ở Ngày 5)</string>
 
-    <!-- Splash -->
     <string name="splash_tagline">Học tiếng Anh mỗi ngày</string>
 
-    <!-- Onboarding -->
     <string name="onboarding_skip">Bỏ qua</string>
     <string name="onboarding_next">Tiếp tục →</string>
     <string name="onboarding_title_1">67 chủ đề từ vựng</string>
@@ -36,4 +30,20 @@
     <string name="onboarding_desc_3">Nâng cấp Premium để luyện đề TOEIC/IELTS, học cùng AI English Tutor cá nhân hóa, nhận diện ảnh.</string>
     <string name="onboarding_title_4">Dữ liệu của bạn được bảo vệ</string>
     <string name="onboarding_desc_4">Dữ liệu học tập luôn được bảo vệ. Không chia sẻ thông tin ngoài ý muốn của bạn.</string>
+
+    <string name="topic_word_count_format">%1$d từ</string>
+
+    <string name="flashcard_tap_hint_front">Chạm để xem nghĩa</string>
+    <string name="flashcard_tap_hint_back">Chạm để lật lại</string>
+    <string name="flashcard_position_format">%1$d/%2$d</string>
+    <string name="flashcard_view_detail_button">Xem chi tiết từ</string>
+
+    <string name="word_detail_topic_label_format">Chủ đề: %1$s</string>
+
+    <string name="cd_back">Quay lại</string>
+    <string name="cd_speak">Phát âm</string>
+    <string name="tts_not_available">Thiết bị chưa hỗ trợ phát âm tiếng Anh</string>
+
+    <string name="nav_label_flashcard">Flashcard</string>
+    <string name="nav_label_word_detail">Chi tiết từ vựng</string>
 </resources>

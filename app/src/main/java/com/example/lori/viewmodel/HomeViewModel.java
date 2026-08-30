@@ -13,11 +13,7 @@ import com.example.lori.data.local.entity.Topic;
 
 import java.util.List;
 
-/**
- * ViewModel cho HomeFragment (Dashboard thống kê offline).
- * Đọc trực tiếp qua AppDatabase (chưa có Repository ở giai đoạn này —
- * Repository pattern sẽ được thêm ở Tuần 6 cho dữ liệu online).
- */
+//viewmodel quản lý dữ liệu thống kê hiển thị trên homefragment
 public class HomeViewModel extends AndroidViewModel {
 
     private final LiveData<Integer> topicCount;
@@ -31,11 +27,15 @@ public class HomeViewModel extends AndroidViewModel {
         LiveData<List<Topic>> topics = db.topicDao().getAllTopics();
         LiveData<List<GrammarLesson>> lessons = db.grammarDao().getAllLessons();
 
+        //Chuyển danh sách chủ đề thành tổng số chủ đề
         topicCount = Transformations.map(topics, List::size);
+        //Tính tổng số từ vựng từ số lượng từ của từng chủ đề
         wordCount = Transformations.map(topics, this::sumWordCount);
+        //Chuyển danh sách bài học thành tổng số bài học
         lessonCount = Transformations.map(lessons, List::size);
     }
 
+    //Tính tổng số từ vựng của tất cả các chủ đề
     private int sumWordCount(List<Topic> topics) {
         int total = 0;
         for (Topic topic : topics) {

@@ -15,6 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+//Màn hình khởi động, hiển thị logo trước khi chuyển sang màn hình tiếp theo
 public class SplashActivity extends AppCompatActivity {
 
     public static final String PREFS_NAME = "lori_prefs";
@@ -30,6 +31,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         View root = findViewById(R.id.splashRoot);
+        //Đảm bảo nội dung splash không bị che bởi các thanh hệ thống
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
@@ -39,6 +41,7 @@ public class SplashActivity extends AppCompatActivity {
         playLogoAnimation();
     }
 
+    //Chạy hiệu ứng phóng to và hiện dần logo khi mở ứng dụng
     private void playLogoAnimation() {
         ImageView logo = findViewById(R.id.imgLogo);
         logo.setScaleX(0.7f);
@@ -56,6 +59,7 @@ public class SplashActivity extends AppCompatActivity {
                 .start();
     }
 
+    //Kiểm tra trạng thái lần mở app để chọn màn hình điều hướng tiếp theo
     private void navigateNext() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         boolean isFirstLaunch = prefs.getBoolean(KEY_IS_FIRST_LAUNCH, true);

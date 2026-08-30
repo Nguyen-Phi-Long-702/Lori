@@ -14,6 +14,7 @@ import com.example.lori.model.OnboardingSlide;
 
 import java.util.List;
 
+//Adapter quản lý các slide hiển thị trong màn hình onboarding
 public class OnboardingPagerAdapter extends RecyclerView.Adapter<OnboardingPagerAdapter.SlideViewHolder> {
 
     private final List<OnboardingSlide> slides;
@@ -43,6 +44,7 @@ public class OnboardingPagerAdapter extends RecyclerView.Adapter<OnboardingPager
         return slides.size();
     }
 
+    //Viewholder giữ các thành phần giao diện của một slide
     static class SlideViewHolder extends RecyclerView.ViewHolder {
         final ImageView icon;
         final TextView title;

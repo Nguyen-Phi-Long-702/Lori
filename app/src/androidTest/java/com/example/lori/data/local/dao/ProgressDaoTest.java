@@ -27,6 +27,7 @@ public class ProgressDaoTest {
     @Before
     public void createDb() {
         Context context = ApplicationProvider.getApplicationContext();
+        //Dùng db inmemory để test độc lập với dữ liệu thật
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
@@ -35,6 +36,7 @@ public class ProgressDaoTest {
 
     @After
     public void closeDb() throws IOException {
+        //Đóng db sau khi test để giải phóng tài nguyên
         db.close();
     }
 
@@ -51,6 +53,7 @@ public class ProgressDaoTest {
         progressDao.insertOrUpdate(progress);
 
         UserProgressLocal result = progressDao.getProgress("word", 10);
+        //Đảm bảo tiến độ được lưu và truy vấn đúng theo loại và id
         assertEquals("learned", result.status);
         assertEquals(3, result.correctCount);
     }
@@ -69,8 +72,9 @@ public class ProgressDaoTest {
         UserProgressLocal saved = progressDao.getProgress("grammar", 20);
         saved.status = "mastered";
         saved.correctCount = 5;
-        progressDao.insertOrUpdate(saved); // cùng id -> REPLACE, không tạo dòng mới
+        progressDao.insertOrUpdate(saved);
 
+        //Đảm bảo insert lại cùng id cập nhật bản ghi thay vì tạo bản ghi mới
         UserProgressLocal updated = progressDao.getProgress("grammar", 20);
         assertEquals("mastered", updated.status);
         assertEquals(5, updated.correctCount);
@@ -91,6 +95,7 @@ public class ProgressDaoTest {
         progressDao.delete(saved);
 
         UserProgressLocal result = progressDao.getProgress("quiz", 30);
+        //Đảm bảo bản ghi tiến độ đã được xóa khỏi db
         assertEquals(null, result);
     }
 }

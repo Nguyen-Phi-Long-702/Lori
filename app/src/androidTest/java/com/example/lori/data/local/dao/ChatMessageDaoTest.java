@@ -30,6 +30,7 @@ public class ChatMessageDaoTest {
     @Before
     public void createDb() {
         Context context = ApplicationProvider.getApplicationContext();
+        //Dùng db inmemory để test độc lập với dữ liệu thật
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
@@ -38,6 +39,7 @@ public class ChatMessageDaoTest {
 
     @After
     public void closeDb() throws IOException {
+        //Đóng db sau khi test để giải phóng tài nguyên
         db.close();
     }
 
@@ -59,6 +61,7 @@ public class ChatMessageDaoTest {
 
         List<ChatMessage> result = getOrAwaitValue(chatMessageDao.getAllMessages());
 
+        //Kiểm tra dữ liệu được thêm đầy đủ và đúng thứ tự theo timestamp
         assertEquals(2, result.size());
         assertEquals("Xin chào", result.get(0).content);
     }
@@ -76,6 +79,7 @@ public class ChatMessageDaoTest {
         chatMessageDao.deleteMessage(beforeDelete.get(0));
 
         List<ChatMessage> afterDelete = getOrAwaitValue(chatMessageDao.getAllMessages());
+        //Đảm bảo tin nhắn đã được xóa khỏi db
         assertEquals(0, afterDelete.size());
     }
 
@@ -98,6 +102,7 @@ public class ChatMessageDaoTest {
         chatMessageDao.clearAllMessages();
 
         List<ChatMessage> result = getOrAwaitValue(chatMessageDao.getAllMessages());
+        //Đảm bảo thao tác xóa toàn bộ đã loại bỏ tất cả tin nhắn
         assertEquals(0, result.size());
     }
 }

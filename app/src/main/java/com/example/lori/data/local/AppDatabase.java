@@ -53,6 +53,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ProgressDao progressDao();
     public abstract ChatMessageDao chatMessageDao();
 
+    //Singleton instance để toàn bộ ứng dụng sử dụng chung một db
     private static volatile AppDatabase INSTANCE;
 
     public static AppDatabase getInstance(Context context) {
@@ -64,11 +65,13 @@ public abstract class AppDatabase extends RoomDatabase {
                                     AppDatabase.class,
                                     "dictionary.db"
                             )
+                            //Khởi tạo db từ file có sẵn trong assets
                             .createFromAsset("databases/dictionary.db")
                             .addCallback(new Callback() {
                                 @Override
                                 public void onOpen(@NonNull SupportSQLiteDatabase db) {
                                     super.onOpen(db);
+                                    // Phân biệt chữ hoa/thường khi tìm kiếm bằng like
                                     db.execSQL("PRAGMA case_sensitive_like = ON");
                                 }
                             })

@@ -37,6 +37,7 @@ public class DictionaryDaoTest {
     @Before
     public void createDb() {
         Context context = ApplicationProvider.getApplicationContext();
+        //Dùng db inmemory để test độc lập với dữ liệu thật
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
@@ -45,9 +46,11 @@ public class DictionaryDaoTest {
 
     @After
     public void closeDb() throws IOException {
+        //Đóng db sau khi test để giải phóng tài nguyên
         db.close();
     }
 
+    //Tạo từ vựng mẫu cho các test
     private DictionaryWord newWord(int id, String word) {
         DictionaryWord w = new DictionaryWord();
         w.id = id;
@@ -62,6 +65,7 @@ public class DictionaryDaoTest {
 
         DictionaryWord result = dictionaryDao.getExactWord("hello");
 
+        //Đảm bảo truy vấn trả về đúng từ khi tồn tại trong db
         assertNotNull(result);
         assertEquals("hello", result.word);
     }
@@ -76,11 +80,13 @@ public class DictionaryDaoTest {
 
         List<DictionaryWord> result = dictionaryDao.searchByPrefix("hap");
 
+        //Chỉ các từ bắt đầu bằng prefix hap được trả về
         assertEquals(2, result.size());
     }
 
     @Test
     public void getExactWordReturnsNullWhenMissing() {
+        //Đảm bảo truy vấn trả về null khi từ không tồn tại
         assertNull(dictionaryDao.getExactWord("khongtontai"));
     }
 
@@ -103,6 +109,7 @@ public class DictionaryDaoTest {
 
         List<DictionaryDefinition> results = dictionaryDao.getDefinitions(1);
 
+        //Kiểm tra join lấy đúng nghĩa, từ loại và ví dụ của từ vựng
         assertEquals(1, results.size());
         assertEquals("Quả táo", results.get(0).definition);
         assertEquals("I eat an apple", results.get(0).example);
@@ -126,6 +133,7 @@ public class DictionaryDaoTest {
 
         dictionaryDao.insertWordRelations(Arrays.asList(synonym, antonym));
 
+        //Đảm bảo mỗi truy vấn chỉ trả về đúng loại quan hệ tương ứng
         assertEquals(Collections.singletonList("large"), dictionaryDao.getSynonyms(1));
         assertEquals(Collections.singletonList("small"), dictionaryDao.getAntonyms(1));
     }
@@ -143,6 +151,7 @@ public class DictionaryDaoTest {
         dictionaryDao.insertPronunciations(Arrays.asList(us, uk));
 
         List<WordPronunciation> result = dictionaryDao.getPronunciations(1);
+        //Đảm bảo truy vấn trả về đầy đủ phiên âm của các vùng
         assertEquals(2, result.size());
     }
 }

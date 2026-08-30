@@ -15,7 +15,48 @@
         android:id="@+id/topicListFragment"
         android:name="com.example.lori.view.TopicListFragment"
         android:label="@string/nav_study"
-        tools:layout="@layout/fragment_placeholder" />
+        tools:layout="@layout/fragment_topic_list">
+        <action
+            android:id="@+id/action_topicListFragment_to_flashcardFragment"
+            app:destination="@id/flashcardFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/flashcardFragment"
+        android:name="com.example.lori.view.FlashcardFragment"
+        android:label="@string/nav_label_flashcard"
+        tools:layout="@layout/fragment_flashcard">
+        <argument
+            android:name="topicId"
+            app:argType="integer" />
+        <argument
+            android:name="topicName"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_flashcardFragment_to_wordDetailFragment"
+            app:destination="@id/wordDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/wordDetailFragment"
+        android:name="com.example.lori.view.WordDetailFragment"
+        android:label="@string/nav_label_word_detail"
+        tools:layout="@layout/fragment_word_detail">
+        <argument
+            android:name="word"
+            app:argType="string" />
+        <argument
+            android:name="pronunciation"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="meaning"
+            app:argType="string" />
+        <argument
+            android:name="topicName"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/examListFragment"
