@@ -6,6 +6,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
+import androidx.lifecycle.LiveData;
 
 import com.example.lori.data.local.entity.UserProgressLocal;
 
@@ -32,4 +33,16 @@ public interface ProgressDao {
     //Xóa một bản ghi tiến độ
     @Delete
     void delete(UserProgressLocal progress);
+
+    //Lấy tiến độ của một nội dung cụ thể để giao diện tự cập nhật khi dữ liệu đổi
+    @Query("SELECT * FROM user_progress_local WHERE item_type = :itemType AND item_id = :itemId LIMIT 1")
+    LiveData<UserProgressLocal> observeProgress(String itemType, int itemId);
+
+    //Lấy toàn bộ tiến độ theo loại nội dung, dùng để hiển thị trạng thái hoàn thành trong danh sách
+    @Query("SELECT * FROM user_progress_local WHERE item_type = :itemType")
+    LiveData<List<UserProgressLocal>> getProgressByType(String itemType);
+
+    //Lấy toàn bộ bản ghi có ngày học gần nhất, dùng để tính lịch streak ở màn hồ sơ
+    @Query("SELECT * FROM user_progress_local WHERE last_studied_at IS NOT NULL ORDER BY last_studied_at DESC")
+    LiveData<List<UserProgressLocal>> getAllStudyDates();
 }

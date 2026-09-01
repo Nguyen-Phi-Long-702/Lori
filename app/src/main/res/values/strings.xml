@@ -16,7 +16,7 @@
 
     <string name="stub_exam">Đề thi\n(hoàn thiện ở Sprint 3 – Tuần 7)</string>
     <string name="stub_dictionary">Tra cứu\n(hoàn thiện ở Ngày 6)</string>
-    <string name="stub_profile">Tôi\n(hoàn thiện ở Ngày 5)</string>
+
 
     <string name="splash_tagline">Học tiếng Anh mỗi ngày</string>
 
@@ -46,4 +46,60 @@
 
     <string name="nav_label_flashcard">Flashcard</string>
     <string name="nav_label_word_detail">Chi tiết từ vựng</string>
+
+    <!-- Ngữ pháp -->
+    <string name="grammar_screen_title">Học tập</string>
+    <string name="grammar_subtab_vocab">Từ vựng</string>
+    <string name="grammar_subtab_grammar">Ngữ pháp</string>
+    <string name="grammar_level_all">Tất cả</string>
+    <string name="grammar_level_beginner">Cơ bản</string>
+    <string name="grammar_level_intermediate">Trung cấp</string>
+    <string name="grammar_level_advanced">Nâng cao</string>
+    <string name="grammar_lesson_item_title_format">Bài %1$d · %2$s</string>
+    <string name="grammar_lesson_eyebrow_format">%1$s · Bài %2$d/30</string>
+    <string name="grammar_progress_done">đã học</string>
+    <string name="grammar_progress_not_done">chưa học</string>
+    <string name="grammar_examples_title">Ví dụ minh họa</string>
+    <string name="grammar_example_wrong_label">Câu sai</string>
+    <string name="grammar_complete_button">Hoàn thành bài học ✓</string>
+    <string name="grammar_completed_label">Đã hoàn thành bài học này</string>
+    <string name="nav_label_grammar_list">Ngữ pháp</string>
+    <string name="nav_label_grammar_detail">Nội dung bài học</string>
+
+    <!-- Hồ sơ -->
+    <string name="profile_greeting">Chào bạn!</string>
+    <string name="profile_stat_current_streak">Streak</string>
+    <string name="profile_stat_best_streak">Kỷ lục</string>
+    <string name="profile_premium_title">Nâng cấp Premium</string>
+    <string name="profile_premium_desc">Mở khóa đề thi, AI English Tutor, nhận diện ảnh</string>
+    <string name="profile_premium_coming_soon">Tính năng Premium sẽ được mở ở các tuần tới</string>
+    <string name="profile_streak_section_title">30 ngày gần đây</string>
+    <string name="profile_streak_legend_off">Chưa học</string>
+    <string name="profile_streak_legend_on">Đã học</string>
+    <string name="profile_settings_button">Cài đặt</string>
+
+    <!-- Cài đặt -->
+    <string name="settings_title">Cài đặt</string>
+    <string name="settings_section_account">Tài khoản</string>
+    <string name="settings_section_app">Ứng dụng</string>
+    <string name="settings_premium_row_title">Gói Premium</string>
+    <string name="settings_premium_row_status">Chưa kích hoạt</string>
+    <string name="settings_edit_profile_title">Chỉnh sửa hồ sơ</string>
+    <string name="settings_edit_profile_desc">Tên, avatar</string>
+    <string name="settings_change_password_title">Đổi mật khẩu</string>
+    <string name="settings_change_password_desc">Cập nhật mật khẩu mới</string>
+    <string name="settings_account_locked_message">Cần đăng nhập tài khoản — tính năng này sẽ hoàn thiện ở Tuần 4-5</string>
+    <string name="settings_notification_title">Thông báo học tập</string>
+    <string name="settings_notification_desc">Nhắc nhở học mỗi ngày</string>
+    <string name="settings_sound_title">Âm thanh &amp; phát âm</string>
+    <string name="settings_sound_desc">TTS offline hoạt động</string>
+    <string name="settings_dark_mode_title">Giao diện tối</string>
+    <string name="settings_dark_mode_desc">Dark mode</string>
+    <string name="settings_clear_cache_title">Xóa bộ nhớ đệm</string>
+    <string name="settings_clear_cache_desc_format">%1$s đã sử dụng</string>
+    <string name="settings_clear_cache_done">Đã xóa bộ nhớ đệm</string>
+    <string name="settings_about_title">Về ứng dụng</string>
+    <string name="settings_about_version_format">Phiên bản %1$s</string>
+    <string name="settings_about_dialog_message">Lori — Ứng dụng học tiếng Anh, tra cứu từ điển và luyện thi TOEIC/IELTS.</string>
+    <string name="settings_dialog_close">Đóng</string>
 </resources>
