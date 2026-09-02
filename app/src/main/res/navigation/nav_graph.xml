@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_topicListFragment_to_flashcardFragment"
             app:destination="@id/flashcardFragment" />
+        <action
+            android:id="@+id/action_topicListFragment_to_grammarListFragment"
+            app:destination="@id/grammarListFragment" />
     </fragment>
 
     <fragment
@@ -76,4 +79,23 @@
         android:label="@string/nav_profile"
         tools:layout="@layout/fragment_placeholder" />
 
+    <fragment
+        android:id="@+id/grammarListFragment"
+        android:name="com.example.lori.view.GrammarListFragment"
+        android:label="@string/nav_label_grammar_list"
+        tools:layout="@layout/fragment_grammar_list">
+        <action
+            android:id="@+id/action_grammarListFragment_to_grammarDetailFragment"
+            app:destination="@id/grammarDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/grammarDetailFragment"
+        android:name="com.example.lori.view.GrammarDetailFragment"
+        android:label="@string/nav_label_grammar_detail"
+        tools:layout="@layout/fragment_grammar_detail">
+        <argument
+            android:name="lessonId"
+            app:argType="integer" />
+    </fragment>
 </navigation>

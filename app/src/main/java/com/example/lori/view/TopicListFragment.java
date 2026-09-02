@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.lori.R;
 import com.example.lori.data.local.entity.Topic;
 import com.example.lori.viewmodel.TopicListViewModel;
+import com.google.android.material.chip.ChipGroup;
 
 //Fragment hiển thị danh sách các chủ đề học tập
 public class TopicListFragment extends Fragment {
@@ -43,8 +44,16 @@ public class TopicListFragment extends Fragment {
 
         //Quan sát danh sách chủ đề và cập nhật adapter khi dữ liệu thay đổi
         viewModel.getTopics().observe(getViewLifecycleOwner(), adapter::setTopics);
-    }
 
+        ChipGroup chipGroupSubtabs = view.findViewById(R.id.chipGroupSubtabs);
+        //Chuyển sang màn hình Ngữ pháp khi người dùng chọn subtab tương ứng
+        chipGroupSubtabs.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.contains(R.id.chipSubtabGrammar)) {
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_topicListFragment_to_grammarListFragment);
+            }
+        });
+    }
     //Chuyển sang màn hình flashcard của chủ đề được chọn
     private void openFlashcard(View view, Topic topic) {
         Bundle args = new Bundle();
