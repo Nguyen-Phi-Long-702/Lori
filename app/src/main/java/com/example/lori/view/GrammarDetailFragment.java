@@ -9,6 +9,7 @@ import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.content.res.TypedArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,14 +78,31 @@ public class GrammarDetailFragment extends Fragment {
                 levelLabel(lesson.level), lesson.orderIndex));
         tvLessonTitle.setText(lesson.titleVi);
 
+        //Lấy đúng màu chữ và màu viền theo theme đang chạy, để không bị trùng màu nền
+        String textColor = toHexColor(resolveThemeColor(com.google.android.material.R.attr.colorOnSurface));
+        String borderColor = toHexColor(resolveThemeColor(com.google.android.material.R.attr.colorOutlineVariant));
+
         String html = "<html><head><meta charset='utf-8'>"
                 + "<style>body{font-family:sans-serif;font-size:15px;line-height:1.6;"
-                + "color:#1a1a1a;margin:0;padding:0;}"
+                + "color:" + textColor + ";margin:0;padding:0;}"
                 + "table{border-collapse:collapse;width:100%;}"
-                + "td,th{border:1px solid #ddd;padding:6px;text-align:left;}</style>"
+                + "td,th{border:1px solid " + borderColor + ";padding:6px;text-align:left;}</style>"
                 + "</head><body>" + lesson.contentHtml + "</body></html>";
         webViewContent.getSettings().setDefaultTextEncodingName("utf-8");
         webViewContent.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+    }
+
+    //Lấy giá trị màu của một thuộc tính theme hiện hành
+    private int resolveThemeColor(int attrResId) {
+        TypedArray typedArray = requireContext().obtainStyledAttributes(new int[]{attrResId});
+        int color = typedArray.getColor(0, 0xFF000000);
+        typedArray.recycle();
+        return color;
+    }
+
+    //Chuyển màu dạng số nguyên sang chuỗi mã hex
+    private String toHexColor(int colorInt) {
+        return String.format("#%06X", 0xFFFFFF & colorInt);
     }
 
     //Dựng danh sách câu ví dụ minh họa, phân biệt câu đúng và câu sai kèm giải thích

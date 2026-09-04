@@ -17,6 +17,7 @@ import com.example.lori.R;
 import com.example.lori.data.local.entity.GrammarLesson;
 import com.example.lori.viewmodel.GrammarListViewModel;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.chip.Chip;
 
 //Fragment hiển thị danh sách bài học ngữ pháp
 public class GrammarListFragment extends Fragment {
@@ -37,7 +38,7 @@ public class GrammarListFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(GrammarListViewModel.class);
 
-        ChipGroup chipGroupSubtabs = view.findViewById(R.id.chipGroupSubtabs);
+        Chip chipSubtabVocab = view.findViewById(R.id.chipSubtabVocab);
         ChipGroup chipGroupLevel = view.findViewById(R.id.chipGroupLevel);
         RecyclerView rvGrammarLessons = view.findViewById(R.id.rvGrammarLessons);
 
@@ -45,12 +46,8 @@ public class GrammarListFragment extends Fragment {
         adapter = new GrammarAdapter(this::openLessonDetail);
         rvGrammarLessons.setAdapter(adapter);
 
-        //Quay lại màn hình từ vựng khi người dùng chọn subtab tương ứng
-        chipGroupSubtabs.setOnCheckedStateChangeListener((group, checkedIds) -> {
-            if (checkedIds.contains(R.id.chipSubtabVocab)) {
-                Navigation.findNavController(view).navigateUp();
-            }
-        });
+        //Quay lại màn hình từ vựng khi người dùng bấm subtab tương ứng
+        chipSubtabVocab.setOnClickListener(v -> Navigation.findNavController(view).navigateUp());
 
         //Lọc danh sách bài học theo cấp độ khi người dùng chọn chip
         chipGroupLevel.setOnCheckedStateChangeListener((group, checkedIds) -> {
@@ -69,6 +66,13 @@ public class GrammarListFragment extends Fragment {
 
         viewModel.getFilteredLessons().observe(getViewLifecycleOwner(), adapter::setLessons);
         viewModel.getCompletedLessonIds().observe(getViewLifecycleOwner(), adapter::setCompletedLessonIds);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Chip chipSubtabGrammar = requireView().findViewById(R.id.chipSubtabGrammar);
+        chipSubtabGrammar.setChecked(true);
     }
 
     //Mở màn hình nội dung chi tiết của bài học được chọn

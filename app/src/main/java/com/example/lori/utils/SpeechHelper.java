@@ -5,14 +5,28 @@ import android.speech.tts.TextToSpeech;
 
 import java.util.Locale;
 
-//Quản lý chức năng chuyển văn bản thành giọng nói
+//Quản lý chức năng chuyển văn bản thành giọng nói.
 public class SpeechHelper implements TextToSpeech.OnInitListener {
 
-    private TextToSpeech tts;
+    private static volatile SpeechHelper INSTANCE;
+
+    private final TextToSpeech tts;
     private boolean ready = false;
 
-    public SpeechHelper(Context context) {
+    private SpeechHelper(Context context) {
         tts = new TextToSpeech(context.getApplicationContext(), this);
+    }
+
+    //Lấy thực thể dùng chung duy nhất, tạo mới nếu đây là lần gọi đầu tiên
+    public static SpeechHelper getInstance(Context context) {
+        if (INSTANCE == null) {
+            synchronized (SpeechHelper.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new SpeechHelper(context);
+                }
+            }
+        }
+        return INSTANCE;
     }
 
     @Override
@@ -32,15 +46,5 @@ public class SpeechHelper implements TextToSpeech.OnInitListener {
             return true;
         }
         return false;
-    }
-
-    //Dừng phát âm và giải phóng tài nguyên texttospeech
-    public void shutdown() {
-        ready = false;
-        if (tts != null) {
-            tts.stop();
-            tts.shutdown();
-            tts = null;
-        }
     }
 }

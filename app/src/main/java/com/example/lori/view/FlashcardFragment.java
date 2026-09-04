@@ -60,7 +60,7 @@ public class FlashcardFragment extends Fragment {
         tvTopicTitle.setText(topicName);
         btnBack.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
 
-        speechHelper = new SpeechHelper(requireContext());
+        speechHelper = SpeechHelper.getInstance(requireContext());
 
         viewModel = new ViewModelProvider(this).get(FlashcardViewModel.class);
 
@@ -119,14 +119,5 @@ public class FlashcardFragment extends Fragment {
         if (!speechHelper.speak(word, "flashcard_utt")) {
             Toast.makeText(requireContext(), R.string.tts_not_available, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        //Giải phóng tài nguyên của speechhelper khi view của fragment bị hủy
-        if (speechHelper != null) {
-            speechHelper.shutdown();
-        }
-        super.onDestroyView();
     }
 }

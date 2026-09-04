@@ -12,12 +12,15 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.lori.utils.ThemeHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Áp dụng lại giao diện tối đã lưu, phòng trường hợp hệ điều hành khôi phục thẳng mainactivity mà không chạy lại splashactivity
+        ThemeHelper.applySavedNightMode(this);
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
@@ -33,11 +36,39 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
-        //Đồng bộ bottomnavigationview với navcontroller
+        //Đồng bộ bottomnavigationview với navcontroller cho các màn hình khớp trực tiếp với 1 tab
         NavigationUI.setupWithNavController(bottomNav, navController);
-        //Ẩn bottomnavigationview khi mở màn hình flashcard để tập trung vào nội dung học
-        navController.addOnDestinationChangedListener((controller, destination, arguments) ->
-                bottomNav.setVisibility(
-                        destination.getId() == R.id.flashcardFragment ? View.GONE : View.VISIBLE));
+
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            int destId = destination.getId();
+
+            //Ẩn thanh điều hướng dưới ở các màn hình cần tập trung toàn màn hình hoặc đã có nút quay lại riêng
+            boolean hideBottomNav = destId == R.id.flashcardFragment
+                    || destId == R.id.wordDetailFragment
+                    || destId == R.id.grammarDetailFragment
+                    || destId == R.id.settingsFragment;
+            bottomNav.setVisibility(hideBottomNav ? View.GONE : View.VISIBLE);
+
+            //Tô sáng đúng tab cha cho các màn hình con không khớp trực tiếp với menu item nào
+            int parentTabId = resolveParentTabId(destId);
+            if (parentTabId != -1) {
+                bottomNav.getMenu().findItem(parentTabId).setChecked(true);
+            }
+        });
+    }
+
+    //Ánh xạ một màn hình con về đúng tab cha của nó trên thanh điều hướng dưới
+    //Trả về -1 nếu màn hình đã khớp trực tiếp với 1 tab
+    private int resolveParentTabId(int destinationId) {
+        if (destinationId == R.id.flashcardFragment
+                || destinationId == R.id.wordDetailFragment
+                || destinationId == R.id.grammarListFragment
+                || destinationId == R.id.grammarDetailFragment) {
+            return R.id.topicListFragment;
+        }
+        if (destinationId == R.id.settingsFragment) {
+            return R.id.profileFragment;
+        }
+        return -1;
     }
 }
