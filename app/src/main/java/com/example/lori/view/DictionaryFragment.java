@@ -33,7 +33,6 @@ import java.util.List;
 
 //Fragment tra cứu từ điển offline
 public class DictionaryFragment extends Fragment {
-
     private static final long SEARCH_DEBOUNCE_MS = 300;
 
     private DictionaryViewModel viewModel;
@@ -47,8 +46,7 @@ public class DictionaryFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_dictionary, container, false);
     }
 
@@ -85,6 +83,11 @@ public class DictionaryFragment extends Fragment {
 
         viewModel.getSearchResults().observe(getViewLifecycleOwner(), this::onSearchResultsChanged);
         viewModel.getWordDetail().observe(getViewLifecycleOwner(), this::onWordDetailLoaded);
+
+        //Chuyển sang màn dịch thuật khi người dùng bấm subtab tương ứng
+        Chip chipSubtabTranslate = view.findViewById(R.id.chipSubtabTranslate);
+        chipSubtabTranslate.setOnClickListener(v ->
+                Navigation.findNavController(view).navigate(R.id.action_dictionaryFragment_to_translateFragment));
     }
 
     //Trì hoãn tìm kiếm 300ms sau lần gõ cuối cùng, tránh query liên tục theo từng ký tự

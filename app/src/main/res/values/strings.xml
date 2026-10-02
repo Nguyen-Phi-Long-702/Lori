@@ -135,4 +135,12 @@
     <string name="dictionary_synonyms_label">Đồng nghĩa: %1$s</string>
     <string name="dictionary_antonyms_label">Trái nghĩa: %1$s</string>
     <string name="dictionary_no_definition">Chưa có định nghĩa cho từ này</string>
+    <string name="translate_lang_en">🇬🇧 Anh</string>
+    <string name="translate_lang_vi">🇻🇳 Việt</string>
+    <string name="cd_translate_swap">Đổi chiều ngôn ngữ</string>
+    <string name="translate_input_hint">Nhập câu hoặc đoạn văn tiếng Anh cần dịch…</string>
+    <string name="translate_char_count_format">%1$d/%2$d ký tự</string>
+    <string name="translate_button">Dịch ngay</string>
+    <string name="translate_coming_soon_toast">Chức năng dịch sẽ hoàn thiện ở tuần 6, khi kết nối máy chủ dịch</string>
+    <string name="translate_swap_not_available_toast">Tính năng đổi chiều ngôn ngữ sẽ khả dụng cùng chức năng dịch ở tuần 6</string>
 </resources>

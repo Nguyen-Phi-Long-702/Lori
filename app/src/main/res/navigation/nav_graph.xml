@@ -98,7 +98,16 @@
         <action
             android:id="@+id/action_dictionaryFragment_to_wordDetailFragment"
             app:destination="@id/wordDetailFragment" />
+        <action
+            android:id="@+id/action_dictionaryFragment_to_translateFragment"
+            app:destination="@id/translateFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/translateFragment"
+        android:name="com.example.lori.view.TranslateFragment"
+        android:label="@string/nav_dictionary"
+        tools:layout="@layout/fragment_translate" />
 
     <fragment
         android:id="@+id/profileFragment"

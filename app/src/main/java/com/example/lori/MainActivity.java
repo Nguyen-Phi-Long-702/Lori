@@ -70,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
         if (destinationId == R.id.settingsFragment) {
             return R.id.profileFragment;
         }
+        if (destinationId == R.id.translateFragment) {
+            return R.id.dictionaryFragment;
+        }
         return -1;
     }
 }
