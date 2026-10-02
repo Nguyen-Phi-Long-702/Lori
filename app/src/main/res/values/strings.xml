@@ -47,7 +47,6 @@
     <string name="nav_label_flashcard">Flashcard</string>
     <string name="nav_label_word_detail">Chi tiết từ vựng</string>
 
-    <!-- Ngữ pháp -->
     <string name="grammar_screen_title">Học tập</string>
     <string name="grammar_subtab_vocab">Từ vựng</string>
     <string name="grammar_subtab_grammar">Ngữ pháp</string>
@@ -66,7 +65,6 @@
     <string name="nav_label_grammar_list">Ngữ pháp</string>
     <string name="nav_label_grammar_detail">Nội dung bài học</string>
 
-    <!-- Hồ sơ -->
     <string name="profile_greeting">Chào bạn!</string>
     <string name="profile_stat_current_streak">Streak</string>
     <string name="profile_stat_best_streak">Kỷ lục</string>
@@ -78,7 +76,6 @@
     <string name="profile_streak_legend_on">Đã học</string>
     <string name="profile_settings_button">Cài đặt</string>
 
-    <!-- Cài đặt -->
     <string name="settings_title">Cài đặt</string>
     <string name="settings_section_account">Tài khoản</string>
     <string name="settings_section_app">Ứng dụng</string>
@@ -126,4 +123,16 @@
     <string name="quiz_finish_button">Quay lại</string>
     <string name="quiz_start_button">Làm bài kiểm tra →</string>
     <string name="quiz_explanation_format">Giải thích: %1$s</string>
+    <string name="dictionary_subtab_dictionary">Từ điển</string>
+    <string name="dictionary_subtab_translate">Dịch thuật</string>
+    <string name="dictionary_info_banner">📖 118.356 từ · Tra cứu tức thời, hoàn toàn offline</string>
+    <string name="dictionary_search_hint">Nhập từ tiếng Anh cần tra…</string>
+    <string name="cd_search_clear">Xóa nội dung tìm kiếm</string>
+    <string name="dictionary_empty_result_format">Không tìm thấy kết quả cho \"%1$s\"</string>
+    <string name="dictionary_detail_source_label">Từ điển</string>
+    <string name="dictionary_definition_line_format">%1$d. (%2$s) %3$s</string>
+    <string name="dictionary_example_line_format">VD: %1$s</string>
+    <string name="dictionary_synonyms_label">Đồng nghĩa: %1$s</string>
+    <string name="dictionary_antonyms_label">Trái nghĩa: %1$s</string>
+    <string name="dictionary_no_definition">Chưa có định nghĩa cho từ này</string>
 </resources>

@@ -94,7 +94,11 @@
         android:id="@+id/dictionaryFragment"
         android:name="com.example.lori.view.DictionaryFragment"
         android:label="@string/nav_dictionary"
-        tools:layout="@layout/fragment_placeholder" />
+        tools:layout="@layout/fragment_dictionary">
+        <action
+            android:id="@+id/action_dictionaryFragment_to_wordDetailFragment"
+            app:destination="@id/wordDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
