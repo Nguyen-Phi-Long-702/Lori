@@ -59,6 +59,29 @@
         <argument
             android:name="topicName"
             app:argType="string" />
+        <argument
+            android:name="topicId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <action
+            android:id="@+id/action_wordDetailFragment_to_quizFragment"
+            app:destination="@id/quizFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/quizFragment"
+        android:name="com.example.lori.view.QuizFragment"
+        android:label="@string/nav_label_quiz"
+        tools:layout="@layout/fragment_quiz">
+        <argument
+            android:name="quizType"
+            app:argType="string" />
+        <argument
+            android:name="itemId"
+            app:argType="integer" />
+        <argument
+            android:name="itemTitle"
+            app:argType="string" />
     </fragment>
 
     <fragment
@@ -101,6 +124,9 @@
         <argument
             android:name="lessonId"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_grammarDetailFragment_to_quizFragment"
+            app:destination="@id/quizFragment" />
     </fragment>
 
     <fragment

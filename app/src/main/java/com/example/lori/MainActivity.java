@@ -16,7 +16,6 @@ import com.example.lori.utils.ThemeHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Áp dụng lại giao diện tối đã lưu, phòng trường hợp hệ điều hành khôi phục thẳng mainactivity mà không chạy lại splashactivity
@@ -46,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
             boolean hideBottomNav = destId == R.id.flashcardFragment
                     || destId == R.id.wordDetailFragment
                     || destId == R.id.grammarDetailFragment
-                    || destId == R.id.settingsFragment;
+                    || destId == R.id.settingsFragment
+                    || destId == R.id.quizFragment;
             bottomNav.setVisibility(hideBottomNav ? View.GONE : View.VISIBLE);
 
             //Tô sáng đúng tab cha cho các màn hình con không khớp trực tiếp với menu item nào
@@ -63,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
         if (destinationId == R.id.flashcardFragment
                 || destinationId == R.id.wordDetailFragment
                 || destinationId == R.id.grammarListFragment
-                || destinationId == R.id.grammarDetailFragment) {
+                || destinationId == R.id.grammarDetailFragment
+                || destinationId == R.id.quizFragment) {
             return R.id.topicListFragment;
         }
         if (destinationId == R.id.settingsFragment) {

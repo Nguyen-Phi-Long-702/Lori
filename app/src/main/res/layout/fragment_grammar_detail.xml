@@ -82,6 +82,14 @@
                 android:layout_marginTop="22dp"
                 android:text="@string/grammar_complete_button" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGrammarStartQuiz"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/quiz_start_button" />
+
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

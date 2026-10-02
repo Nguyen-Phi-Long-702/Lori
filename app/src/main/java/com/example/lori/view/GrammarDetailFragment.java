@@ -28,18 +28,19 @@ import java.util.List;
 
 //Fragment hiển thị nội dung chi tiết một bài học ngữ pháp
 public class GrammarDetailFragment extends Fragment {
-
     private GrammarViewModel viewModel;
     private WebView webViewContent;
     private TextView tvEyebrow;
     private TextView tvLessonTitle;
     private LinearLayout llExamples;
     private MaterialButton btnComplete;
+    private MaterialButton btnStartQuiz;
+    private int lessonId;
+    private String lessonTitle;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_grammar_detail, container, false);
     }
 
@@ -47,7 +48,7 @@ public class GrammarDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        int lessonId = requireArguments().getInt("lessonId");
+        lessonId = requireArguments().getInt("lessonId");
 
         ImageButton btnBack = view.findViewById(R.id.btnBackGrammarDetail);
         tvEyebrow = view.findViewById(R.id.tvGrammarEyebrow);
@@ -55,8 +56,18 @@ public class GrammarDetailFragment extends Fragment {
         webViewContent = view.findViewById(R.id.webViewGrammarContent);
         llExamples = view.findViewById(R.id.llGrammarExamples);
         btnComplete = view.findViewById(R.id.btnGrammarComplete);
+        btnStartQuiz = view.findViewById(R.id.btnGrammarStartQuiz);
 
         btnBack.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
+
+        btnStartQuiz.setOnClickListener(v -> {
+            Bundle quizArgs = new Bundle();
+            quizArgs.putString("quizType", "grammar");
+            quizArgs.putInt("itemId", lessonId);
+            quizArgs.putString("itemTitle", lessonTitle);
+            Navigation.findNavController(v)
+                    .navigate(R.id.action_grammarDetailFragment_to_quizFragment, quizArgs);
+        });
         webViewContent.setBackgroundColor(Color.TRANSPARENT);
 
         viewModel = new ViewModelProvider(this).get(GrammarViewModel.class);
@@ -74,8 +85,8 @@ public class GrammarDetailFragment extends Fragment {
     //Hiển thị tiêu đề, thông tin cấp độ và nạp nội dung html của bài học vào webview
     private void onLessonLoaded(GrammarLesson lesson) {
         if (lesson == null) return;
-        tvEyebrow.setText(getString(R.string.grammar_lesson_eyebrow_format,
-                levelLabel(lesson.level), lesson.orderIndex));
+        lessonTitle = lesson.titleVi;
+        tvEyebrow.setText(getString(R.string.grammar_lesson_eyebrow_format, levelLabel(lesson.level), lesson.orderIndex));
         tvLessonTitle.setText(lesson.titleVi);
 
         //Lấy đúng màu chữ và màu viền theo theme đang chạy, để không bị trùng màu nền

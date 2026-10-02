@@ -109,4 +109,21 @@
     <string name="premium_prompt_default_feature">tính năng này</string>
     <string name="premium_coming_soon_toast">Tính năng nâng cấp Premium sẽ hoàn thiện ở Tuần 6</string>
     <string name="premium_prompt_title">Cần nâng cấp Premium</string>
+    <string name="nav_label_quiz">Kiểm tra</string>
+    <string name="quiz_title_vocab">Kiểm tra từ vựng</string>
+    <string name="quiz_title_grammar">Kiểm tra ngữ pháp</string>
+    <string name="quiz_position_format">Câu %1$d/%2$d · %3$s</string>
+    <string name="quiz_option_format">%1$s. %2$s</string>
+    <string name="quiz_next_button">Câu tiếp theo →</string>
+    <string name="quiz_score_format">%1$d/%2$d</string>
+    <string name="quiz_result_subtitle_format">%1$s · %2$s</string>
+    <string name="quiz_correct_label_format">Đúng: %1$d</string>
+    <string name="quiz_incorrect_label_format">Sai: %1$d</string>
+    <string name="quiz_ai_insight_title">Xem phân tích AI chi tiết</string>
+    <string name="quiz_ai_insight_desc">AI sẽ chỉ ra điểm mạnh, điểm yếu và gợi ý ôn tập riêng cho bạn</string>
+    <string name="quiz_ai_insight_feature_name">phân tích AI chi tiết</string>
+    <string name="quiz_ai_insight_not_ready_toast">Tính năng đang được phát triển, sẽ có ở các sprint sau</string>
+    <string name="quiz_finish_button">Quay lại</string>
+    <string name="quiz_start_button">Làm bài kiểm tra →</string>
+    <string name="quiz_explanation_format">Giải thích: %1$s</string>
 </resources>

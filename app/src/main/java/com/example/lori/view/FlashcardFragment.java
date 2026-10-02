@@ -26,19 +26,18 @@ import java.util.List;
 
 //Fragment hiển thị flashcard của một chủ đề và hỗ trợ phát âm từ vựng
 public class FlashcardFragment extends Fragment {
-
     private FlashcardViewModel viewModel;
     private FlashcardPagerAdapter pagerAdapter;
     private SpeechHelper speechHelper;
     private String topicName;
+    private int topicId;
 
     private TextView tvPosition;
     private LinearProgressIndicator progressFlashcard;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_flashcard, container, false);
     }
 
@@ -47,7 +46,7 @@ public class FlashcardFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         //Lấy thông tin chủ đề được truyền từ màn hình trước
-        int topicId = requireArguments().getInt("topicId");
+        topicId = requireArguments().getInt("topicId");
         topicName = requireArguments().getString("topicName");
 
         ImageButton btnBack = view.findViewById(R.id.btnBack);
@@ -110,8 +109,8 @@ public class FlashcardFragment extends Fragment {
         args.putString("pronunciation", word.pronunciation);
         args.putString("meaning", word.meaning);
         args.putString("topicName", topicName);
-        Navigation.findNavController(view)
-                .navigate(R.id.action_flashcardFragment_to_wordDetailFragment, args);
+        args.putInt("topicId", topicId);
+        Navigation.findNavController(view).navigate(R.id.action_flashcardFragment_to_wordDetailFragment, args);
     }
 
     //Yêu cầu speechhelper phát âm từ vựng

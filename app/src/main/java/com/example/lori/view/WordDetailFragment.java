@@ -15,9 +15,12 @@ import androidx.navigation.Navigation;
 
 import com.example.lori.R;
 import com.example.lori.utils.SpeechHelper;
+import com.google.android.material.button.MaterialButton;
 
 //Fragment hiển thị thông tin chi tiết của một từ vựng
 public class WordDetailFragment extends Fragment {
+
+    private static final int NO_TOPIC = -1;
 
     private SpeechHelper speechHelper;
     private String word;
@@ -33,12 +36,13 @@ public class WordDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //Nhận thông tin từ vựng được truyền từ màn hình flashcard
+        //Nhận thông tin từ vựng được truyền từ màn hình flashcard hoặc từ điển
         Bundle args = requireArguments();
         word = args.getString("word");
         String pronunciation = args.getString("pronunciation");
         String meaning = args.getString("meaning");
         String topicName = args.getString("topicName");
+        int topicId = args.getInt("topicId", NO_TOPIC);
 
         TextView tvWord = view.findViewById(R.id.tvWordDetail);
         TextView tvPronunciation = view.findViewById(R.id.tvPronunciationDetail);
@@ -46,6 +50,7 @@ public class WordDetailFragment extends Fragment {
         TextView tvTopic = view.findViewById(R.id.tvTopicDetail);
         ImageButton btnBack = view.findViewById(R.id.btnBackDetail);
         ImageButton btnSpeak = view.findViewById(R.id.btnSpeakDetail);
+        MaterialButton btnStartQuiz = view.findViewById(R.id.btnStartQuiz);
 
         tvWord.setText(word);
         tvMeaning.setText(meaning);
@@ -57,6 +62,21 @@ public class WordDetailFragment extends Fragment {
             tvPronunciation.setText(pronunciation);
         } else {
             tvPronunciation.setVisibility(View.GONE);
+        }
+
+        //Chỉ hiện nút làm bài kiểm tra khi từ này thuộc 1 chủ đề cụ thể
+        if (topicId != NO_TOPIC) {
+            btnStartQuiz.setVisibility(View.VISIBLE);
+            btnStartQuiz.setOnClickListener(v -> {
+                Bundle quizArgs = new Bundle();
+                quizArgs.putString("quizType", "vocab");
+                quizArgs.putInt("itemId", topicId);
+                quizArgs.putString("itemTitle", topicName);
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_wordDetailFragment_to_quizFragment, quizArgs);
+            });
+        } else {
+            btnStartQuiz.setVisibility(View.GONE);
         }
 
         btnBack.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
