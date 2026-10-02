@@ -10,6 +10,8 @@ import java.util.Date;
 @Entity(tableName = "user_progress_local")
 public class UserProgressLocal {
     public static final String TYPE_GRAMMAR_LESSON = "grammar_lesson";
+    public static final String TYPE_VOCAB_QUIZ = "vocab_quiz_topic";
+    public static final String TYPE_GRAMMAR_QUIZ = "grammar_quiz_lesson";
     public static final String STATUS_COMPLETED = "completed";
     @PrimaryKey(autoGenerate = true)
     public int id;
