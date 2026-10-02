@@ -102,4 +102,11 @@
     <string name="settings_about_version_format">Phiên bản %1$s</string>
     <string name="settings_about_dialog_message">Lori — Ứng dụng học tiếng Anh, tra cứu từ điển và luyện thi TOEIC/IELTS.</string>
     <string name="settings_dialog_close">Đóng</string>
+    <string name="premium_badge_label">PREMIUM</string>
+    <string name="premium_prompt_upgrade_button">Nâng cấp Premium →</string>
+    <string name="premium_prompt_later_button">Để sau</string>
+    <string name="premium_prompt_desc_format">Nâng cấp Premium để mở khóa %1$s và nhiều tính năng khác.</string>
+    <string name="premium_prompt_default_feature">tính năng này</string>
+    <string name="premium_coming_soon_toast">Tính năng nâng cấp Premium sẽ hoàn thiện ở Tuần 6</string>
+    <string name="premium_prompt_title">Cần nâng cấp Premium</string>
 </resources>

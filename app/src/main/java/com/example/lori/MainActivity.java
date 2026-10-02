@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
-        //Đồng bộ bottomnavigationview với navcontroller cho các màn hình khớp trực tiếp với 1 tab
+        //Đồng bộ bottomnavigationview với navcontroller
         NavigationUI.setupWithNavController(bottomNav, navController);
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {

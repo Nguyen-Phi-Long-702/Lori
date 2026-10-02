@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/ivPremiumBadgeIcon"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:src="@drawable/ic_premium_crown"
+        app:tint="@color/premium_badge_text"
+        android:contentDescription="@null" />
+
+    <TextView
+        android:id="@+id/tvPremiumBadgeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="@string/premium_badge_label"
+        android:textColor="@color/premium_badge_text"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.03" />
+
+</merge>

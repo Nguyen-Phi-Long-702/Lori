@@ -2,4 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="premium_badge_gradient_start">#D4A843</color>
+    <color name="premium_badge_gradient_end">#F5D580</color>
+    <color name="premium_badge_text">#644B0C</color>
 </resources>

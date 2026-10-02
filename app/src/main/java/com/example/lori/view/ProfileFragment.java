@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,9 +54,9 @@ public class ProfileFragment extends Fragment {
         viewModel.getBestStreak().observe(getViewLifecycleOwner(),
                 streak -> tvBestStreak.setText(String.valueOf(streak)));
 
-        //Premium chưa mở ở sprint này nên chỉ hiển thị thông báo tạm thời
+        //Bấm vào banner Premium sẽ hiện dialog nhắc nâng cấp
         cardPremiumBanner.setOnClickListener(v ->
-                Toast.makeText(requireContext(), R.string.profile_premium_coming_soon, Toast.LENGTH_SHORT).show());
+                PremiumPromptDialog.newInstance().show(getChildFragmentManager(), "premium_prompt"));
 
         btnOpenSettings.setOnClickListener(v ->
                 Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_settingsFragment));

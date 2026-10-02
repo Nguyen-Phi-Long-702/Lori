@@ -20,7 +20,6 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 
 //Fragment hiển thị màn hình cài đặt ứng dụng
 public class SettingsFragment extends Fragment {
-
     private SettingsViewModel viewModel;
 
     @Nullable
@@ -40,7 +39,7 @@ public class SettingsFragment extends Fragment {
                 Navigation.findNavController(v).navigateUp());
 
         view.findViewById(R.id.rowPremium).setOnClickListener(v ->
-                Toast.makeText(requireContext(), R.string.profile_premium_coming_soon, Toast.LENGTH_SHORT).show());
+                PremiumPromptDialog.newInstance().show(getChildFragmentManager(), "premium_prompt"));
 
         //Các mục cần tài khoản đăng nhập - app chưa có hệ thống tài khoản nên chỉ thông báo rõ ràng
         View.OnClickListener showAccountLockedMessage = v ->
