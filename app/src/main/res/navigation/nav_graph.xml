@@ -18,10 +18,18 @@
         tools:layout="@layout/fragment_topic_list">
         <action
             android:id="@+id/action_topicListFragment_to_flashcardFragment"
-            app:destination="@id/flashcardFragment" />
+            app:destination="@id/flashcardFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
         <action
             android:id="@+id/action_topicListFragment_to_grammarListFragment"
-            app:destination="@id/grammarListFragment" />
+            app:destination="@id/grammarListFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
 
     <fragment
@@ -37,7 +45,11 @@
             app:argType="string" />
         <action
             android:id="@+id/action_flashcardFragment_to_wordDetailFragment"
-            app:destination="@id/wordDetailFragment" />
+            app:destination="@id/wordDetailFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
 
     <fragment
@@ -65,7 +77,11 @@
             android:defaultValue="-1" />
         <action
             android:id="@+id/action_wordDetailFragment_to_quizFragment"
-            app:destination="@id/quizFragment" />
+            app:destination="@id/quizFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
 
     <fragment
@@ -97,10 +113,18 @@
         tools:layout="@layout/fragment_dictionary">
         <action
             android:id="@+id/action_dictionaryFragment_to_wordDetailFragment"
-            app:destination="@id/wordDetailFragment" />
+            app:destination="@id/wordDetailFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
         <action
             android:id="@+id/action_dictionaryFragment_to_translateFragment"
-            app:destination="@id/translateFragment" />
+            app:destination="@id/translateFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
 
     <fragment
@@ -116,7 +140,11 @@
         tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_profileFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
 
     <fragment
@@ -126,7 +154,11 @@
         tools:layout="@layout/fragment_grammar_list">
         <action
             android:id="@+id/action_grammarListFragment_to_grammarDetailFragment"
-            app:destination="@id/grammarDetailFragment" />
+            app:destination="@id/grammarDetailFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
 
     <fragment
@@ -139,7 +171,11 @@
             app:argType="integer" />
         <action
             android:id="@+id/action_grammarDetailFragment_to_quizFragment"
-            app:destination="@id/quizFragment" />
+            app:destination="@id/quizFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
 
     <fragment
