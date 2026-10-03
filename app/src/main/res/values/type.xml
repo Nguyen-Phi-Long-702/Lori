@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Text appearance M3 mà các thành phần app đang dùng: MaterialButton và Chip (LabelLarge), BottomNavigationView (LabelMedium) -->
+    <style name="TextAppearance.Lori.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="fontFamily">@font/manrope</item>
+        <item name="android:fontFamily">@font/manrope</item>
+    </style>
+
+    <style name="TextAppearance.Lori.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="fontFamily">@font/manrope</item>
+        <item name="android:fontFamily">@font/manrope</item>
+    </style>
+
+    <!-- Tiêu đề màn hình: Fraunces -->
+    <style name="TextAppearance.Lori.Title" parent="">
+        <item name="fontFamily">@font/fraunces</item>
+        <item name="android:fontFamily">@font/fraunces</item>
+    </style>
+</resources>

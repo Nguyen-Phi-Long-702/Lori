@@ -39,6 +39,11 @@
         <item name="colorSurfaceInverse">@color/lori_inverse_surface</item>
         <item name="colorOnSurfaceInverse">@color/lori_inverse_on_surface</item>
         <item name="colorPrimaryInverse">@color/lori_inverse_primary</item>
+
+        <item name="android:fontFamily">@font/manrope</item>
+        <item name="fontFamily">@font/manrope</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.Lori.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.Lori.LabelMedium</item>
     </style>
 
     <style name="Theme.Lori" parent="Base.Theme.Lori" />
