@@ -1,8 +1,44 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Lori" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/lori_primary</item>
+        <item name="colorOnPrimary">@color/lori_on_primary</item>
+        <item name="colorPrimaryContainer">@color/lori_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/lori_on_primary_container</item>
+
+        <item name="colorSecondary">@color/lori_secondary</item>
+        <item name="colorOnSecondary">@color/lori_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/lori_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/lori_on_secondary_container</item>
+
+        <item name="colorTertiary">@color/lori_tertiary</item>
+        <item name="colorOnTertiary">@color/lori_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/lori_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/lori_on_tertiary_container</item>
+
+        <item name="colorError">@color/lori_error</item>
+        <item name="colorOnError">@color/lori_on_error</item>
+        <item name="colorErrorContainer">@color/lori_error_container</item>
+        <item name="colorOnErrorContainer">@color/lori_on_error_container</item>
+
+        <item name="android:colorBackground">@color/lori_background</item>
+        <item name="colorOnBackground">@color/lori_on_background</item>
+        <item name="colorSurface">@color/lori_surface</item>
+        <item name="colorOnSurface">@color/lori_on_surface</item>
+        <item name="colorSurfaceVariant">@color/lori_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/lori_on_surface_variant</item>
+        <item name="colorOutline">@color/lori_outline</item>
+        <item name="colorOutlineVariant">@color/lori_outline_variant</item>
+
+        <item name="colorSurfaceContainerLowest">@color/lori_surface_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/lori_surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/lori_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/lori_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/lori_surface_container_highest</item>
+
+        <item name="colorSurfaceInverse">@color/lori_inverse_surface</item>
+        <item name="colorOnSurfaceInverse">@color/lori_inverse_on_surface</item>
+        <item name="colorPrimaryInverse">@color/lori_inverse_primary</item>
     </style>
 
     <style name="Theme.Lori" parent="Base.Theme.Lori" />

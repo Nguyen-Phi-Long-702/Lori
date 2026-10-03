@@ -9,4 +9,43 @@
     <color name="quiz_correct_text">#33691E</color>
     <color name="quiz_incorrect_bg">#FFCDD2</color>
     <color name="quiz_incorrect_text">#B71C1C</color>
+
+    <color name="lori_primary">#1E6FB0</color>
+    <color name="lori_on_primary">#FFFFFF</color>
+    <color name="lori_primary_container">#D6E5F1</color>
+    <color name="lori_on_primary_container">#0F2E48</color>
+
+    <color name="lori_secondary">#1D6E93</color>
+    <color name="lori_on_secondary">#FFFFFF</color>
+    <color name="lori_secondary_container">#D6E5EC</color>
+    <color name="lori_on_secondary_container">#0F2E48</color>
+
+    <color name="lori_tertiary">#644B0C</color>
+    <color name="lori_on_tertiary">#FFFFFF</color>
+    <color name="lori_tertiary_container">#F5D580</color>
+    <color name="lori_on_tertiary_container">#644B0C</color>
+
+    <color name="lori_error">#97382C</color>
+    <color name="lori_on_error">#FFFFFF</color>
+    <color name="lori_error_container">#F7DCD9</color>
+    <color name="lori_on_error_container">#97382C</color>
+
+    <color name="lori_background">#EAF2F1</color>
+    <color name="lori_on_background">#123A5C</color>
+    <color name="lori_surface">#FFFFFF</color>
+    <color name="lori_on_surface">#123A5C</color>
+    <color name="lori_surface_variant">#DCEAE8</color>
+    <color name="lori_on_surface_variant">#55676F</color>
+    <color name="lori_outline">#5C86A3</color>
+    <color name="lori_outline_variant">#CFE1DF</color>
+
+    <color name="lori_surface_container_lowest">#FFFFFF</color>
+    <color name="lori_surface_container_low">#F4F8F8</color>
+    <color name="lori_surface_container">#EAF2F1</color>
+    <color name="lori_surface_container_high">#E2EEEC</color>
+    <color name="lori_surface_container_highest">#DCEAE8</color>
+
+    <color name="lori_inverse_surface">#123A5C</color>
+    <color name="lori_inverse_on_surface">#EAF2F1</color>
+    <color name="lori_inverse_primary">#8FC4EE</color>
 </resources>

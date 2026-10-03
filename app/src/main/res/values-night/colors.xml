@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lori_primary">#5AA9E6</color>
+    <color name="lori_on_primary">#0B2438</color>
+    <color name="lori_primary_container">#14507F</color>
+    <color name="lori_on_primary_container">#D3E5F5</color>
+
+    <color name="lori_secondary">#7FB6D0</color>
+    <color name="lori_on_secondary">#0B2438</color>
+    <color name="lori_secondary_container">#1F4A66</color>
+    <color name="lori_on_secondary_container">#D3E5F0</color>
+
+    <color name="lori_tertiary">#F5D580</color>
+    <color name="lori_on_tertiary">#3B2C00</color>
+    <color name="lori_tertiary_container">#644B0C</color>
+    <color name="lori_on_tertiary_container">#F5D580</color>
+
+    <color name="lori_error">#F0877A</color>
+    <color name="lori_on_error">#4A140D</color>
+    <color name="lori_error_container">#97382C</color>
+    <color name="lori_on_error_container">#FADBD6</color>
+
+    <color name="lori_background">#1B2233</color>
+    <color name="lori_on_background">#EDEFF7</color>
+    <color name="lori_surface">#242C40</color>
+    <color name="lori_on_surface">#EDEFF7</color>
+    <color name="lori_surface_variant">#151B29</color>
+    <color name="lori_on_surface_variant">#9AA2C2</color>
+    <color name="lori_outline">#8891AD</color>
+    <color name="lori_outline_variant">#333D57</color>
+
+    <color name="lori_surface_container_lowest">#151B29</color>
+    <color name="lori_surface_container_low">#181F2E</color>
+    <color name="lori_surface_container">#1B2233</color>
+    <color name="lori_surface_container_high">#242C40</color>
+    <color name="lori_surface_container_highest">#333D57</color>
+
+    <color name="lori_inverse_surface">#EDEFF7</color>
+    <color name="lori_inverse_on_surface">#1B2233</color>
+    <color name="lori_inverse_primary">#1E6FB0</color>
+</resources>
