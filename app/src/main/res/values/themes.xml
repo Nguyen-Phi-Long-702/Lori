@@ -44,6 +44,9 @@
         <item name="fontFamily">@font/manrope</item>
         <item name="textAppearanceLabelLarge">@style/TextAppearance.Lori.LabelLarge</item>
         <item name="textAppearanceLabelMedium">@style/TextAppearance.Lori.LabelMedium</item>
+
+        <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.Lori.Corner.Small</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.Lori.Corner.ExtraLarge</item>
     </style>
 
     <style name="Theme.Lori" parent="Base.Theme.Lori" />

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ShapeAppearance.Lori.Corner.Small" parent="ShapeAppearance.Material3.Corner.Small">
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="ShapeAppearance.Lori.Corner.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
+        <item name="cornerSize">26dp</item>
+    </style>
+</resources>
