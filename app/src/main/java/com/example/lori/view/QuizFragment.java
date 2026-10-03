@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.graphics.Color;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,8 +25,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
-//Fragment làm bài kiểm tra, dùng chung cho quiz từ vựng (theo chủ đề) và
-//quiz ngữ pháp (theo bài học), phân biệt qua tham số quizType.
+//Fragment làm bài kiểm tra, dùng chung cho quiz từ vựng (theo chủ đề) và quiz ngữ pháp (theo bài học), phân biệt qua tham số quizType.
 public class QuizFragment extends Fragment {
 
     private QuizViewModel viewModel;
@@ -179,7 +179,7 @@ public class QuizFragment extends Fragment {
 
     private void resetOptionStyles() {
         for (MaterialButton button : optionButtons) {
-            button.setBackgroundTintList(null);
+            button.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
             button.setTextColor(defaultOptionTextColor);
             button.setStrokeWidth(defaultOptionStrokeWidth);
         }
