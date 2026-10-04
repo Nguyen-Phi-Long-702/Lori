@@ -68,3 +68,23 @@ File: `.github/workflows/backend-deploy.yml`, tên workflow **Backend CI/CD**.
 - **Job `deploy`** (chạy sau `build`): gọi **Deploy Hook** của Render bằng `curl -X POST`.
 - **GitHub Secret (repo Lori):** `RENDER_DEPLOY_HOOK_URL` — URL Deploy Hook lấy từ Render → service → Settings. Không để URL này trong file.
 - **Kiểm tra:** push một thay đổi nhỏ trong `backend/` → tab Actions của repo Lori chạy xanh → Render hiện một lần deploy mới.
+
+
+## 6. Backup Neon tự động (GitHub Actions)
+
+Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không phải backup dài hạn** → có thêm workflow `pg_dump` hàng tuần.
+
+- **Nơi lưu:** repo GitHub **riêng tư** `lori-db-backup`. Repo này (Lori) là Public nên **không bao giờ** để file dump hoặc chuỗi kết nối ở đây.
+- **Workflow:** `.github/workflows/neon-backup.yml` nằm trong repo `lori-db-backup` (dùng `GITHUB_TOKEN` có sẵn, không cần token cá nhân).
+- **Lịch:** thứ Bảy 20:17 UTC (03:17 sáng Chủ nhật giờ Việt Nam), `cron: '17 20 * * 6'`. Có thể bấm **Run workflow** để chạy tay. GitHub có thể chạy trễ vài phút đến vài chục phút khi hệ thống bận.
+- **GitHub Secret (repo `lori-db-backup`):** `NEON_DIRECT_URL` — chuỗi kết nối Neon dạng **direct** (host không có `-pooler`) của `lori_db`.
+- **Phiên bản công cụ:** workflow chạy `pg_dump` trong container `postgres:16` (biến `NEON_PG_MAJOR` trong file workflow). `pg_dump` phải **cùng hoặc mới hơn** phiên bản Postgres của Neon → nếu Neon nâng/đổi phiên bản major, phải sửa số này.
+- **Kết quả:** mỗi lần chạy tạo file `backups/lori_db_<ngày>_<giờ>.dump` (định dạng custom `-Fc`, tạo bằng `--no-owner --no-acl`), được kiểm tra bằng `pg_restore --list` trước khi commit.
+
+## 7. Giám sát (UptimeRobot)
+
+- Dịch vụ ngoài, độc lập với hạ tầng được theo dõi; tài khoản Free, không cần thẻ.
+- Monitor: `Lori Backend (Render)`, loại HTTP(s), kiểm tra mỗi 5 phút, báo qua email.
+- URL theo dõi: `https://lori-25ej.onrender.com/actuator/health/ping`.
+- **Vì sao không theo dõi `/actuator/health`:** endpoint đó kiểm tra cả PostgreSQL và Redis; gọi mỗi 5 phút sẽ giữ Neon thức gần như liên tục và làm cạn hạn mức 100 CU-giờ/tháng. `/actuator/health/ping` luôn trả `UP`, không đụng DB/Redis.
+- **Lưu ý:** monitor 5 phút/lần giữ Render luôn thức (~744/750 giờ miễn phí mỗi tháng) → không chạy thêm service Free thứ hai trong cùng workspace Render.
