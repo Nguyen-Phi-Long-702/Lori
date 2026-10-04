@@ -20,3 +20,13 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t lori-backend:${{ github.sha }} ./backend
+
+  deploy:
+    name: Deploy to Render
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: curl --fail-with-body -sS -X POST "$RENDER_DEPLOY_HOOK_URL"
