@@ -59,8 +59,10 @@ UptimeRobot --kiểm tra mỗi 5 phút--> Render
 | `NEON_USER` | User ứng dụng của Neon (`lori_app`) |
 | `NEON_PASSWORD` | Mật khẩu của user ứng dụng |
 | `UPSTASH_URL` | Kết nối Redis (Upstash) |
-| `JWT_SECRET` | JWT secret |
+| `JWT_SECRET` | Khóa ký JWT, chuỗi ngẫu nhiên ≥ 32 byte (256-bit) |
 | `SPRING_DATA_REDIS_URL` |              |
+| `API_KEY` | Giá trị Backend yêu cầu ở header `X-API-Key` (lớp anti-abuse, không phải ranh giới bảo mật thật — kế hoạch mục 8.0) |
+| `APP_SIGNATURE` | Giá trị Backend yêu cầu ở header `X-App-Signature` (SHA-256 chữ ký app) |
 
 - Auto-Deploy (Render → Settings → Build & Deploy): **Off**.
 
