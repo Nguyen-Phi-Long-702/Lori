@@ -95,7 +95,7 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - URL theo dõi: `https://lori-25ej.onrender.com/actuator/health/ping`.
 - **Vì sao không theo dõi `/actuator/health`:** endpoint đó kiểm tra cả PostgreSQL và Redis; gọi mỗi 5 phút sẽ giữ Neon thức gần như liên tục và làm cạn hạn mức 100 CU-giờ/tháng. `/actuator/health/ping` luôn trả `UP`, không đụng DB/Redis.
 - **Lưu ý:** monitor 5 phút/lần giữ Render luôn thức (~744/750 giờ miễn phí mỗi tháng) → không chạy thêm service Free thứ hai trong cùng workspace Render.
-- `SecurityConfig` của Backend phải luôn cho phép `/actuator/health/**`; nếu không, UptimeRobot sẽ nhận 401/403 và báo Down.
+- `SecurityConfig`, `ApiKeyFilter` và `RateLimitFilter` của Backend phải luôn bỏ qua `/actuator/health/**` (UptimeRobot không gửi `X-API-Key`); nếu không, UptimeRobot sẽ nhận 401/403/429 và báo Down. Danh sách đường dẫn mở nằm ở `SecurityPaths`.
 
 
 ## 8. Database migration (Flyway)
