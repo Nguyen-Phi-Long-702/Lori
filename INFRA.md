@@ -36,6 +36,8 @@ UptimeRobot --kiểm tra mỗi 5 phút--> Render
    - **Direct** (host không có `-pooler`): dùng cho công cụ quản trị như `pg_dump`/`pg_restore`.
 4. Kiểm tra kết nối từ máy local bằng `psql` với chuỗi kết nối của `lori_db`.
 5. Chuỗi kết nối chứa mật khẩu → chỉ để trong biến môi trường Render và GitHub Secret, không commit.
+6. **User ứng dụng:** Backend không dùng user mặc định của Neon (thuộc `neon_superuser`) mà dùng user riêng `lori_app`, tạo bằng SQL (user tạo bằng SQL không thuộc `neon_superuser`), chỉ có quyền `CONNECT` và `USAGE, CREATE` trên schema `public` của `lori_db`.
+7. **Chuỗi kết nối của Backend:** khác với gợi ý ở mục 3, Backend dùng host **direct** (không `-pooler`) vì Flyway chạy migration khi app khởi động; định dạng JDBC `jdbc:postgresql://<host>/lori_db?sslmode=require`, user và mật khẩu để ở biến riêng. Pool kết nối đặt `spring.datasource.hikari.minimum-idle=0` để Backend không giữ sẵn kết nối, giúp Neon vẫn tự ngủ khi không có request.
 
 ## 3. Upstash (Redis)
 
@@ -53,9 +55,12 @@ UptimeRobot --kiểm tra mỗi 5 phút--> Render
 
 | Tên biến | Ý nghĩa |
 |---|---|
-| `NEON_URL` | Kết nối PostgreSQL (Neon) |
+| `NEON_URL` | Chuỗi JDBC tới PostgreSQL (Neon), dạng direct, không chứa user/mật khẩu |
+| `NEON_USER` | User ứng dụng của Neon (`lori_app`) |
+| `NEON_PASSWORD` | Mật khẩu của user ứng dụng |
 | `UPSTASH_URL` | Kết nối Redis (Upstash) |
 | `JWT_SECRET` | JWT secret |
+| `SPRING_DATA_REDIS_URL` |              |
 
 - Auto-Deploy (Render → Settings → Build & Deploy): **Off**.
 
@@ -88,3 +93,12 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - URL theo dõi: `https://lori-25ej.onrender.com/actuator/health/ping`.
 - **Vì sao không theo dõi `/actuator/health`:** endpoint đó kiểm tra cả PostgreSQL và Redis; gọi mỗi 5 phút sẽ giữ Neon thức gần như liên tục và làm cạn hạn mức 100 CU-giờ/tháng. `/actuator/health/ping` luôn trả `UP`, không đụng DB/Redis.
 - **Lưu ý:** monitor 5 phút/lần giữ Render luôn thức (~744/750 giờ miễn phí mỗi tháng) → không chạy thêm service Free thứ hai trong cùng workspace Render.
+- `SecurityConfig` của Backend phải luôn cho phép `/actuator/health/**`; nếu không, UptimeRobot sẽ nhận 401/403 và báo Down.
+
+
+## 8. Database migration (Flyway)
+
+- Migration nằm ở `backend/src/main/resources/db/migration/`, đặt tên `V<số>__<mô_tả>.sql`.
+- Flyway tự chạy khi Backend khởi động (cả local lẫn Render), dùng chung kết nối `NEON_URL`.
+- `V1__init_schema.sql`: `users`, `refresh_tokens`, `user_progress`, `subscriptions`.
+- **Không sửa migration đã chạy** (Flyway kiểm tra checksum); muốn đổi schema thì tạo migration mới.
