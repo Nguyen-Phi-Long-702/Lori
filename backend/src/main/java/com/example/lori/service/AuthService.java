@@ -8,6 +8,8 @@ import com.example.lori.entity.User;
 import com.example.lori.exception.ApiException;
 import com.example.lori.repository.RefreshTokenRepository;
 import com.example.lori.repository.UserRepository;
+import com.example.lori.security.GoogleTokenVerifier;
+import com.example.lori.security.GoogleTokenVerifier.GoogleUserInfo;
 import com.example.lori.security.JwtTokenProvider;
 import com.example.lori.util.InputSanitizerUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,16 +21,22 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.Locale;
 
-/** Nghiep vu dang ky / dang nhap / lam moi token / dang xuat. */
+/** Nghiep vu dang ky / dang nhap (email, Google) / lam moi token / dang xuat. */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
+    // Gioi han do dai theo cot trong V1__init_schema.sql (users.display_name, users.avatar_url)
+    private static final int MAX_DISPLAY_NAME_LENGTH = 100;
+    private static final int MAX_AVATAR_URL_LENGTH = 500;
+    private static final String DEFAULT_DISPLAY_NAME = "Lori User";
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final BruteForceProtectionService bruteForceProtectionService;
+    private final GoogleTokenVerifier googleTokenVerifier;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -64,6 +72,33 @@ public class AuthService {
         }
 
         bruteForceProtectionService.reset(email);
+        return issueTokens(user);
+    }
+
+    /**
+     * Dang nhap Google: xac thuc ID Token, tim user theo google_id; chua co thi tim theo email de lien ket
+     * (account linking); van chua co thi tao user moi (khong co mat khau).
+     */
+    @Transactional
+    public AuthResponse googleLogin(String idToken) {
+        GoogleUserInfo info = googleTokenVerifier.verify(idToken);
+        String email = normalizeEmail(info.email());
+
+        User user = userRepository.findByGoogleId(info.googleId()).orElse(null);
+        if (user == null) {
+            user = userRepository.findByEmail(email).orElse(null);
+            if (user == null) {
+                user = new User();
+                user.setEmail(email);
+                user.setDisplayName(resolveDisplayName(info.name(), email));
+            }
+            // Email da dang ky bang mat khau thi giu nguyen tai khoan, chi gan them google_id (account linking)
+            user.setGoogleId(info.googleId());
+            if (user.getAvatarUrl() == null) {
+                user.setAvatarUrl(resolveAvatarUrl(info.pictureUrl()));
+            }
+            user = userRepository.save(user);
+        }
         return issueTokens(user);
     }
 
@@ -103,5 +138,25 @@ public class AuthService {
 
     private static String normalizeEmail(String email) {
         return email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    /** Ten Google -> lam sach, cat toi da 100 ky tu; trong thi dung phan truoc @ cua email. */
+    private static String resolveDisplayName(String googleName, String email) {
+        String name = InputSanitizerUtil.sanitize(googleName);
+        if (name == null || name.isEmpty()) {
+            name = InputSanitizerUtil.sanitize(email.split("@")[0]);
+        }
+        if (name == null || name.isEmpty()) {
+            return DEFAULT_DISPLAY_NAME;
+        }
+        return name.length() > MAX_DISPLAY_NAME_LENGTH ? name.substring(0, MAX_DISPLAY_NAME_LENGTH) : name;
+    }
+
+    /** URL avatar dai hon cot (500) thi bo qua, de khong loi khi luu. */
+    private static String resolveAvatarUrl(String pictureUrl) {
+        if (pictureUrl == null || pictureUrl.isBlank() || pictureUrl.length() > MAX_AVATAR_URL_LENGTH) {
+            return null;
+        }
+        return pictureUrl;
     }
 }

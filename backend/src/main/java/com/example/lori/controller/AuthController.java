@@ -1,6 +1,7 @@
 package com.example.lori.controller;
 
 import com.example.lori.dto.AuthResponse;
+import com.example.lori.dto.GoogleLoginRequest;
 import com.example.lori.dto.LoginRequest;
 import com.example.lori.dto.RefreshTokenRequest;
 import com.example.lori.dto.RegisterRequest;
@@ -31,6 +32,11 @@ public class AuthController {
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
+    }
+
+    @PostMapping("/google")
+    public AuthResponse google(@Valid @RequestBody GoogleLoginRequest request) {
+        return authService.googleLogin(request.idToken());
     }
 
     @PostMapping("/refresh")
