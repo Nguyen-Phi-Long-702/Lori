@@ -15,8 +15,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Anh xa bang users (V1__init_schema.sql), chi gom cac cot dang dung.
- * Cot avatar_url, google_id chua map (them o Ngay 5-6 khi lam Google login / User APIs).
+ * Anh xa bang users (V1__init_schema.sql).
  * Field "premium" <-> cot is_premium; getter do Lombok sinh ra la isPremium().
  */
 @Entity
@@ -37,6 +36,12 @@ public class User {
 
     @Column(name = "display_name", nullable = false, length = 100)
     private String displayName;
+
+    @Column(name = "avatar_url", length = 500)
+    private String avatarUrl;
+
+    @Column(name = "google_id", length = 255)
+    private String googleId;
 
     @Column(name = "is_premium", nullable = false)
     private boolean premium;
