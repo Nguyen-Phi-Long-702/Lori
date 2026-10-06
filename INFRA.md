@@ -64,6 +64,8 @@ UptimeRobot --kiểm tra mỗi 5 phút--> Render
 | `API_KEY` | Giá trị Backend yêu cầu ở header `X-API-Key` (lớp anti-abuse, không phải ranh giới bảo mật thật — kế hoạch mục 8.0) |
 | `APP_SIGNATURE` | Giá trị Backend yêu cầu ở header `X-App-Signature` (SHA-256 chữ ký app) |
 | `GOOGLE_CLIENT_ID` | Web client ID của Google OAuth; Backend dùng để kiểm tra `aud` của Google ID Token |
+| `BREVO_API_KEY` | API key (v3) của Brevo để Backend gửi email đặt lại mật khẩu (xem mục 10) |
+| `MAIL_SENDER_EMAIL` | Email người gửi đã được xác minh trên Brevo (xem mục 10) |
 
 - Auto-Deploy (Render → Settings → Build & Deploy): **Off**.
 
@@ -115,3 +117,11 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - **Redirect URI** của Web client: `https://developers.google.com/oauthplayground` — chỉ để lấy ID Token thử bằng tay (OAuth 2.0 Playground).
 - **Android client** (cần package name + SHA-1) sẽ được tạo ở Tuần 6, khi làm Google Sign-In trên app.
 - Biến môi trường Render: `GOOGLE_CLIENT_ID`.
+
+## 10. Gửi email (Brevo)
+
+- Dùng để gửi mã xác nhận quên mật khẩu. Gói **Free**, **không cần thẻ tín dụng**.
+- **Gọi qua HTTPS API** (`POST https://api.brevo.com/v3/smtp/email`, header `api-key`), không dùng SMTP vì **Render Free chặn các cổng SMTP 25, 465, 587**.
+- Người gửi (`MAIL_SENDER_EMAIL`) phải được **xác minh** trong Brevo → Senders, Domains & Dedicated IPs → Senders.
+- Brevo có tính năng chặn IP lạ gọi API (Settings → Security → Authorized IPs). Vì không kiểm soát được IP gửi đi của Render Free nên đã **tắt chặn (Deactivate blocking)**; bù lại API key chỉ lưu trong biến môi trường, không commit.
+- Biến môi trường Render: `BREVO_API_KEY`, `MAIL_SENDER_EMAIL`.
