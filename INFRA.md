@@ -63,6 +63,7 @@ UptimeRobot --kiểm tra mỗi 5 phút--> Render
 | `SPRING_DATA_REDIS_URL` |              |
 | `API_KEY` | Giá trị Backend yêu cầu ở header `X-API-Key` (lớp anti-abuse, không phải ranh giới bảo mật thật — kế hoạch mục 8.0) |
 | `APP_SIGNATURE` | Giá trị Backend yêu cầu ở header `X-App-Signature` (SHA-256 chữ ký app) |
+| `GOOGLE_CLIENT_ID` | Web client ID của Google OAuth; Backend dùng để kiểm tra `aud` của Google ID Token |
 
 - Auto-Deploy (Render → Settings → Build & Deploy): **Off**.
 
@@ -104,3 +105,13 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - Flyway tự chạy khi Backend khởi động (cả local lẫn Render), dùng chung kết nối `NEON_URL`.
 - `V1__init_schema.sql`: `users`, `refresh_tokens`, `user_progress`, `subscriptions`.
 - **Không sửa migration đã chạy** (Flyway kiểm tra checksum); muốn đổi schema thì tạo migration mới.
+
+
+## 9. Đăng nhập Google (OAuth 2.0)
+
+- Dịch vụ: Google Cloud Console → **Google Auth Platform**, dùng project riêng cho Lori. **Không bật thanh toán, không cần thẻ tín dụng** (tạo OAuth client không yêu cầu billing).
+- **Audience:** External, trạng thái **Testing** → chỉ các tài khoản Google nằm trong danh sách **Test users** mới đăng nhập được. Chuyển sang In production là quyết định ở giai đoạn phát hành.
+- **Web client:** Backend chỉ cần **Client ID** của Web client để kiểm tra trường `aud` của Google ID Token. **Client secret không dùng trong Backend**, không lưu vào repo hay biến môi trường Render.
+- **Redirect URI** của Web client: `https://developers.google.com/oauthplayground` — chỉ để lấy ID Token thử bằng tay (OAuth 2.0 Playground).
+- **Android client** (cần package name + SHA-1) sẽ được tạo ở Tuần 6, khi làm Google Sign-In trên app.
+- Biến môi trường Render: `GOOGLE_CLIENT_ID`.
