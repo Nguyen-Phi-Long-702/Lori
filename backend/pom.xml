@@ -110,6 +110,11 @@
             <artifactId>bucket4j_jdk17-lettuce</artifactId>
             <version>8.20.0</version>
         </dependency>
+        <!-- Xac thuc Google ID Token bang NimbusJwtDecoder (Spring Security OAuth2, ke hoach muc 9.2); version do Spring Boot quan ly -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
