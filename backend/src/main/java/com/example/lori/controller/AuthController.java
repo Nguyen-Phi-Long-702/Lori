@@ -1,11 +1,14 @@
 package com.example.lori.controller;
 
 import com.example.lori.dto.AuthResponse;
+import com.example.lori.dto.ForgotPasswordRequest;
 import com.example.lori.dto.GoogleLoginRequest;
 import com.example.lori.dto.LoginRequest;
 import com.example.lori.dto.RefreshTokenRequest;
 import com.example.lori.dto.RegisterRequest;
+import com.example.lori.dto.ResetPasswordRequest;
 import com.example.lori.service.AuthService;
+import com.example.lori.service.PasswordResetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -48,5 +52,17 @@ public class AuthController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@Valid @RequestBody RefreshTokenRequest request) {
         authService.logout(request.refreshToken());
+    }
+
+    @PostMapping("/forgot-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        passwordResetService.requestReset(request.email());
+    }
+
+    @PostMapping("/reset-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        passwordResetService.resetPassword(request.email(), request.code(), request.newPassword());
     }
 }
