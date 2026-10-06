@@ -2,6 +2,7 @@ package com.example.lori.controller;
 
 import com.example.lori.dto.UpdateProfileRequest;
 import com.example.lori.dto.UserResponse;
+import com.example.lori.dto.UserStatsResponse;
 import com.example.lori.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +32,10 @@ public class UserController {
     public UserResponse updateMe(@AuthenticationPrincipal UUID userId,
                                  @Valid @RequestBody UpdateProfileRequest request) {
         return userService.updateMe(userId, request);
+    }
+
+    @GetMapping("/me/stats")
+    public UserStatsResponse getStats(@AuthenticationPrincipal UUID userId) {
+        return userService.getStats(userId);
     }
 }
