@@ -1,16 +1,19 @@
 package com.example.lori.controller;
 
+import com.example.lori.dto.ChangePasswordRequest;
 import com.example.lori.dto.UpdateProfileRequest;
 import com.example.lori.dto.UserResponse;
 import com.example.lori.dto.UserStatsResponse;
 import com.example.lori.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -37,5 +40,12 @@ public class UserController {
     @GetMapping("/me/stats")
     public UserStatsResponse getStats(@AuthenticationPrincipal UUID userId) {
         return userService.getStats(userId);
+    }
+
+    @PutMapping("/me/password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void changePassword(@AuthenticationPrincipal UUID userId,
+                               @Valid @RequestBody ChangePasswordRequest request) {
+        userService.changePassword(userId, request);
     }
 }

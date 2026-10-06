@@ -1,16 +1,19 @@
 package com.example.lori.service;
 
+import com.example.lori.dto.ChangePasswordRequest;
 import com.example.lori.dto.UpdateProfileRequest;
 import com.example.lori.dto.UserResponse;
 import com.example.lori.dto.UserStatsResponse;
 import com.example.lori.entity.User;
 import com.example.lori.entity.UserProgress;
 import com.example.lori.exception.ApiException;
+import com.example.lori.repository.RefreshTokenRepository;
 import com.example.lori.repository.UserProgressRepository;
 import com.example.lori.repository.UserRepository;
 import com.example.lori.util.InputSanitizerUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserProgressRepository userProgressRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public UserResponse getMe(UUID userId) {
@@ -70,6 +75,24 @@ public class UserService {
             }
         }
         return new UserStatsResponse(grammarLessons, vocabQuizTopics, grammarQuizLessons, totalCorrect, totalIncorrect);
+    }
+
+    /**
+     * Doi mat khau: can mat khau hien tai. Sai mat khau tra 400 (khong phai 401 de app khong nham la token het han).
+     * Thanh cong thi thu hoi toan bo refresh token -> moi thiet bi phai dang nhap lai khi het Access Token.
+     */
+    @Transactional
+    public void changePassword(UUID userId, ChangePasswordRequest request) {
+        User user = findUser(userId);
+        if (user.getPasswordHash() == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST,
+                    "This account has no password yet, use forgot password to set one");
+        }
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPasswordHash())) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Current password is incorrect");
+        }
+        user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        refreshTokenRepository.revokeAllByUserId(userId);
     }
 
     // Token con han nhung user da bi xoa -> 401 de app di vao luong dang nhap lai
