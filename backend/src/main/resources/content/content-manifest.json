@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "updates": [
+    {
+      "version": 1,
+      "description": "Initial content bundled in the app (dictionary.db)"
+    }
+  ]
+}
