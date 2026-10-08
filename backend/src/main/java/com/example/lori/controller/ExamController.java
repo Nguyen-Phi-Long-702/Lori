@@ -1,6 +1,7 @@
 package com.example.lori.controller;
 
 import com.example.lori.dto.ExamDetailResponse;
+import com.example.lori.dto.ExamResultDetailResponse;
 import com.example.lori.dto.ExamResultResponse;
 import com.example.lori.dto.ExamSummaryResponse;
 import com.example.lori.dto.StartExamResponse;
@@ -52,5 +53,16 @@ public class ExamController {
                                      @PathVariable UUID examId,
                                      @Valid @RequestBody SubmitExamRequest request) {
         return examService.submit(userId, examId, request);
+    }
+
+    @GetMapping("/results")
+    public List<ExamResultResponse> results(@AuthenticationPrincipal UUID userId) {
+        return examService.listResults(userId);
+    }
+
+    @GetMapping("/results/{resultId}")
+    public ExamResultDetailResponse resultDetail(@AuthenticationPrincipal UUID userId,
+                                                 @PathVariable UUID resultId) {
+        return examService.getResultDetail(userId, resultId);
     }
 }

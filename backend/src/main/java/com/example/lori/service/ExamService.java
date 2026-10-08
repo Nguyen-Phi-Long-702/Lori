@@ -1,6 +1,7 @@
 package com.example.lori.service;
 
 import com.example.lori.dto.ExamDetailResponse;
+import com.example.lori.dto.ExamResultDetailResponse;
 import com.example.lori.dto.ExamResultResponse;
 import com.example.lori.dto.ExamSummaryResponse;
 import com.example.lori.dto.StartExamResponse;
@@ -26,12 +27,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -200,6 +203,49 @@ public class ExamService {
         return toResultResponse(examResultRepository.save(result), paper);
     }
 
+    // ===== Lich su + xem lai =====
+
+    /** Lich su thi cua user, moi nhat truoc. */
+    @Transactional(readOnly = true)
+    public List<ExamResultResponse> listResults(UUID userId) {
+        List<ExamResult> results = examResultRepository.findByUserIdOrderBySubmittedAtDesc(userId);
+        if (results.isEmpty()) {
+            return List.of();
+        }
+        List<UUID> paperIds = results.stream().map(ExamResult::getPaperId).distinct().toList();
+        Map<UUID, ExamPaper> papers = examPaperRepository.findAllById(paperIds).stream()
+                .collect(Collectors.toMap(ExamPaper::getId, Function.identity()));
+        return results.stream()
+                .map(result -> toResultResponse(result, papers.get(result.getPaperId())))
+                .toList();
+    }
+
+    /** Ket qua + xem lai tung cau. Ket qua cua user khac -> 404. */
+    @Transactional(readOnly = true)
+    public ExamResultDetailResponse getResultDetail(UUID userId, UUID resultId) {
+        ExamResult result = examResultRepository.findByIdAndUserId(resultId, userId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Result not found"));
+        ExamPaper paper = findPaper(result.getPaperId());
+        PaperContent content = loadContent(paper);
+
+        List<ExamResultDetailResponse.Item> items = new ArrayList<>();
+        for (ExamSection section : content.sections()) {
+            for (ExamQuestion question : content.questionsOf(section)) {
+                String yourAnswer = result.getAnswers().get(question.getId().toString());
+                items.add(new ExamResultDetailResponse.Item(
+                        question.getId(),
+                        question.getQuestionType(),
+                        question.getQuestionText(),
+                        question.getOptions(),
+                        yourAnswer,
+                        question.getCorrectAnswer(),
+                        isCorrect(question, yourAnswer),
+                        question.getExplanation()));
+            }
+        }
+        return new ExamResultDetailResponse(toResultResponse(result, paper), items);
+    }
+    
     // ===== Ham dung chung =====
 
     private ExamPaper findPaper(UUID examId) {
