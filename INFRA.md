@@ -106,6 +106,7 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - Migration nằm ở `backend/src/main/resources/db/migration/`, đặt tên `V<số>__<mô_tả>.sql`.
 - Flyway tự chạy khi Backend khởi động (cả local lẫn Render), dùng chung kết nối `NEON_URL`.
 - `V1__init_schema.sql`: `users`, `refresh_tokens`, `user_progress`, `subscriptions`.
+- `V2__exam_tables.sql`: `exam_papers`, `exam_sections`, `exam_questions`, `exam_results`.
 - **Không sửa migration đã chạy** (Flyway kiểm tra checksum); muốn đổi schema thì tạo migration mới.
 
 
