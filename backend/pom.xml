@@ -115,6 +115,11 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-jose</artifactId>
         </dependency>
+        <!-- Spring AOP (AspectJ) cho @RequirePremium; version do Spring Boot quan ly -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
         <!-- Thu vien test (chi dung luc chay test, khong dong goi vao jar) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
