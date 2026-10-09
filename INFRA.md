@@ -24,6 +24,7 @@ UptimeRobot --kiểm tra mỗi 5 phút--> Render
 | Redis | Upstash | Free (không cần thẻ) | — |
 | CI/CD + Backup | GitHub Actions | Free | — |
 | Giám sát | UptimeRobot | Free | 50 monitor, kiểm tra mỗi 5 phút |
+| Audio đề thi | Supabase Storage | Free (không cần thẻ) | 1 GB lưu trữ, 50 MB/file, 5 GB egress; project bị tạm dừng sau 1 tuần không hoạt động |
 
 > Kế hoạch gốc dùng Google Cloud Run; vì team không dùng thẻ tín dụng nên Backend chạy trên **Render**.
 
@@ -126,3 +127,17 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - Người gửi (`MAIL_SENDER_EMAIL`) phải được **xác minh** trong Brevo → Senders, Domains & Dedicated IPs → Senders.
 - Brevo có tính năng chặn IP lạ gọi API (Settings → Security → Authorized IPs). Vì không kiểm soát được IP gửi đi của Render Free nên đã **tắt chặn (Deactivate blocking)**; bù lại API key chỉ lưu trong biến môi trường, không commit.
 - Biến môi trường Render: `BREVO_API_KEY`, `MAIL_SENDER_EMAIL`.
+
+## 11. Dữ liệu đề thi (TOEIC / IELTS)
+
+- Nội dung đề (`exam_papers`, `exam_sections`, `exam_questions`) **không nằm trong repo** và không đi qua Flyway. Dữ liệu được nạp thẳng vào Neon bằng file SQL do script trong `tools/exam-import/` sinh ra. Lý do: repo này là Public và nguồn đề TOEIC không có giấy phép.
+- **Nguồn:**
+  - TOEIC: `tmd22121999/thi_toeic` (repo nguồn không có tệp giấy phép; dữ liệu chỉ nằm trong database, không commit).
+  - IELTS: [`LuchoBazz/ielts-ai-dataset`](https://github.com/LuchoBazz/ielts-ai-dataset), giấy phép [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); đề do AI tạo, audio là giọng TTS. Đã chuyển định dạng sang SQL.
+- **Audio:** Supabase Storage, bucket public `lori-audio`, thư mục `toeic-test-1/` và `ielts-test-1/`; URL đầy đủ ghi trong `exam_sections.audio_url`. App Android phát audio trực tiếp từ Supabase qua HTTPS, không đi qua Backend. Khi project Supabase bị tạm dừng (sau 1 tuần không hoạt động) audio không phát được cho đến khi khôi phục trong dashboard.
+- **Quy trình nhập 1 đề:** (1) sinh SQL bằng `toeic_to_sql.py` hoặc `ielts_to_sql.py` (chạy trong Docker `python:3.12-slim`); (2) tải audio nguồn và upload lên bucket đúng thư mục/tên file mà SQL đã trỏ tới; (3) nạp SQL vào Neon bằng `psql` (Docker `postgres:16-alpine`, thông tin kết nối qua biến môi trường `PG*`, không ghi ra file); (4) chạy `tools/exam-import/verify_exam_data.sql`. Mỗi file SQL nằm trong 1 transaction nên lỗi thì không lưu gì. File SQL, audio và repo nguồn để ngoài repo.
+- **Quy ước dữ liệu:**
+  - `options` là mảng JSON theo thứ tự A, B, C… (không kèm tiền tố "A."; riêng TOEIC Part 1–2 không in nội dung lựa chọn nên là `["A","B","C","D"]` / `["A","B","C"]`); `correct_answer` của `MULTIPLE_CHOICE`/`MATCHING` là một chữ cái.
+  - TOEIC: `order_index` câu hỏi là số câu TOEIC 1–200. Mỗi câu Part 1–2 là 1 section có audio riêng; mỗi hội thoại/bài nói Part 3–4 là 1 section; Part 5 là 1 section; mỗi đoạn Part 6–7 là 1 section có `passage_text`. Transcript và lời giải nằm ở `explanation`.
+  - IELTS: Y/N/NG lưu dạng `MULTIPLE_CHOICE` (YES/NO/NOT GIVEN); hướng dẫn, bảng, đoạn tóm tắt và hộp từ của dạng điền từ nằm trong `question_text`.
+- **Giới hạn đã biết:** chưa có ảnh cho câu TOEIC Part 1 và một số câu đồ họa Part 3–4 (V2 chưa có cột ảnh); một số câu điền từ IELTS có đáp án thay thế hợp lệ nhưng hệ thống chỉ chấp nhận đáp án chính.
