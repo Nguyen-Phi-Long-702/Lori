@@ -1,6 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
 }
+
+val localProperties = Properties().apply {
+    val localFile = rootProject.file("local.properties")
+    if (localFile.exists()) {
+        localFile.inputStream().use { load(it) }
+    }
+}
+val loriApiKey: String = localProperties.getProperty("LORI_API_KEY", "").trim()
 
 android {
     namespace = "com.example.lori"
@@ -16,6 +26,11 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0-alpha"
+
+        //URL Backend trên Render (có dấu / ở cuối — Retrofit bắt buộc)
+        buildConfigField("String", "BASE_URL", "\"https://lori-25ej.onrender.com/\"")
+        //API_KEY lấy từ local.properties; thiếu thì rỗng → Backend sẽ trả 403
+        buildConfigField("String", "API_KEY", "\"$loriApiKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -35,6 +50,12 @@ android {
     }
     androidResources {
         noCompress += "db"
+    }
+    androidResources {
+        noCompress += "db"
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 
