@@ -141,3 +141,19 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
   - TOEIC: `order_index` câu hỏi là số câu TOEIC 1–200. Mỗi câu Part 1–2 là 1 section có audio riêng; mỗi hội thoại/bài nói Part 3–4 là 1 section; Part 5 là 1 section; mỗi đoạn Part 6–7 là 1 section có `passage_text`. Transcript và lời giải nằm ở `explanation`.
   - IELTS: Y/N/NG lưu dạng `MULTIPLE_CHOICE` (YES/NO/NOT GIVEN); hướng dẫn, bảng, đoạn tóm tắt và hộp từ của dạng điền từ nằm trong `question_text`.
 - **Giới hạn đã biết:** chưa có ảnh cho câu TOEIC Part 1 và một số câu đồ họa Part 3–4 (V2 chưa có cột ảnh); một số câu điền từ IELTS có đáp án thay thế hợp lệ nhưng hệ thống chỉ chấp nhận đáp án chính.
+
+
+## 12. Dịch thuật (LibreTranslate) và Thanh toán mock
+
+### LibreTranslate (dịch EN–VI)
+
+- Backend gọi `POST /translate` của LibreTranslate từ `POST /api/translate` (tối đa 500 ký tự, hai chiều `en` ↔ `vi`, đăng nhập là dùng được, không cần Premium).
+- **Hiện tại chạy tạm trên máy Dev** (kế hoạch v5, Tuần 5 Ngày 6): file `tools/libretranslate/docker-compose.yml`, chạy `docker compose up -d` trong thư mục đó, mở `http://localhost:5000`. Chỉ nạp 2 ngôn ngữ `en`, `vi` (`LT_LOAD_ONLY=en,vi`); lần chạy đầu phải tải model.
+- Biến môi trường của Backend: `LIBRETRANSLATE_URL` (địa chỉ gốc, không có `/` ở cuối). Không đặt thì mặc định `http://localhost:5000`. Khi chạy Backend bằng Docker trên máy Dev, đặt `http://host.docker.internal:5000`.
+- **Trên Render chưa có LibreTranslate** (Render không với tới máy Dev) → `POST /api/translate` trả `503 Translation service unavailable`; các API khác không bị ảnh hưởng. Chỗ chạy cố định sẽ chốt ở Tuần 9 (cùng AI Service).
+
+### Thanh toán mock và hết hạn Premium
+
+- `POST /api/payment/mock-purchase` (`{"planType":"MONTHLY|YEARLY|LIFETIME"}`) tạo bản ghi `subscriptions` (`payment_method = MOCK`) và bật Premium; không có giao dịch tiền thật. Google Play / VNPay / Momo là optional, chưa làm.
+- Biến môi trường (đều tùy chọn): `PAYMENT_MOCK_ENABLED` (mặc định `true`; `false` thì mock-purchase trả 403), `SUBSCRIPTION_EXPIRY_CRON` (mặc định `0 0 * * * *` = đầu mỗi giờ).
+- `SubscriptionExpiryScheduler` chạy theo lịch trên, đánh dấu gói `EXPIRED` và hạ `users.is_premium` của user hết hạn. Premium vĩnh viễn (`expires_at` rỗng) không bị hạ. Mỗi lần chạy sẽ đánh thức Neon (đang tự ngủ khi không có request).
