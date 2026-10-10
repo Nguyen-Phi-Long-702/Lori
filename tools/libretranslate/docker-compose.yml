@@ -1,0 +1,18 @@
+# LibreTranslate (dich EN-VI, self-host mien phi)
+# Tam thoi chay tren may Dev de dev/test; tu Tuan 9 chuyen len VM cua AI Service.
+# Khong co bi mat nao trong file nay (repo Public).
+services:
+  libretranslate:
+    container_name: libretranslate
+    image: libretranslate/libretranslate:latest
+    ports:
+      - "5000:5000"
+    environment:
+      # Chi nap tieng Anh + tieng Viet de nhe va khoi dong nhanh
+      - LT_LOAD_ONLY=en,vi
+    volumes:
+      # Giu model trong volume de lan sau khong phai tai lai
+      - libretranslate_models:/home/libretranslate/.local:rw
+
+volumes:
+  libretranslate_models:
