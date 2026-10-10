@@ -364,6 +364,225 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "2. Premium flow",
+      "item": [
+        {
+          "name": "P1 Register (user moi)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Moi lan chay tao 1 email moi de khong bi trung (409)\r\npm.environment.set(\"testEmail\", \"postman.\" + Date.now() + \"@example.com\");\r\npm.environment.set(\"testPassword\", \"Postman@12345\");\r\n"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Register tra 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Co accessToken va refreshToken\", function () {\r\n    pm.expect(body.accessToken).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(body.refreshToken).to.be.a(\"string\").and.not.empty;\r\n});\r\npm.environment.set(\"accessToken\", body.accessToken);\r\npm.environment.set(\"refreshToken\", body.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"displayName\": \"Postman Tester\",\r\n  \"email\": \"{{testEmail}}\",\r\n  \"password\": \"{{testPassword}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "P2 Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"accessToken la JWT (3 phan)\", function () {\r\n    pm.expect(body.accessToken.split(\".\")).to.have.lengthOf(3);\r\n});\r\npm.test(\"Co refreshToken\", function () {\r\n    pm.expect(body.refreshToken).to.be.a(\"string\").and.not.empty;\r\n});\r\npm.environment.set(\"accessToken\", body.accessToken);\r\npm.environment.set(\"refreshToken\", body.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{testEmail}}\",\r\n  \"password\": \"{{testPassword}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "P3 GET exams (Free, bi chan 403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Free bi chan -> 403\", function () {\r\n    pm.response.to.have.status(403);\r\n});\r\npm.test(\"Body bao PREMIUM_REQUIRED\", function () {\r\n    const body = pm.response.json();\r\n    pm.expect(body.status).to.eql(403);\r\n    pm.expect(body.message).to.eql(\"PREMIUM_REQUIRED\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/exams",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "exams"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "P4 POST mock-purchase (MONTHLY, 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Mock purchase tra 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Goi MONTHLY, thanh toan MOCK, trang thai ACTIVE\", function () {\r\n    pm.expect(body.planType).to.eql(\"MONTHLY\");\r\n    pm.expect(body.paymentMethod).to.eql(\"MOCK\");\r\n    pm.expect(body.status).to.eql(\"ACTIVE\");\r\n});\r\npm.test(\"Goi thang co ngay het han\", function () {\r\n    pm.expect(body.expiresAt).to.be.a(\"string\").and.not.empty;\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"planType\": \"MONTHLY\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payment/mock-purchase",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payment",
+                "mock-purchase"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "P5 GET exams (Premium, 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sau khi mua, GET /api/exams tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Co it nhat 1 de thi\", function () {\r\n    pm.expect(body).to.be.an(\"array\").that.is.not.empty;\r\n});\r\npm.test(\"Moi de co id, examType, title, totalQuestions > 0\", function () {\r\n    body.forEach(function (exam) {\r\n        pm.expect(exam.id).to.be.a(\"string\").and.not.empty;\r\n        pm.expect([\"TOEIC\", \"IELTS\"]).to.include(exam.examType);\r\n        pm.expect(exam.title).to.be.a(\"string\").and.not.empty;\r\n        pm.expect(exam.totalQuestions).to.be.above(0);\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/exams",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "exams"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [
