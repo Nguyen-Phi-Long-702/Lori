@@ -1,0 +1,382 @@
+{
+  "info": {
+    "_postman_id": "f4b7d5a6-4414-463a-9263-be1ad2fe48b6",
+    "name": "Lori - API v2 (Render)",
+    "description": "API Lori Backend (Render). Collection v2 – Tuần 5, Ngày 7. Mỗi thư mục là một luồng kiểm thử.  \nCần Environment có 3 biến: baseUrl, apiKey, appSignature (không commit Environment vào repo).  \nHeader X-API-Key và X-App-Signature được thêm tự động bởi Pre-request script của collection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58733651",
+    "_collection_link": "https://go.postman.co/collection/58733651-f4b7d5a6-4414-463a-9263-be1ad2fe48b6?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "1. Auth flow",
+      "item": [
+        {
+          "name": "A1 Health ping",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Health tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"status la UP\", function () {\r\n    pm.expect(pm.response.json().status).to.eql(\"UP\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health/ping",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health",
+                "ping"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "A2 Register",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Moi lan chay tao 1 email moi de khong bi trung (409)\r\npm.environment.set(\"testEmail\", \"postman.\" + Date.now() + \"@example.com\");\r\npm.environment.set(\"testPassword\", \"Postman@12345\");\r\n"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Register tra 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Co accessToken va refreshToken\", function () {\r\n    pm.expect(body.accessToken).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(body.refreshToken).to.be.a(\"string\").and.not.empty;\r\n});\r\npm.environment.set(\"accessToken\", body.accessToken);\r\npm.environment.set(\"refreshToken\", body.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"displayName\": \"Postman Tester\",\r\n  \"email\": \"{{testEmail}}\",\r\n  \"password\": \"{{testPassword}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "A3 Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"accessToken la JWT (3 phan)\", function () {\r\n    pm.expect(body.accessToken.split(\".\")).to.have.lengthOf(3);\r\n});\r\npm.test(\"Co refreshToken\", function () {\r\n    pm.expect(body.refreshToken).to.be.a(\"string\").and.not.empty;\r\n});\r\npm.environment.set(\"accessToken\", body.accessToken);\r\npm.environment.set(\"refreshToken\", body.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{testEmail}}\",\r\n  \"password\": \"{{testPassword}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "A4 GET me (co token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"GET /me tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Dung email vua dang ky\", function () {\r\n    pm.expect(body.email).to.eql(pm.environment.get(\"testEmail\"));\r\n});\r\npm.test(\"User moi chua Premium\", function () {\r\n    pm.expect(body.premium).to.eql(false);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "A5 GET me (khong token, 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Khong token -> 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\npm.test(\"Message dung\", function () {\r\n    pm.expect(pm.response.json().message).to.eql(\"Authentication required\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "A6 Refresh (xoay vong)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Luu lai token cu de request 5 kiem tra \"xoay vong\" va request 6 kiem tra \"dung lai token cu\"\r\npm.environment.set(\"oldRefreshToken\", pm.environment.get(\"refreshToken\"));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Refresh tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Cap token moi, refreshToken khac token cu (xoay vong)\", function () {\r\n    pm.expect(body.accessToken).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(body.refreshToken).to.not.eql(pm.environment.get(\"oldRefreshToken\"));\r\n});\r\npm.environment.set(\"accessToken\", body.accessToken);\r\npm.environment.set(\"refreshToken\", body.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "A7 Refresh (token cu, 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Token cu bi thu hoi -> 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\npm.test(\"Message dung\", function () {\r\n    pm.expect(pm.response.json().message).to.eql(\"Invalid refresh token\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"refreshToken\": \"{{oldRefreshToken}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "A8 Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Logout tra 204\", function () {\r\n    pm.response.to.have.status(204);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "A9 Refresh sau logout (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sau logout, refresh bi tu choi -> 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Them 2 header bat buoc cho MOI request cua collection nay\r",
+          "pm.request.headers.upsert({ key: \"X-API-Key\", value: pm.environment.get(\"apiKey\") });\r",
+          "pm.request.headers.upsert({ key: \"X-App-Signature\", value: pm.environment.get(\"appSignature\") });"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ]
+}
