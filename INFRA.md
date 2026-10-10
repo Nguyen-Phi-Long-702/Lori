@@ -157,3 +157,32 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - `POST /api/payment/mock-purchase` (`{"planType":"MONTHLY|YEARLY|LIFETIME"}`) tạo bản ghi `subscriptions` (`payment_method = MOCK`) và bật Premium; không có giao dịch tiền thật. Google Play / VNPay / Momo là optional, chưa làm.
 - Biến môi trường (đều tùy chọn): `PAYMENT_MOCK_ENABLED` (mặc định `true`; `false` thì mock-purchase trả 403), `SUBSCRIPTION_EXPIRY_CRON` (mặc định `0 0 * * * *` = đầu mỗi giờ).
 - `SubscriptionExpiryScheduler` chạy theo lịch trên, đánh dấu gói `EXPIRED` và hạ `users.is_premium` của user hết hạn. Premium vĩnh viễn (`expires_at` rỗng) không bị hạ. Mỗi lần chạy sẽ đánh thức Neon (đang tự ngủ khi không có request).
+
+## 13. Kiểm thử API (Postman Collection v2, load test k6)
+
+### Postman Collection v2
+
+- File: `postman/Lori-API-v2.postman_collection.json` (Collection v2.1). Bản v1 (`postman/Lori-Auth.postman_collection.json`) giữ lại để tham khảo.
+- Gồm 2 thư mục:
+  - `1. Auth flow`: register → login → truy cập API cần đăng nhập → refresh (xoay vòng) → logout, kèm các trường hợp 401.
+  - `2. Premium flow`: register → login → user Free gọi `GET /api/exams` bị `403 PREMIUM_REQUIRED` → `POST /api/payment/mock-purchase` → gọi lại `GET /api/exams` thành công bằng cùng access token.
+- Cần một Environment có 3 biến: `baseUrl` (URL Render, không có `/` ở cuối), `apiKey`, `appSignature`. **Không commit file Environment** (chứa khóa). Header `X-API-Key` và `X-App-Signature` được Pre-request script của collection thêm vào mọi request.
+- Chạy: Postman → chuột phải thư mục (hoặc collection) → Run. Mỗi lần chạy đăng ký một email mới `postman.<thời gian>@example.com` nên để lại user thử trong Neon. Một lần chạy cả collection dùng 14 request.
+- Backend giới hạn 60 request/phút/IP: không chạy liên tục nhiều lần trong 1 phút.
+
+### Load test (k6)
+
+- Script: `tools/load-test/load-test.js`, chạy bằng Docker (image `grafana/k6`), không cần cài k6. Biến môi trường (chỉ ghi tên): `BASE_URL`, `API_KEY`, `APP_SIGNATURE`. Lệnh chạy (PowerShell, ở thư mục gốc repo, sau khi đặt 3 biến môi trường):
+  `docker run --rm -e BASE_URL -e API_KEY -e APP_SIGNATURE -v "${PWD}\tools\load-test:/scripts" grafana/k6 run /scripts/load-test.js`
+- Script tự đăng ký 1 user (`k6.<thời gian>@example.com`), nâng lên Premium bằng mock-purchase, rồi gọi 5 API CRUD: `GET /api/content/version`, `GET /api/users/me`, `GET /api/progress/pull`, `POST /api/progress/sync`, `GET /api/exams`.
+- Vì Backend giới hạn 60 request/phút/IP (`RateLimitFilter`), script chỉ gửi ~50 request/phút trong 3 phút (~150 request). Đây là đo độ trễ ở mức tải thấp, **không phải** test nhiều người dùng đồng thời; test tải đồng thời (kế hoạch Tuần 17) phải tính tới giới hạn này.
+- Ngưỡng (kế hoạch mục 20): avg < 300ms và p95 < 500ms cho từng API. Mỗi lần chạy để lại 1 user, 1 subscription `MOCK` và 1 dòng `user_progress` trong Neon (không tự xóa).
+- Kết quả đo ngày 10/10/2026 (Render Free + Neon Free, chạy từ máy Dev; số đo gồm cả độ trễ mạng từ máy chạy test tới Render):
+
+| API | avg | p(95) | Đạt ngưỡng |
+|---|---|---|---|
+| `GET /api/content/version` | 239.92ms | 407.81ms | Đạt |
+| `GET /api/users/me` | 255.74ms | 466.84ms | Đạt |
+| `GET /api/progress/pull` | 258.65ms | 530.25ms | Chưa đạt |
+| `POST /api/progress/sync` | 313.74ms | 479.06ms | Chưa đạt |
+| `GET /api/exams` | 293.78ms | 556.9ms | Chưa đạt |
