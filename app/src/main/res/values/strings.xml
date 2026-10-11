@@ -143,4 +143,26 @@
     <string name="translate_button">Dịch ngay</string>
     <string name="translate_coming_soon_toast">Chức năng dịch sẽ hoàn thiện ở tuần 6, khi kết nối máy chủ dịch</string>
     <string name="translate_swap_not_available_toast">Tính năng đổi chiều ngôn ngữ sẽ khả dụng cùng chức năng dịch ở tuần 6</string>
+
+    <!-- Xác thực: lỗi nhập liệu (kiểm tra ở app, trước khi gọi API) -->
+    <string name="auth_error_name_required">Vui lòng nhập tên hiển thị</string>
+    <string name="auth_error_name_too_long">Tên hiển thị tối đa 100 ký tự</string>
+    <string name="auth_error_email_required">Vui lòng nhập email</string>
+    <string name="auth_error_email_invalid">Email không hợp lệ</string>
+    <string name="auth_error_password_required">Vui lòng nhập mật khẩu</string>
+    <string name="auth_error_password_short">Mật khẩu cần ít nhất 8 ký tự</string>
+    <string name="auth_error_password_long">Mật khẩu tối đa 72 ký tự</string>
+    <string name="auth_error_confirm_required">Vui lòng nhập lại mật khẩu</string>
+    <string name="auth_error_confirm_mismatch">Mật khẩu xác nhận không khớp</string>
+
+    <!-- Xác thực: lỗi mạng và lỗi từ máy chủ (dựa theo mã HTTP) -->
+    <string name="auth_error_offline">Cần kết nối Internet để tiếp tục</string>
+    <string name="auth_error_timeout">Máy chủ phản hồi chậm (có thể đang khởi động). Vui lòng thử lại sau ít giây</string>
+    <string name="auth_error_network">Không kết nối được máy chủ. Vui lòng kiểm tra mạng và thử lại</string>
+    <string name="auth_error_invalid_credentials">Email hoặc mật khẩu không đúng</string>
+    <string name="auth_error_too_many_requests">Bạn thao tác quá nhiều lần. Vui lòng đợi vài phút rồi thử lại</string>
+    <string name="auth_error_email_taken">Email này đã được đăng ký</string>
+    <string name="auth_error_invalid_request">Thông tin chưa hợp lệ, vui lòng kiểm tra lại</string>
+    <string name="auth_error_forbidden">Máy chủ từ chối ứng dụng này. Hãy kiểm tra LORI_API_KEY trong local.properties và chữ ký ứng dụng</string>
+    <string name="auth_error_server">Máy chủ đang gặp sự cố. Vui lòng thử lại sau</string>
 </resources>
