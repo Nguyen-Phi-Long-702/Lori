@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.example.lori.AuthActivity;
 import com.example.lori.R;
@@ -62,6 +63,10 @@ public class LoginFragment extends Fragment {
             }
             return false;
         });
+
+        //Chuyển sang tab Đăng ký
+        tabRegister.setOnClickListener(v -> Navigation.findNavController(v)
+                .navigate(R.id.action_loginFragment_to_registerFragment));
 
         viewModel.getEmailError().observe(getViewLifecycleOwner(),
                 res -> layoutEmail.setError(res == null ? null : getString(res)));
