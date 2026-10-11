@@ -21,7 +21,6 @@ import com.example.lori.BuildConfig;
 import com.example.lori.R;
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
-import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException;
 
 //Lấy Google ID Token bằng Credential Manager (bảng chọn tài khoản Google của hệ thống)
 //serverClientId là Web client ID nên ID Token có aud = Web client ID, khớp biến GOOGLE_CLIENT_ID của Backend
@@ -79,14 +78,19 @@ public final class GoogleSignInHelper {
         Credential credential = result.getCredential();
         if (credential instanceof CustomCredential
                 && GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL.equals(credential.getType())) {
+            String idToken;
             try {
-                GoogleIdTokenCredential googleCredential = GoogleIdTokenCredential
-                        .createFrom(((CustomCredential) credential).getData());
-                callback.onIdToken(googleCredential.getIdToken());
-            } catch (GoogleIdTokenParsingException e) {
+                //createFrom (Kotlin) không khai báo @Throws nên Java không cho catch đích danh
+                //GoogleIdTokenParsingException; bắt Exception để vẫn xử lý được lỗi đọc token lúc chạy
+                idToken = GoogleIdTokenCredential
+                        .createFrom(((CustomCredential) credential).getData())
+                        .getIdToken();
+            } catch (Exception e) {
                 Log.e(TAG, "ID Token Google không đọc được", e);
                 callback.onError(R.string.auth_error_google_failed);
+                return;
             }
+            callback.onIdToken(idToken);
             return;
         }
         Log.e(TAG, "Loại thông tin xác thực không mong đợi: " + credential.getType());
