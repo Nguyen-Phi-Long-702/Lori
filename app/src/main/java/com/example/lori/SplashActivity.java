@@ -15,6 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.example.lori.utils.ThemeHelper;
+import com.example.lori.data.local.SessionManager;
 
 //Màn hình khởi động, hiển thị logo trước khi chuyển sang màn hình tiếp theo
 public class SplashActivity extends AppCompatActivity {
@@ -61,14 +62,21 @@ public class SplashActivity extends AppCompatActivity {
                 .start();
     }
 
-    //Kiểm tra trạng thái lần mở app để chọn màn hình điều hướng tiếp theo
+    //Chọn màn hình tiếp theo: lần đầu -> giới thiệu; đã có phiên đăng nhập -> vào thẳng app; còn lại -> Đăng nhập
     private void navigateNext() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         boolean isFirstLaunch = prefs.getBoolean(KEY_IS_FIRST_LAUNCH, true);
 
-        Intent intent = isFirstLaunch
-                ? new Intent(this, OnboardingActivity.class)
-                : new Intent(this, MainActivity.class);
+        Intent intent;
+        if (isFirstLaunch) {
+            intent = new Intent(this, OnboardingActivity.class);
+        } else if (SessionManager.getInstance(this).isLoggedIn()) {
+            //Chỉ kiểm tra cục bộ (có refresh token hay không) nên mở app nhanh và dùng được khi offline;
+            //token hết hạn sẽ được TokenAuthenticator tự làm mới khi gọi API
+            intent = new Intent(this, MainActivity.class);
+        } else {
+            intent = new Intent(this, AuthActivity.class);
+        }
         startActivity(intent);
         finish();
     }

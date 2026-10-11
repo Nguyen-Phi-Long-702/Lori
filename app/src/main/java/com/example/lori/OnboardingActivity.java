@@ -114,11 +114,11 @@ public class OnboardingActivity extends AppCompatActivity {
         }
     }
 
-    //Đánh dấu onboarding đã hoàn thành và chuyển sang màn hình chính
+    //Đánh dấu onboarding đã hoàn thành và chuyển sang màn hình Đăng nhập/Đăng ký
     private void finishOnboarding() {
         SharedPreferences prefs = getSharedPreferences(SplashActivity.PREFS_NAME, MODE_PRIVATE);
         prefs.edit().putBoolean(SplashActivity.KEY_IS_FIRST_LAUNCH, false).apply();
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, AuthActivity.class));
         finish();
     }
 }
