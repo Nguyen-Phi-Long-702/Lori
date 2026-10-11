@@ -18,6 +18,7 @@ import androidx.navigation.Navigation;
 import com.example.lori.AuthActivity;
 import com.example.lori.R;
 import com.example.lori.viewmodel.AuthViewModel;
+import com.example.lori.utils.GoogleSignInHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
@@ -53,6 +54,8 @@ public class RegisterFragment extends Fragment {
         TextView tvFormError = view.findViewById(R.id.tvFormError);
         LinearProgressIndicator progress = view.findViewById(R.id.progressAuth);
         MaterialButton btnRegister = view.findViewById(R.id.btnRegister);
+        MaterialButton btnGoogle = view.findViewById(R.id.btnGoogle);
+        btnGoogle.setOnClickListener(v -> startGoogleSignIn());
 
         Runnable submit = () -> {
             hideKeyboard(view);
@@ -89,11 +92,36 @@ public class RegisterFragment extends Fragment {
             boolean busy = Boolean.TRUE.equals(isLoading);
             progress.setVisibility(busy ? View.VISIBLE : View.INVISIBLE);
             btnRegister.setEnabled(!busy);
+            btnGoogle.setEnabled(!busy);
             tabLogin.setEnabled(!busy);
         });
         viewModel.getAuthenticated().observe(getViewLifecycleOwner(), authenticated -> {
             if (Boolean.TRUE.equals(authenticated)) {
                 ((AuthActivity) requireActivity()).openMain();
+            }
+        });
+    }
+
+    //Mở bảng chọn tài khoản Google, lấy ID Token rồi nhờ ViewModel gửi lên Backend
+    private void startGoogleSignIn() {
+        if (!viewModel.startGoogleSignIn()) {
+            return;
+        }
+        //Callback chỉ gọi ViewModel (sống qua xoay màn hình), không đụng tới View nên an toàn
+        GoogleSignInHelper.signIn(requireActivity(), new GoogleSignInHelper.Callback() {
+            @Override
+            public void onIdToken(String idToken) {
+                viewModel.loginWithGoogle(idToken);
+            }
+
+            @Override
+            public void onCancelled() {
+                viewModel.cancelGoogleSignIn();
+            }
+
+            @Override
+            public void onError(int messageRes) {
+                viewModel.failGoogleSignIn(messageRes);
             }
         });
     }

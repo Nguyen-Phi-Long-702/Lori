@@ -16,6 +16,7 @@ import com.example.lori.data.remote.api.AuthApi;
 import com.example.lori.data.remote.dto.AuthResponse;
 import com.example.lori.data.remote.dto.LoginRequest;
 import com.example.lori.data.remote.dto.RegisterRequest;
+import com.example.lori.data.remote.dto.GoogleLoginRequest;
 import com.example.lori.utils.NetworkStateManager;
 
 import java.net.SocketTimeoutException;
@@ -89,6 +90,32 @@ public class AuthViewModel extends AndroidViewModel {
         }
         send(authApi.register(new RegisterRequest(cleanName, cleanEmail, password)),
                 R.string.auth_error_invalid_request);
+    }
+
+    //Bước 1 của đăng nhập Google: View sắp mở bảng chọn tài khoản. Trả về false nếu đang bận (chống bấm 2 lần)
+    public boolean startGoogleSignIn() {
+        if (isBusy()) {
+            return false;
+        }
+        clearErrors();
+        loading.setValue(true);
+        return true;
+    }
+
+    //Người dùng đóng bảng chọn tài khoản: không coi là lỗi
+    public void cancelGoogleSignIn() {
+        loading.setValue(false);
+    }
+
+    //Lấy ID Token thất bại (chưa có tài khoản Google, lỗi cấu hình…)
+    public void failGoogleSignIn(@StringRes int messageRes) {
+        loading.setValue(false);
+        formError.setValue(messageRes);
+    }
+
+    //Bước 2: gửi ID Token cho Backend đổi lấy JWT của Lori
+    public void loginWithGoogle(String idToken) {
+        send(authApi.google(new GoogleLoginRequest(idToken)), R.string.auth_error_google_failed);
     }
 
     //Gửi request, xử lý kết quả. unauthorizedMessage: câu hiển thị khi Backend trả 401 (mỗi chức năng một ý nghĩa)

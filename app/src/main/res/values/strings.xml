@@ -181,4 +181,11 @@
     <string name="auth_hint_confirm_password">Nhập lại mật khẩu</string>
     <string name="auth_login_button">Đăng nhập</string>
     <string name="auth_register_button">Tạo tài khoản</string>
+
+    <!-- Đăng nhập Google -->
+    <string name="auth_or_divider">HOẶC</string>
+    <string name="auth_google_button">Tiếp tục với Google</string>
+    <string name="auth_error_google_failed">Đăng nhập Google không thành công. Vui lòng thử lại</string>
+    <string name="auth_error_google_no_account">Thiết bị chưa có tài khoản Google. Hãy thêm tài khoản trong Cài đặt của thiết bị</string>
+    <string name="auth_error_google_not_configured">Chưa cấu hình GOOGLE_WEB_CLIENT_ID trong local.properties</string>
 </resources>

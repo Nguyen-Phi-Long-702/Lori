@@ -214,5 +214,47 @@
             android:layout_height="56dp"
             android:text="@string/auth_register_button" />
 
+
+        <!-- Đường kẻ "HOẶC" ngăn giữa đăng nhập email và đăng nhập Google -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="?attr/colorOutlineVariant" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:text="@string/auth_or_divider"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="?attr/colorOutlineVariant" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGoogle"
+            style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/auth_google_button"
+            android:textColor="?attr/colorOnSurface"
+            app:icon="@drawable/ic_auth_google"
+            app:iconGravity="textStart"
+            app:iconTint="?attr/colorOnSurface"
+            app:strokeColor="?attr/colorOutlineVariant" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
