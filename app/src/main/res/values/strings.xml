@@ -165,4 +165,20 @@
     <string name="auth_error_invalid_request">Thông tin chưa hợp lệ, vui lòng kiểm tra lại</string>
     <string name="auth_error_forbidden">Máy chủ từ chối ứng dụng này. Hãy kiểm tra LORI_API_KEY trong local.properties và chữ ký ứng dụng</string>
     <string name="auth_error_server">Máy chủ đang gặp sự cố. Vui lòng thử lại sau</string>
+
+    <!-- Màn Đăng nhập / Đăng ký -->
+    <string name="auth_eyebrow">Chào mừng trở lại</string>
+    <string name="auth_headline">Học tiếng Anh mỗi ngày</string>
+    <string name="auth_tab_login">Đăng nhập</string>
+    <string name="auth_tab_register">Đăng ký</string>
+    <string name="auth_label_display_name">Tên hiển thị</string>
+    <string name="auth_hint_display_name">Nguyễn Văn A</string>
+    <string name="auth_label_email">Email</string>
+    <string name="auth_hint_email">ban@email.com</string>
+    <string name="auth_label_password">Mật khẩu</string>
+    <string name="auth_hint_password">••••••••</string>
+    <string name="auth_label_confirm_password">Xác nhận mật khẩu</string>
+    <string name="auth_hint_confirm_password">Nhập lại mật khẩu</string>
+    <string name="auth_login_button">Đăng nhập</string>
+    <string name="auth_register_button">Tạo tài khoản</string>
 </resources>
