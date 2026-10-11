@@ -17,6 +17,7 @@ import com.example.lori.data.remote.dto.AuthResponse;
 import com.example.lori.data.remote.dto.LoginRequest;
 import com.example.lori.data.remote.dto.RegisterRequest;
 import com.example.lori.data.remote.dto.GoogleLoginRequest;
+import com.example.lori.data.remote.dto.RefreshTokenRequest;
 import com.example.lori.utils.NetworkStateManager;
 
 import java.net.SocketTimeoutException;
@@ -116,6 +117,27 @@ public class AuthViewModel extends AndroidViewModel {
     //Bước 2: gửi ID Token cho Backend đổi lấy JWT của Lori
     public void loginWithGoogle(String idToken) {
         send(authApi.google(new GoogleLoginRequest(idToken)), R.string.auth_error_google_failed);
+    }
+
+    //Đăng xuất: xóa phiên trên máy NGAY (luôn thành công kể cả khi mất mạng), rồi báo Backend thu hồi refresh token
+    public void logout() {
+        String refreshToken = sessionManager.getRefreshToken();
+        sessionManager.clear();
+        if (refreshToken == null) {
+            return;
+        }
+        //Cố ý KHÔNG lưu vào pendingCall: màn hình đóng ngay sau khi đăng xuất, nếu hủy theo ViewModel thì Backend không nhận được yêu cầu
+        authApi.logout(new RefreshTokenRequest(refreshToken)).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                //Bỏ qua kết quả: phiên trên máy đã xóa; token còn lại ở Backend tự hết hạn sau 7 ngày
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                //Bỏ qua (vd đang offline), lý do như trên
+            }
+        });
     }
 
     //Gửi request, xử lý kết quả. unauthorizedMessage: câu hiển thị khi Backend trả 401 (mỗi chức năng một ý nghĩa)

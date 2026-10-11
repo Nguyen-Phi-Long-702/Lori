@@ -188,4 +188,6 @@
     <string name="auth_error_google_failed">Đăng nhập Google không thành công. Vui lòng thử lại</string>
     <string name="auth_error_google_no_account">Thiết bị chưa có tài khoản Google. Hãy thêm tài khoản trong Cài đặt của thiết bị</string>
     <string name="auth_error_google_not_configured">Chưa cấu hình GOOGLE_WEB_CLIENT_ID trong local.properties</string>
+    <string name="settings_logout_title">Đăng xuất</string>
+    <string name="settings_logout_desc">Thoát khỏi tài khoản trên thiết bị này</string>
 </resources>

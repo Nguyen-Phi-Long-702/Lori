@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +17,8 @@ import androidx.navigation.Navigation;
 
 import com.example.lori.R;
 import com.example.lori.viewmodel.SettingsViewModel;
+import com.example.lori.AuthActivity;
+import com.example.lori.viewmodel.AuthViewModel;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
 //Fragment hiển thị màn hình cài đặt ứng dụng
@@ -46,6 +49,15 @@ public class SettingsFragment extends Fragment {
                 Toast.makeText(requireContext(), R.string.settings_account_locked_message, Toast.LENGTH_SHORT).show();
         view.findViewById(R.id.rowEditProfile).setOnClickListener(showAccountLockedMessage);
         view.findViewById(R.id.rowChangePassword).setOnClickListener(showAccountLockedMessage);
+
+        //Đăng xuất: xóa phiên (và báo Backend thu hồi token) rồi về màn Đăng nhập, xóa hết các màn trước
+        AuthViewModel authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+        view.findViewById(R.id.rowLogout).setOnClickListener(v -> {
+            authViewModel.logout();
+            Intent intent = new Intent(requireContext(), AuthActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
 
         //Chỉ gắn sự kiện đổi công tắc ở đây, trạng thái hiển thị ban đầu và đồng bộ lại xử lý trong onResume()
         MaterialSwitch switchNotification = view.findViewById(R.id.switchNotification);
