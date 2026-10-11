@@ -11,6 +11,7 @@ val localProperties = Properties().apply {
     }
 }
 val loriApiKey: String = localProperties.getProperty("LORI_API_KEY", "").trim()
+val googleWebClientId: String = localProperties.getProperty("GOOGLE_WEB_CLIENT_ID", "").trim()
 
 android {
     namespace = "com.example.lori"
@@ -31,6 +32,8 @@ android {
         buildConfigField("String", "BASE_URL", "\"https://lori-25ej.onrender.com/\"")
         //API_KEY lấy từ local.properties; thiếu thì rỗng → Backend sẽ trả 403
         buildConfigField("String", "API_KEY", "\"$loriApiKey\"")
+        //Web client ID của Google OAuth (lấy từ local.properties, KHÔNG commit); dùng làm serverClientId khi đăng nhập Google
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -110,4 +113,12 @@ dependencies {
 
     // WorkManager
     implementation("androidx.work:work-runtime:2.9.1")
+
+    // Lưu JWT mã hóa (EncryptedSharedPreferences) – Tuần 6 Ngày 3-4
+    implementation("androidx.security:security-crypto:1.1.0")
+
+    // Đăng nhập Google qua Credential Manager – Tuần 6 Ngày 3-4
+    implementation("androidx.credentials:credentials:1.6.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.6.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 }
