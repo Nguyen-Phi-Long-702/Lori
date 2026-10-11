@@ -117,7 +117,8 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - **Audience:** External, trạng thái **Testing** → chỉ các tài khoản Google nằm trong danh sách **Test users** mới đăng nhập được. Chuyển sang In production là quyết định ở giai đoạn phát hành.
 - **Web client:** Backend chỉ cần **Client ID** của Web client để kiểm tra trường `aud` của Google ID Token. **Client secret không dùng trong Backend**, không lưu vào repo hay biến môi trường Render.
 - **Redirect URI** của Web client: `https://developers.google.com/oauthplayground` — chỉ để lấy ID Token thử bằng tay (OAuth 2.0 Playground).
-- **Android client** (cần package name + SHA-1) sẽ được tạo ở Tuần 6, khi làm Google Sign-In trên app.
+- **Android client:** đã tạo ở Tuần 6 cho package `com.example.lori` với SHA-1 của **debug keystore** (mỗi máy build có SHA-1 riêng nên cần thêm client Android khác nếu build trên máy khác; bản release sẽ cần client riêng với SHA-1 của keystore release). Client này chỉ để Google nhận diện app, code không dùng Client ID của nó.
+- **Phía app:** dùng **Credential Manager** (`GetSignInWithGoogleOption`) với **Web client ID** làm `serverClientId`, nên ID Token có `aud` = Web client ID, khớp `GOOGLE_CLIENT_ID` ở Backend. Web client ID đặt trong `local.properties` (khóa `GOOGLE_WEB_CLIENT_ID`, không commit) và được đọc vào `BuildConfig`.
 - Biến môi trường Render: `GOOGLE_CLIENT_ID`.
 
 ## 10. Gửi email (Brevo)
