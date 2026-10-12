@@ -13,6 +13,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.lori.utils.ThemeHelper;
+import com.example.lori.data.sync.SyncManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         //Đồng bộ bottomnavigationview với navcontroller
         NavigationUI.setupWithNavController(bottomNav, navController);
+
+        //Bật lịch đồng bộ 30 phút/lần. Vào được MainActivity nghĩa là đã đăng nhập; gọi lại nhiều lần vẫn an toàn (chỉ có 1 lịch)
+        SyncManager.schedule(this);
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int destId = destination.getId();

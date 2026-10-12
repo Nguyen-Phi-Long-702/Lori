@@ -18,6 +18,9 @@ import com.example.lori.data.remote.dto.LoginRequest;
 import com.example.lori.data.remote.dto.RegisterRequest;
 import com.example.lori.data.remote.dto.GoogleLoginRequest;
 import com.example.lori.data.remote.dto.RefreshTokenRequest;
+import com.example.lori.data.local.AppDatabase;
+import com.example.lori.data.sync.SyncManager;
+import com.example.lori.utils.PremiumManager;
 import com.example.lori.utils.NetworkStateManager;
 
 import java.net.SocketTimeoutException;
@@ -123,6 +126,15 @@ public class AuthViewModel extends AndroidViewModel {
     public void logout() {
         String refreshToken = sessionManager.getRefreshToken();
         sessionManager.clear();
+
+        //Dọn dẹp dữ liệu gắn với tài khoản vừa thoát để tài khoản đăng nhập sau không bị lẫn dữ liệu:
+        //hủy lịch đồng bộ, đặt lại cờ Premium, xóa tiến trình học cục bộ (đăng nhập lại sẽ pull về từ server)
+        SyncManager.cancel(getApplication());
+        PremiumManager.setPremium(getApplication(), false);
+        AppDatabase db = AppDatabase.getInstance(getApplication());
+        //Dùng executor của Room (không phải của ViewModel) vì ViewModel bị hủy ngay khi màn hình đóng
+        db.getQueryExecutor().execute(() -> db.progressDao().deleteAll());
+
         if (refreshToken == null) {
             return;
         }
