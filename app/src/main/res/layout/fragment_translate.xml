@@ -98,5 +98,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/translate_button" />
+
+        <TextView
+            android:id="@+id/tvTranslateOffline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/translate_offline_hint"
+            android:textColor="?attr/colorError"
+            android:textSize="12sp"
+            android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

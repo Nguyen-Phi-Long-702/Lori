@@ -15,7 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.lori.viewmodel.NetworkViewModel;
 import com.example.lori.R;
 import com.google.android.material.chip.Chip;
 
@@ -54,6 +56,15 @@ public class TranslateFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 tvCharCount.setText(getString(R.string.translate_char_count_format, s.length(), MAX_CHARS));
             }
+        });
+
+        //Dịch cần Internet: offline thì khóa nút và hiện dòng giải thích
+        TextView tvOffline = view.findViewById(R.id.tvTranslateOffline);
+        NetworkViewModel networkViewModel = new ViewModelProvider(this).get(NetworkViewModel.class);
+        networkViewModel.getOnline().observe(getViewLifecycleOwner(), online -> {
+            boolean isOnline = Boolean.TRUE.equals(online);
+            btnSubmit.setEnabled(isOnline);
+            tvOffline.setVisibility(isOnline ? View.GONE : View.VISIBLE);
         });
 
         btnSwap.setOnClickListener(v ->

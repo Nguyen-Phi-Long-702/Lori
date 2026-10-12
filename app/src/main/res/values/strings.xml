@@ -193,4 +193,6 @@
 
     <!-- Giao diện offline -->
     <string name="offline_banner_message">Bạn đang offline · Từ điển và việc học vẫn dùng bình thường</string>
+
+    <string name="translate_offline_hint">Cần kết nối Internet để dịch</string>
 </resources>
