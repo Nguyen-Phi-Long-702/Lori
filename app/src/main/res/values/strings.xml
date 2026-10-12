@@ -124,6 +124,10 @@
     <string name="quiz_explanation_format">Giải thích: %1$s</string>
     <string name="dictionary_subtab_dictionary">Từ điển</string>
     <string name="dictionary_subtab_translate">Dịch thuật</string>
+    <string name="translate_input_hint_vi">Nhập câu hoặc đoạn văn tiếng Việt cần dịch…</string>
+    <string name="translate_result_title">Kết quả dịch</string>
+    <string name="translate_error_empty">Vui lòng nhập nội dung cần dịch</string>
+    <string name="translate_error_unavailable">Dịch vụ dịch tạm thời chưa khả dụng. Vui lòng thử lại sau</string>
     <string name="dictionary_info_banner">📖 118.356 từ · Tra cứu tức thời, hoàn toàn offline</string>
     <string name="dictionary_search_hint">Nhập từ tiếng Anh cần tra…</string>
     <string name="cd_search_clear">Xóa nội dung tìm kiếm</string>
