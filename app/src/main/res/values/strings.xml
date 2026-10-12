@@ -190,4 +190,7 @@
     <string name="auth_error_google_not_configured">Chưa cấu hình GOOGLE_WEB_CLIENT_ID trong local.properties</string>
     <string name="settings_logout_title">Đăng xuất</string>
     <string name="settings_logout_desc">Thoát khỏi tài khoản trên thiết bị này</string>
+
+    <!-- Giao diện offline -->
+    <string name="offline_banner_message">Bạn đang offline · Từ điển và việc học vẫn dùng bình thường</string>
 </resources>

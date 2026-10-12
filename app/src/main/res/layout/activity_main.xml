@@ -7,6 +7,27 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!-- Banner offline: ẩn mặc định, MainActivity bật/tắt theo trạng thái mạng -->
+    <TextView
+        android:id="@+id/bannerOffline"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorError"
+        android:drawablePadding="6dp"
+        android:drawableStart="@drawable/ic_action_cloud_off"
+        android:drawableTint="?attr/colorOnError"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="7dp"
+        android:text="@string/offline_banner_message"
+        android:textColor="?attr/colorOnError"
+        android:textSize="11.5sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -16,7 +37,7 @@
         app:layout_constraintBottom_toTopOf="@id/bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bannerOffline"
         app:navGraph="@navigation/nav_graph" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

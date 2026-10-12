@@ -2,7 +2,9 @@ package com.example.lori;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -14,6 +16,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.lori.utils.ThemeHelper;
 import com.example.lori.data.sync.SyncManager;
+import com.example.lori.viewmodel.NetworkViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,6 +44,12 @@ public class MainActivity extends AppCompatActivity {
 
         //Bật lịch đồng bộ 30 phút/lần. Vào được MainActivity nghĩa là đã đăng nhập; gọi lại nhiều lần vẫn an toàn (chỉ có 1 lịch)
         SyncManager.schedule(this);
+
+        //Banner offline: chỉ hiện khi máy mất mạng
+        TextView bannerOffline = findViewById(R.id.bannerOffline);
+        NetworkViewModel networkViewModel = new ViewModelProvider(this).get(NetworkViewModel.class);
+        networkViewModel.getOnline().observe(this, online ->
+                bannerOffline.setVisibility(Boolean.FALSE.equals(online) ? View.VISIBLE : View.GONE));
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int destId = destination.getId();
