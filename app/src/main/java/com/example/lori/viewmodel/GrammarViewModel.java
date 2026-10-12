@@ -59,6 +59,8 @@ public class GrammarViewModel extends AndroidViewModel {
             if (existing != null) {
                 existing.status = UserProgressLocal.STATUS_COMPLETED;
                 existing.lastStudiedAt = new Date();
+                //Đã học lại: phải đẩy lên server một lần nữa
+                existing.isSynced = false;
                 db.progressDao().update(existing);
             } else {
                 UserProgressLocal newProgress = new UserProgressLocal();

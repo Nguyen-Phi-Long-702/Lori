@@ -106,6 +106,8 @@ public class QuizViewModel extends AndroidViewModel {
                 existing.correctCount = correct;
                 existing.incorrectCount = incorrect;
                 existing.lastStudiedAt = new Date();
+                //Đã học lại: phải đẩy lên server một lần nữa
+                existing.isSynced = false;
                 db.progressDao().update(existing);
             } else {
                 UserProgressLocal newProgress = new UserProgressLocal();
