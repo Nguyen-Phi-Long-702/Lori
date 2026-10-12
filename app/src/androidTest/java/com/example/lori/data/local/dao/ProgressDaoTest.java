@@ -1,6 +1,10 @@
 package com.example.lori.data.local.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Date;
 
 import android.content.Context;
 
@@ -97,5 +101,46 @@ public class ProgressDaoTest {
         UserProgressLocal result = progressDao.getProgress("quiz", 30);
         //Đảm bảo bản ghi tiến độ đã được xóa khỏi db
         assertEquals(null, result);
+    }
+
+    @Test
+    public void markSyncedIfUnchanged_marksOnlyWhenTimestampMatches() {
+        Date studiedAt = new Date(1_700_000_000_000L);
+        UserProgressLocal progress = new UserProgressLocal();
+        progress.itemType = "grammar_lesson";
+        progress.itemId = 1;
+        progress.status = "completed";
+        progress.lastStudiedAt = studiedAt;
+        progress.isSynced = false;
+        progressDao.insertOrUpdate(progress);
+
+        //Mốc thời gian khác (bản ghi vừa được học lại trong lúc đồng bộ) → không đánh dấu
+        int skipped = progressDao.markSyncedIfUnchanged("grammar_lesson", 1, new Date(studiedAt.getTime() + 1000));
+        assertEquals(0, skipped);
+        assertFalse(progressDao.getProgress("grammar_lesson", 1).isSynced);
+        assertEquals(1, progressDao.getUnsyncedProgress().size());
+
+        //Đúng mốc → đánh dấu đã đồng bộ
+        int marked = progressDao.markSyncedIfUnchanged("grammar_lesson", 1, studiedAt);
+        assertEquals(1, marked);
+        assertTrue(progressDao.getProgress("grammar_lesson", 1).isSynced);
+        assertTrue(progressDao.getUnsyncedProgress().isEmpty());
+    }
+
+    @Test
+    public void deleteAll_removesEveryProgressRow() {
+        for (int id = 1; id <= 2; id++) {
+            UserProgressLocal progress = new UserProgressLocal();
+            progress.itemType = "vocab_quiz_topic";
+            progress.itemId = id;
+            progress.status = "completed";
+            progress.isSynced = true;
+            progressDao.insertOrUpdate(progress);
+        }
+
+        progressDao.deleteAll();
+
+        assertEquals(null, progressDao.getProgress("vocab_quiz_topic", 1));
+        assertEquals(null, progressDao.getProgress("vocab_quiz_topic", 2));
     }
 }

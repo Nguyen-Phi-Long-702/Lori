@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData;
 import com.example.lori.data.local.entity.UserProgressLocal;
 
 import java.util.List;
+import java.util.Date;
 
 @Dao
 public interface ProgressDao {
@@ -45,4 +46,13 @@ public interface ProgressDao {
     //Lấy toàn bộ bản ghi có ngày học gần nhất, dùng để tính lịch streak ở màn hồ sơ
     @Query("SELECT * FROM user_progress_local WHERE last_studied_at IS NOT NULL ORDER BY last_studied_at DESC")
     LiveData<List<UserProgressLocal>> getAllStudyDates();
+
+    //Đánh dấu đã đồng bộ, CHỈ khi bản ghi vẫn còn đúng mốc lastStudiedAt đã gửi lên server
+    //Nếu người dùng vừa học lại trong lúc đang gửi thì mốc đã khác → trả 0 và giữ is_synced = 0 để lần sau gửi tiếp
+    @Query("UPDATE user_progress_local SET is_synced = 1 WHERE item_type = :itemType AND item_id = :itemId AND last_studied_at = :lastStudiedAt")
+    int markSyncedIfUnchanged(String itemType, int itemId, Date lastStudiedAt);
+
+    //Xóa toàn bộ tiến trình học trên máy (dùng khi đăng xuất)
+    @Query("DELETE FROM user_progress_local")
+    void deleteAll();
 }
