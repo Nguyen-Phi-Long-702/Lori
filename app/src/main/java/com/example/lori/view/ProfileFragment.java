@@ -1,6 +1,7 @@
 package com.example.lori.view;
 
 import android.os.Bundle;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lori.R;
+import com.example.lori.PremiumPurchaseActivity;
 import com.example.lori.viewmodel.ProfileViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
@@ -54,9 +56,9 @@ public class ProfileFragment extends Fragment {
         viewModel.getBestStreak().observe(getViewLifecycleOwner(),
                 streak -> tvBestStreak.setText(String.valueOf(streak)));
 
-        //Bấm vào banner Premium sẽ hiện dialog nhắc nâng cấp
+        //Banner Premium mở thẳng màn mua
         cardPremiumBanner.setOnClickListener(v ->
-                PremiumPromptDialog.newInstance().show(getChildFragmentManager(), "premium_prompt"));
+                startActivity(new Intent(requireContext(), PremiumPurchaseActivity.class)));
 
         btnOpenSettings.setOnClickListener(v ->
                 Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_settingsFragment));

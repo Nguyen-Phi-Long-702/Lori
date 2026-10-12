@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.io.File;
 import java.util.Locale;
+import com.example.lori.utils.PremiumManager;
 import com.example.lori.utils.ThemeHelper;
 
 //Quản lý dữ liệu và thao tác của màn hình cài đặt: tuỳ chọn lưu local, bộ nhớ đệm, thông tin ứng dụng
@@ -113,6 +114,11 @@ public class SettingsViewModel extends AndroidViewModel {
         } catch (PackageManager.NameNotFoundException e) {
             return "1.0";
         }
+    }
+
+    //Trạng thái Premium đã biết trên máy (được cập nhật khi mua và mỗi lần SyncWorker chạy)
+    public boolean isPremium() {
+        return PremiumManager.isPremium(getApplication());
     }
 
     public LiveData<String> getCacheSizeLabel() {

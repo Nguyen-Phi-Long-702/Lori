@@ -5,12 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.lori.R;
+import com.example.lori.PremiumPurchaseActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 public class PremiumPromptDialog extends BottomSheetDialogFragment {
@@ -53,7 +54,7 @@ public class PremiumPromptDialog extends BottomSheetDialogFragment {
         view.findViewById(R.id.btnPremiumLater).setOnClickListener(v -> dismiss());
 
         view.findViewById(R.id.btnPremiumUpgrade).setOnClickListener(v -> {
-            Toast.makeText(requireContext(), R.string.premium_coming_soon_toast, Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(requireContext(), PremiumPurchaseActivity.class));
             dismiss();
         });
     }

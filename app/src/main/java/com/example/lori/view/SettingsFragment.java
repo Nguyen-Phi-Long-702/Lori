@@ -19,6 +19,7 @@ import com.example.lori.R;
 import com.example.lori.viewmodel.SettingsViewModel;
 import com.example.lori.AuthActivity;
 import com.example.lori.viewmodel.AuthViewModel;
+import com.example.lori.PremiumPurchaseActivity;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
 //Fragment hiển thị màn hình cài đặt ứng dụng
@@ -41,8 +42,9 @@ public class SettingsFragment extends Fragment {
         view.findViewById(R.id.btnBackSettings).setOnClickListener(v ->
                 Navigation.findNavController(v).navigateUp());
 
+        //Theo prototype v7: dòng Gói Premium mở thẳng màn mua
         view.findViewById(R.id.rowPremium).setOnClickListener(v ->
-                PremiumPromptDialog.newInstance().show(getChildFragmentManager(), "premium_prompt"));
+                startActivity(new Intent(requireContext(), PremiumPurchaseActivity.class)));
 
         //Các mục cần tài khoản đăng nhập - app chưa có hệ thống tài khoản nên chỉ thông báo rõ ràng
         View.OnClickListener showAccountLockedMessage = v ->
@@ -88,6 +90,12 @@ public class SettingsFragment extends Fragment {
 
         MaterialSwitch switchDarkMode = requireView().findViewById(R.id.switchDarkMode);
         switchDarkMode.setChecked(viewModel.isDarkModeEnabled());
+
+        //Cập nhật trạng thái gói mỗi khi quay lại màn này (vd vừa mua xong ở PremiumPurchaseActivity)
+        TextView tvPremiumStatus = requireView().findViewById(R.id.tvPremiumStatus);
+        tvPremiumStatus.setText(viewModel.isPremium()
+                ? R.string.settings_premium_row_status_active
+                : R.string.settings_premium_row_status);
     }
 
     //Hiển thị dung lượng bộ nhớ đệm hiện tại và cho phép xóa

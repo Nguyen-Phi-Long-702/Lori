@@ -78,12 +78,13 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvPremiumStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/settings_premium_row_title"
-                        android:textSize="14.5sp"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnSurface" />
+                        android:layout_marginTop="2dp"
+                        android:text="@string/settings_premium_row_status"
+                        android:textSize="12sp"
+                        android:textColor="?attr/colorTertiary" />
 
                     <TextView
                         android:layout_width="wrap_content"

@@ -104,7 +104,6 @@
     <string name="premium_prompt_later_button">Để sau</string>
     <string name="premium_prompt_desc_format">Nâng cấp Premium để mở khóa %1$s và nhiều tính năng khác.</string>
     <string name="premium_prompt_default_feature">tính năng này</string>
-    <string name="premium_coming_soon_toast">Tính năng nâng cấp Premium sẽ hoàn thiện ở Tuần 6</string>
     <string name="premium_prompt_title">Cần nâng cấp Premium</string>
     <string name="nav_label_quiz">Kiểm tra</string>
     <string name="quiz_title_vocab">Kiểm tra từ vựng</string>
