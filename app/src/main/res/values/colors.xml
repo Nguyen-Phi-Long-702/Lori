@@ -5,6 +5,9 @@
     <color name="premium_badge_gradient_start">#D4A843</color>
     <color name="premium_badge_gradient_end">#F5D580</color>
     <color name="premium_badge_text">#644B0C</color>
+    <color name="premium_hero_start">#2D2006</color>
+    <color name="premium_hero_center">#5A3F0B</color>
+    <color name="premium_hero_end">#8B6914</color>
     <color name="quiz_correct_bg">#DCEDC8</color>
     <color name="quiz_correct_text">#33691E</color>
     <color name="quiz_incorrect_bg">#FFCDD2</color>

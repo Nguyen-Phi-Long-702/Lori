@@ -195,4 +195,41 @@
     <string name="offline_banner_message">Bạn đang offline · Từ điển và việc học vẫn dùng bình thường</string>
 
     <string name="translate_offline_hint">Cần kết nối Internet để dịch</string>
+
+    <!-- Màn mua Premium -->
+    <string name="premium_purchase_title">Premium</string>
+    <string name="premium_hero_title">Lori Premium</string>
+    <string name="premium_hero_subtitle">Mở khóa toàn bộ tính năng cao cấp</string>
+    <string name="premium_features_header">TÍNH NĂNG PREMIUM BAO GỒM</string>
+    <string name="premium_feature_toeic">Đề thi TOEIC đầy đủ (7 parts)</string>
+    <string name="premium_feature_ielts">Đề thi IELTS Academic</string>
+    <string name="premium_feature_ai_tutor">AI English Tutor — hỏi đáp, phân tích câu, ôn tập cá nhân hóa</string>
+    <string name="premium_feature_exercises">Bài tập &amp; lộ trình ôn luyện do AI tạo riêng cho bạn</string>
+    <string name="premium_feature_image">Nhận diện ảnh → từ tiếng Anh + IPA</string>
+    <string name="premium_plans_header">CHỌN GÓI</string>
+    <string name="premium_plan_monthly_name">Gói Tháng</string>
+    <string name="premium_plan_monthly_price">49.000</string>
+    <string name="premium_plan_monthly_unit">đ / tháng</string>
+    <string name="premium_plan_yearly_name">Gói Năm</string>
+    <string name="premium_plan_yearly_price">399.000</string>
+    <string name="premium_plan_yearly_unit">đ / năm</string>
+    <string name="premium_plan_yearly_tag">⭐ Phổ biến nhất</string>
+    <string name="premium_plan_yearly_save">Tiết kiệm ~32% so với gói tháng</string>
+    <string name="premium_plan_lifetime_name">Vĩnh viễn</string>
+    <string name="premium_plan_lifetime_price">999.000</string>
+    <string name="premium_plan_lifetime_unit">đ / một lần</string>
+    <string name="premium_plan_lifetime_save">Mua một lần, dùng mãi mãi</string>
+    <string name="premium_pay_button_format">Thanh toán %1$sđ →</string>
+    <string name="premium_demo_note">Bản demo: không phát sinh giao dịch tiền thật.</string>
+    <string name="premium_offline_note">Cần kết nối Internet để mua gói</string>
+    <string name="premium_success_title">Chào mừng Premium!</string>
+    <string name="premium_success_desc">Bạn đã nâng cấp thành công. Tất cả tính năng cao cấp đã được mở khóa.</string>
+    <string name="premium_success_item_exam">✓ Đề thi TOEIC / IELTS</string>
+    <string name="premium_success_item_ai">✓ AI English Tutor cá nhân hóa</string>
+    <string name="premium_success_item_image">✓ Nhận diện ảnh AI</string>
+    <string name="premium_success_button">Bắt đầu khám phá →</string>
+    <string name="premium_error_session_expired">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại</string>
+    <string name="premium_error_forbidden">Máy chủ từ chối giao dịch. Chức năng mua thử có thể đang bị tắt</string>
+    <string name="premium_error_already_lifetime">Bạn đã có Premium vĩnh viễn</string>
+    <string name="settings_premium_row_status_active">Đang hoạt động</string>
 </resources>
