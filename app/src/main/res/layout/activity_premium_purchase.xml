@@ -129,7 +129,7 @@
                             android:background="@drawable/bg_feature_logo"
                             android:padding="3dp"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/ic_feature_exam"
+                            android:src="@drawable/ic_toeic"
                             android:contentDescription="@null" />
 
                         <TextView
@@ -157,7 +157,7 @@
                             android:background="@drawable/bg_feature_logo"
                             android:padding="3dp"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/ic_feature_book_open"
+                            android:src="@drawable/ic_ielts"
                             android:contentDescription="@null" />
 
                         <TextView

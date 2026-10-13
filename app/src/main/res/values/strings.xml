@@ -232,5 +232,28 @@
     <string name="premium_error_session_expired">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại</string>
     <string name="premium_error_forbidden">Máy chủ từ chối giao dịch. Chức năng mua thử có thể đang bị tắt</string>
     <string name="premium_error_already_lifetime">Bạn đã có Premium vĩnh viễn</string>
+
+    <!-- Màn Đề thi -->
+    <string name="exam_screen_title">Đề thi</string>
+    <string name="exam_filter_all">Tất cả</string>
+    <string name="exam_filter_toeic">TOEIC</string>
+    <string name="exam_filter_ielts">IELTS</string>
+    <string name="exam_tab_history">🕘 Lịch sử</string>
+    <string name="exam_meta_format">📝 %1$d câu · ⏱ %2$d phút · %3$s</string>
+    <string name="exam_difficulty_easy">🟢 Dễ</string>
+    <string name="exam_difficulty_medium">🟡 Trung bình</string>
+    <string name="exam_difficulty_hard">🔴 Khó</string>
+    <string name="exam_start_button">Bắt đầu làm bài →</string>
+    <string name="exam_start_not_ready_toast">Màn làm bài đang được phát triển, sẽ có ở các bước tiếp theo</string>
+    <string name="exam_empty_exams">Chưa có đề thi nào</string>
+    <string name="exam_empty_history">Bạn chưa làm đề thi nào</string>
+    <string name="exam_retry_button">Thử lại</string>
+    <string name="exam_locked_title">Nâng cấp Premium để mở khóa toàn bộ đề thi</string>
+    <string name="exam_locked_desc">Đề đầy đủ TOEIC · IELTS Academic — không giới hạn số lần làm</string>
+    <string name="exam_locked_button">Mở khóa để làm bài</string>
+    <string name="exam_premium_feature_name">đề thi TOEIC / IELTS</string>
+    <string name="exam_result_meta_format">%1$s · %2$d/%3$d câu đúng · ⏱ %4$d phút</string>
+    <string name="exam_result_score_toeic_format">%1$d/990</string>
+    <string name="exam_result_score_ielts_format">Band %1$s</string>
     <string name="settings_premium_row_status_active">Đang hoạt động</string>
 </resources>

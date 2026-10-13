@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nền badge loại đề (TOEIC/IELTS): màu trắng, được tô màu thật bằng backgroundTint trong adapter -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="6dp" />
+    <solid android:color="@color/white" />
+</shape>

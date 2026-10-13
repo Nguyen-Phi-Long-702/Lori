@@ -51,4 +51,7 @@
     <color name="lori_inverse_surface">#123A5C</color>
     <color name="lori_inverse_on_surface">#EAF2F1</color>
     <color name="lori_inverse_primary">#8FC4EE</color>
+
+    <color name="exam_badge_toeic">#1F9E86</color>
+    <color name="exam_badge_ielts">#E8A33D</color>
 </resources>
