@@ -104,7 +104,7 @@
         android:id="@+id/examListFragment"
         android:name="com.example.lori.view.ExamListFragment"
         android:label="@string/nav_exam"
-        tools:layout="@layout/fragment_placeholder" />
+        tools:layout="@layout/fragment_exam_list" />
 
     <fragment
         android:id="@+id/dictionaryFragment"
