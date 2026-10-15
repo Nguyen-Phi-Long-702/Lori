@@ -40,6 +40,11 @@
         <activity
             android:name=".PremiumPurchaseActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ExamTakingActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
