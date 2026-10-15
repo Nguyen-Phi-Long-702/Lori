@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Một ô số câu trong dải ô cuộn ngang và trong lưới điều hướng. Nền do ExamQuestionNavAdapter tô theo trạng thái -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tvQuestionNumber"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="4dp"
+        android:background="@drawable/bg_exam_nav_item"
+        android:gravity="center"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        tools:text="24" />
+
+</FrameLayout>
