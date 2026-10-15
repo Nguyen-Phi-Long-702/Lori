@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="24dp">
+
+        <!-- Tên section, vd "Part 3 - Conversation 1 (Q41-43)" -->
+        <TextView
+            android:id="@+id/tvQuestionSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="Part 3 - Conversation 1 (Q41-43)" />
+
+        <!-- Đoạn văn của section (Reading); ẩn khi section không có -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardPassage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:strokeColor="?attr/colorOutlineVariant"
+            app:strokeWidth="1dp"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/tvPassage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingMultiplier="1.2"
+                android:padding="16dp"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="15sp"
+                tools:text="Đoạn văn của section..." />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Nội dung câu hỏi; ẩn khi câu không có (vd TOEIC Part 1-2) -->
+        <TextView
+            android:id="@+id/tvQuestionText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:lineSpacingMultiplier="1.15"
+            android:textAppearance="@style/TextAppearance.Lori.Title"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:text="What does the woman ask the man to do?"
+            tools:visibility="visible" />
+
+        <!-- Các lựa chọn (trắc nghiệm, matching, True/False/Not Given): QuestionFragment thêm item_exam_option vào đây -->
+        <LinearLayout
+            android:id="@+id/layoutOptions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical" />
+
+        <!-- Ô nhập đáp án cho dạng điền từ -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutFillBlank"
+            style="@style/Widget.Lori.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etFillBlank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/exam_fill_blank_hint"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLength="255"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
