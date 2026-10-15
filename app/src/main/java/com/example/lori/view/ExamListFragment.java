@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.lori.ExamTakingActivity;
 import com.example.lori.R;
 import com.example.lori.viewmodel.ExamListViewModel;
 import com.google.android.material.chip.ChipGroup;
@@ -59,9 +59,9 @@ public class ExamListFragment extends Fragment {
         View btnRetry = view.findViewById(R.id.btnExamRetry);
         View btnUnlock = view.findViewById(R.id.btnExamUnlock);
 
-        //Màn làm bài chưa có (Ngày 2-4): tạm báo bằng Toast, giống cách QuizFragment báo tính năng chưa sẵn sàng
+        //Bấm "Bắt đầu làm bài": mở màn làm bài của đề đó
         ExamAdapter examAdapter = new ExamAdapter(exam ->
-                Toast.makeText(requireContext(), R.string.exam_start_not_ready_toast, Toast.LENGTH_SHORT).show());
+                startActivity(ExamTakingActivity.newIntent(requireContext(), exam.id)));
         ExamResultAdapter resultAdapter = new ExamResultAdapter();
         rvExams.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvExams.setAdapter(examAdapter);

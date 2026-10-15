@@ -243,7 +243,6 @@
     <string name="exam_difficulty_medium">🟡 Trung bình</string>
     <string name="exam_difficulty_hard">🔴 Khó</string>
     <string name="exam_start_button">Bắt đầu làm bài →</string>
-    <string name="exam_start_not_ready_toast">Màn làm bài đang được phát triển, sẽ có ở các bước tiếp theo</string>
     <string name="exam_empty_exams">Chưa có đề thi nào</string>
     <string name="exam_empty_history">Bạn chưa làm đề thi nào</string>
     <string name="exam_retry_button">Thử lại</string>
