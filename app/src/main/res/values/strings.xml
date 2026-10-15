@@ -254,5 +254,33 @@
     <string name="exam_result_meta_format">%1$s · %2$d/%3$d câu đúng · ⏱ %4$d phút</string>
     <string name="exam_result_score_toeic_format">%1$d/990</string>
     <string name="exam_result_score_ielts_format">Band %1$s</string>
+
+    <!-- Màn làm bài thi -->
+    <string name="exam_taking_position_format">Câu %1$d / %2$d</string>
+    <string name="exam_timer_format">⏱ %1$02d:%2$02d</string>
+    <string name="exam_flag_button">Đánh dấu</string>
+    <string name="exam_unflag_button">Bỏ đánh dấu</string>
+    <string name="exam_next_button">Câu tiếp theo →</string>
+    <string name="exam_submit_button">Nộp bài</string>
+    <string name="exam_submit_not_ready_toast">Chức năng nộp bài đang được phát triển, sẽ có ở bước tiếp theo</string>
+    <string name="exam_time_up_toast">Đã hết giờ làm bài</string>
+    <string name="exam_exit_title">Thoát bài thi?</string>
+    <string name="exam_exit_message">Các câu bạn đã trả lời sẽ không được lưu.</string>
+    <string name="exam_exit_continue">Tiếp tục làm</string>
+    <string name="exam_exit_confirm">Thoát</string>
+    <string name="exam_taking_error_empty">Đề thi này chưa có câu hỏi</string>
+    <string name="exam_taking_error_not_found">Không tìm thấy đề thi này</string>
+    <string name="exam_taking_error_premium">Gói Premium của bạn không còn hiệu lực. Hãy nâng cấp để tiếp tục làm bài</string>
+    <string name="exam_fill_blank_hint">Nhập đáp án của bạn</string>
+    <string name="exam_audio_time_format">%1$s / %2$s</string>
+    <string name="exam_audio_error">Không phát được audio. Hãy kiểm tra kết nối mạng rồi bấm phát lại</string>
+    <string name="exam_navigator_title">Danh sách câu hỏi</string>
+    <string name="exam_navigator_summary_format">Đã trả lời %1$d/%2$d · Đánh dấu %3$d</string>
+    <string name="cd_exam_grid">Xem danh sách câu hỏi</string>
+    <string name="cd_audio_play">Phát</string>
+    <string name="cd_audio_pause">Tạm dừng</string>
+    <string name="cd_audio_rewind">Lùi 10 giây</string>
+    <string name="cd_audio_forward">Tiến 10 giây</string>
+
     <string name="settings_premium_row_status_active">Đang hoạt động</string>
 </resources>

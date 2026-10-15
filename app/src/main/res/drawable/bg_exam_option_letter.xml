@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nền hình tròn chứa chữ cái A, B, C... của một lựa chọn: màu trắng, được tô màu theo trạng thái chọn trong QuestionFragment -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/white" />
+</shape>

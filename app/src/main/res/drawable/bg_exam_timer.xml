@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nền viên thuốc của đồng hồ đếm ngược: màu trắng, được tô màu thật bằng backgroundTint trong ExamTakingActivity -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="100dp" />
+    <solid android:color="@color/white" />
+</shape>

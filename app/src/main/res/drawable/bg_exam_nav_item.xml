@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nền ô số câu trong dải/lưới điều hướng: màu trắng, được tô màu theo trạng thái trong ExamQuestionNavAdapter -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="9dp" />
+    <solid android:color="@color/white" />
+</shape>

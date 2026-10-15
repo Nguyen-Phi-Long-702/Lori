@@ -54,4 +54,8 @@
 
     <color name="exam_badge_toeic">#1F9E86</color>
     <color name="exam_badge_ielts">#E8A33D</color>
+
+    <color name="exam_question_answered">#1F9E86</color>
+    <color name="exam_question_flagged">#E8A33D</color>
+    <color name="exam_question_flagged_text">#3B2C00</color>
 </resources>
