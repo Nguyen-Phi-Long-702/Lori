@@ -93,6 +93,7 @@ public class ExamService {
                         section.getTitle(),
                         section.getOrderIndex(),
                         section.getAudioUrl(),
+                        section.getImageUrl(),
                         section.getPassageText(),
                         content.questionsOf(section).stream()
                                 .map(question -> new ExamDetailResponse.Question(

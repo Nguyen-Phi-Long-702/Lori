@@ -15,6 +15,7 @@ import java.util.UUID;
 /**
  * Anh xa bang exam_sections (V2__exam_tables.sql): nhom cau hoi dung chung audio/doan van.
  * skill: LISTENING / READING. Chi giu paperId (khong dung quan he @ManyToOne) cho don gian.
+ * image_url (them o V3__exam_section_image.sql): anh cua section (TOEIC Part 1, cau do hoa Part 3-4), NULL neu khong co.
  */
 @Entity
 @Table(name = "exam_sections")
@@ -40,6 +41,9 @@ public class ExamSection {
 
     @Column(name = "audio_url", length = 500)
     private String audioUrl;
+
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
 
     @Column(name = "passage_text", columnDefinition = "text")
     private String passageText;

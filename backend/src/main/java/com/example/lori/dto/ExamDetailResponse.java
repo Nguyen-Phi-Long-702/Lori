@@ -21,6 +21,7 @@ public record ExamDetailResponse(
             String title,
             int orderIndex,
             String audioUrl,
+            String imageUrl,
             String passageText,
             List<Question> questions) {
     }
