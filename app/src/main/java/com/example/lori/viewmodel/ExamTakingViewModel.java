@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer;
 
 import com.example.lori.R;
 import com.example.lori.data.remote.dto.ExamDetailResponse;
+import com.example.lori.data.remote.dto.StartExamResponse;
 import com.example.lori.repository.ApiResult;
 import com.example.lori.repository.ExamRepository;
 
@@ -54,6 +55,8 @@ public class ExamTakingViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> timeUp = new MutableLiveData<>(false);
 
     private String examId;
+    //Mã phiên làm bài do Backend cấp ở /start; gửi lại khi nộp bài (dùng một lần, chống nộp lặp). null = chưa bắt đầu
+    private String sessionToken;
     private CountDownTimer timer;
     //Vị trí đang nghe dở của một file audio, để xoay màn hình hoặc quay lại app thì nghe tiếp
     private String savedAudioUrl;
@@ -64,7 +67,8 @@ public class ExamTakingViewModel extends AndroidViewModel {
         examRepository = new ExamRepository(application);
     }
 
-    //Tải nội dung đề. Chỉ chạy khi chưa có dữ liệu và chưa có request nào đang chạy
+    //Tải nội dung đề rồi xin phiên làm bài (start): đề chỉ hiện và đồng hồ chỉ chạy khi cả hai bước xong
+    //Chỉ chạy khi chưa có dữ liệu và chưa có request nào đang chạy
     //nên gọi lại sau khi xoay màn hình là vô hại
     public void load(String examId) {
         if (questions.getValue() != null || Boolean.TRUE.equals(loading.getValue())) {
@@ -79,7 +83,6 @@ public class ExamTakingViewModel extends AndroidViewModel {
             @Override
             public void onChanged(ApiResult<ExamDetailResponse> result) {
                 source.removeObserver(this);
-                loading.setValue(false);
                 handleDetail(result);
             }
         });
@@ -94,22 +97,57 @@ public class ExamTakingViewModel extends AndroidViewModel {
 
     private void handleDetail(ApiResult<ExamDetailResponse> result) {
         if (result.isPremiumRequired()) {
-            errorMessage.setValue(R.string.exam_taking_error_premium);
+            failLoading(R.string.exam_taking_error_premium);
             return;
         }
         if (!result.isSuccess() || result.getData() == null) {
-            errorMessage.setValue(messageFor(result));
+            failLoading(messageFor(result));
             return;
         }
         ExamDetailResponse detail = result.getData();
         List<ExamQuestionItem> items = flatten(detail);
         if (items.isEmpty()) {
-            errorMessage.setValue(R.string.exam_taking_error_empty);
+            failLoading(R.string.exam_taking_error_empty);
             return;
         }
+        //Đề hợp lệ: xin phiên làm bài. Chỉ hiện đề và chạy đồng hồ sau khi có sessionToken
+        LiveData<ApiResult<StartExamResponse>> source = examRepository.start(examId);
+        source.observeForever(new Observer<ApiResult<StartExamResponse>>() {
+            @Override
+            public void onChanged(ApiResult<StartExamResponse> startResult) {
+                source.removeObserver(this);
+                handleStart(detail, items, startResult);
+            }
+        });
+    }
+
+    //Kết quả của /start: có token thì mới hiện đề và bắt đầu đếm ngược
+    private void handleStart(ExamDetailResponse detail, List<ExamQuestionItem> items,
+                             ApiResult<StartExamResponse> result) {
+        if (result.isPremiumRequired()) {
+            failLoading(R.string.exam_taking_error_premium);
+            return;
+        }
+        if (!result.isSuccess()) {
+            failLoading(messageFor(result));
+            return;
+        }
+        StartExamResponse started = result.getData();
+        if (started == null || started.sessionToken == null || started.sessionToken.trim().isEmpty()) {
+            failLoading(R.string.auth_error_server);
+            return;
+        }
+        sessionToken = started.sessionToken;
+        loading.setValue(false);
         examTitle.setValue(detail.title);
         questions.setValue(items);
         startTimer(detail.durationMinutes * 60L);
+    }
+
+    //Tải lỗi (ở bước tải đề hoặc bước start): tắt thanh tiến trình và hiện thông báo kèm nút Thử lại
+    private void failLoading(@StringRes int messageRes) {
+        loading.setValue(false);
+        errorMessage.setValue(messageRes);
     }
 
     //Gộp các section thành một danh sách câu hỏi phẳng. Backend đã xếp section và câu hỏi đúng thứ tự làm bài
