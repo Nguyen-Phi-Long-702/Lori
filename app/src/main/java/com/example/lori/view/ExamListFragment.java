@@ -79,7 +79,8 @@ public class ExamListFragment extends Fragment {
         //Bấm "Bắt đầu làm bài": mở màn làm bài của đề đó (nhận resultId khi nộp xong)
         ExamAdapter examAdapter = new ExamAdapter(exam ->
                 examTakingLauncher.launch(ExamTakingActivity.newIntent(requireContext(), exam.id)));
-        ExamResultAdapter resultAdapter = new ExamResultAdapter();
+        //Bấm một dòng Lịch sử: mở màn Kết quả của lần thi đó
+        ExamResultAdapter resultAdapter = new ExamResultAdapter(item -> openResult(item.id));
         rvExams.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvExams.setAdapter(examAdapter);
         rvResults.setLayoutManager(new LinearLayoutManager(requireContext()));

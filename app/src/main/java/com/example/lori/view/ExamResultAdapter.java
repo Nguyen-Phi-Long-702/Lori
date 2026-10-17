@@ -21,12 +21,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-//Adapter hiển thị lịch sử các lần thi (chỉ để xem; xem lại chi tiết từng câu làm ở Ngày 4)
+//Adapter hiển thị lịch sử các lần thi; bấm một dòng để mở màn Kết quả của lần thi đó
 public class ExamResultAdapter extends RecyclerView.Adapter<ExamResultAdapter.ResultViewHolder> {
 
     private static final String TYPE_IELTS = "IELTS";
 
+    //Callback để fragment xử lý khi người dùng bấm một dòng lịch sử
+    public interface OnResultClickListener {
+        void onResultClick(ExamResultResponse result);
+    }
+
+    private final OnResultClickListener listener;
     private List<ExamResultResponse> results = new ArrayList<>();
+
+    public ExamResultAdapter(OnResultClickListener listener) {
+        this.listener = listener;
+    }
 
     //Cập nhật lịch sử và refresh recyclerview
     public void setResults(List<ExamResultResponse> newResults) {
@@ -56,6 +66,7 @@ public class ExamResultAdapter extends RecyclerView.Adapter<ExamResultAdapter.Re
                 formatDate(result.submittedAt), result.correctCount, result.totalQuestions,
                 toMinutes(result.timeSpentSeconds)));
         holder.tvResultScore.setText(formatScore(context, result));
+        holder.itemView.setOnClickListener(v -> listener.onResultClick(result));
     }
 
     @Override
