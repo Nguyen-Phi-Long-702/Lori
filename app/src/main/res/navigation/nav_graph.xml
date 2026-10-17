@@ -104,7 +104,25 @@
         android:id="@+id/examListFragment"
         android:name="com.example.lori.view.ExamListFragment"
         android:label="@string/nav_exam"
-        tools:layout="@layout/fragment_exam_list" />
+        tools:layout="@layout/fragment_exam_list">
+        <action
+            android:id="@+id/action_examListFragment_to_examResultFragment"
+            app:destination="@id/examResultFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/examResultFragment"
+        android:name="com.example.lori.view.ExamResultFragment"
+        android:label="@string/exam_result_title"
+        tools:layout="@layout/fragment_exam_result">
+        <argument
+            android:name="resultId"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/dictionaryFragment"

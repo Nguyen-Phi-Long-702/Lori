@@ -127,7 +127,7 @@
     <string name="translate_result_title">Kết quả dịch</string>
     <string name="translate_error_empty">Vui lòng nhập nội dung cần dịch</string>
     <string name="translate_error_unavailable">Dịch vụ dịch tạm thời chưa khả dụng. Vui lòng thử lại sau</string>
-    <string name="dictionary_info_banner">📖 118.356 từ · Tra cứu tức thời, hoàn toàn offline</string>
+    <string name="dictionary_info_banner">118.356 từ · Tra cứu tức thời, hoàn toàn offline</string>
     <string name="dictionary_search_hint">Nhập từ tiếng Anh cần tra…</string>
     <string name="cd_search_clear">Xóa nội dung tìm kiếm</string>
     <string name="dictionary_empty_result_format">Không tìm thấy kết quả cho \"%1$s\"</string>
@@ -213,7 +213,7 @@
     <string name="premium_plan_yearly_name">Gói Năm</string>
     <string name="premium_plan_yearly_price">399.000</string>
     <string name="premium_plan_yearly_unit">đ / năm</string>
-    <string name="premium_plan_yearly_tag">⭐ Phổ biến nhất</string>
+    <string name="premium_plan_yearly_tag">Phổ biến nhất</string>
     <string name="premium_plan_yearly_save">Tiết kiệm ~32% so với gói tháng</string>
     <string name="premium_plan_lifetime_name">Vĩnh viễn</string>
     <string name="premium_plan_lifetime_price">999.000</string>
@@ -290,6 +290,26 @@
     <string name="cd_audio_pause">Tạm dừng</string>
     <string name="cd_audio_rewind">Lùi 10 giây</string>
     <string name="cd_audio_forward">Tiến 10 giây</string>
+
+    <!-- Màn Kết quả bài thi -->
+    <string name="exam_result_title">Kết quả bài thi</string>
+    <string name="exam_result_headline_format">%1$s · Đã hoàn thành</string>
+    <string name="exam_result_ring_caption_toeic">/ 990</string>
+    <string name="exam_result_ring_caption_ielts">BAND</string>
+    <string name="exam_result_stat_correct_format">%1$d</string>
+    <string name="exam_result_stat_correct_label">CÂU ĐÚNG</string>
+    <string name="exam_result_stat_wrong_format">%1$d</string>
+    <string name="exam_result_stat_wrong_label">SAI / BỎ TRỐNG</string>
+    <string name="exam_result_stat_time_format">%1$dp</string>
+    <string name="exam_result_stat_time_label">THỜI GIAN</string>
+    <string name="exam_result_skills_title">Điểm theo kỹ năng</string>
+    <string name="exam_skill_listening">Listening</string>
+    <string name="exam_skill_reading">Reading</string>
+    <string name="exam_result_skill_score_toeic_format">%1$d/495</string>
+    <string name="exam_result_skill_correct_format">%1$d/%2$d câu đúng</string>
+    <string name="exam_result_back_button">Về danh sách đề thi</string>
+    <string name="exam_result_error_not_found">Không tìm thấy kết quả này</string>
+    <string name="exam_result_error_premium">Gói Premium của bạn không còn hiệu lực. Hãy nâng cấp để xem kết quả</string>
 
     <string name="settings_premium_row_status_active">Đang hoạt động</string>
 </resources>

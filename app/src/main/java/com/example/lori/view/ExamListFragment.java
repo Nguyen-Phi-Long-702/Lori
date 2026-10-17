@@ -1,15 +1,22 @@
 package com.example.lori.view;
 
 import android.os.Bundle;
+import android.app.Activity;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +42,16 @@ public class ExamListFragment extends Fragment {
     private TextView tvError;
     private View cardLocked;
 
+    //Mở màn làm bài và nhận kết quả trả về: nộp bài thành công thì có resultId → mở màn Kết quả
+    //Thoát giữa chừng (không nộp) thì không có gì xảy ra. Khai báo ở đây (trước onCreate) để vẫn nhận được kết quả sau khi app bị hệ thống thu hồi
+    private final ActivityResultLauncher<Intent> examTakingLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            activityResult -> {
+                if (activityResult.getResultCode() == Activity.RESULT_OK) {
+                    openResult(ExamTakingActivity.getResultId(activityResult.getData()));
+                }
+            });
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -59,9 +76,9 @@ public class ExamListFragment extends Fragment {
         View btnRetry = view.findViewById(R.id.btnExamRetry);
         View btnUnlock = view.findViewById(R.id.btnExamUnlock);
 
-        //Bấm "Bắt đầu làm bài": mở màn làm bài của đề đó
+        //Bấm "Bắt đầu làm bài": mở màn làm bài của đề đó (nhận resultId khi nộp xong)
         ExamAdapter examAdapter = new ExamAdapter(exam ->
-                startActivity(ExamTakingActivity.newIntent(requireContext(), exam.id)));
+                examTakingLauncher.launch(ExamTakingActivity.newIntent(requireContext(), exam.id)));
         ExamResultAdapter resultAdapter = new ExamResultAdapter();
         rvExams.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvExams.setAdapter(examAdapter);
@@ -147,6 +164,22 @@ public class ExamListFragment extends Fragment {
         if (hasError) {
             tvError.setText(error);
         }
+    }
+
+    //Mở màn Kết quả của một lần thi (chỉ truyền id, màn đó tự tải dữ liệu)
+    //Chỉ chuyển khi đang đứng ở danh sách đề: chạm nhanh hai lần sẽ không chuyển lần hai (action không còn hợp lệ từ màn khác sẽ làm app văng)
+    private void openResult(@Nullable String resultId) {
+        if (resultId == null) {
+            return;
+        }
+        NavController navController = NavHostFragment.findNavController(this);
+        NavDestination current = navController.getCurrentDestination();
+        if (current == null || current.getId() != R.id.examListFragment) {
+            return;
+        }
+        Bundle args = new Bundle();
+        args.putString(ExamResultFragment.ARG_RESULT_ID, resultId);
+        navController.navigate(R.id.action_examListFragment_to_examResultFragment, args);
     }
 
     private static String tabForChip(int chipId) {
