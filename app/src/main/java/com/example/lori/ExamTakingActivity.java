@@ -30,6 +30,7 @@ import com.example.lori.view.ExamQuestionNavAdapter;
 import com.example.lori.view.ExamQuestionPagerAdapter;
 import com.example.lori.view.QuestionNavigatorSheet;
 import com.example.lori.viewmodel.ExamQuestionItem;
+import com.example.lori.viewmodel.ExamSubmitError;
 import com.example.lori.viewmodel.ExamTakingViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
@@ -38,13 +39,18 @@ import java.util.List;
 import java.util.Locale;
 
 //Màn làm bài thi TOEIC/IELTS (Premium): đồng hồ đếm ngược, mỗi câu một trang (ViewPager2),
-//dải ô + lưới điều hướng câu hỏi, trình phát audio Listening
+//dải ô + lưới điều hướng câu hỏi, trình phát audio Listening, nộp bài (xác nhận → tiến trình → lỗi/thành công)
+//Nộp thành công thì trả id kết quả cho màn gọi (xem getResultId) rồi đóng
 public class ExamTakingActivity extends AppCompatActivity {
 
     private static final String EXTRA_EXAM_ID = "exam_id";
+    private static final String EXTRA_RESULT_ID = "result_id";
 
     private ExamTakingViewModel viewModel;
     private ExamAudioPlayer audioPlayer;
+    //Hộp thoại xác nhận/lỗi/thoát đang hiện (mỗi lúc chỉ một) và hộp thoại tiến trình "Đang nộp bài"
+    private AlertDialog activeDialog;
+    private AlertDialog submittingDialog;
 
     private ViewPager2 pager;
     private ExamQuestionPagerAdapter pagerAdapter;
@@ -74,6 +80,11 @@ public class ExamTakingActivity extends AppCompatActivity {
         Intent intent = new Intent(context, ExamTakingActivity.class);
         intent.putExtra(EXTRA_EXAM_ID, examId);
         return intent;
+    }
+
+    //Đọc id kết quả từ Intent mà màn làm bài trả về sau khi nộp thành công; null nếu không có (người dùng thoát giữa chừng)
+    public static String getResultId(Intent data) {
+        return data == null ? null : data.getStringExtra(EXTRA_RESULT_ID);
     }
 
     @Override
@@ -188,8 +199,8 @@ public class ExamTakingActivity extends AppCompatActivity {
             if (viewModel.hasNext()) {
                 viewModel.goToNext();
             } else {
-                //Câu cuối: nút là "Nộp bài". Chức năng nộp bài chưa có (Ngày 4), tạm báo bằng Toast
-                Toast.makeText(this, R.string.exam_submit_not_ready_toast, Toast.LENGTH_SHORT).show();
+                //Câu cuối: nút là "Nộp bài" → hỏi xác nhận rồi nộp
+                confirmSubmit();
             }
         });
 
@@ -214,12 +225,11 @@ public class ExamTakingActivity extends AppCompatActivity {
             finish();
             return;
         }
-        new AlertDialog.Builder(this)
+        showActiveDialog(new AlertDialog.Builder(this)
                 .setTitle(R.string.exam_exit_title)
                 .setMessage(R.string.exam_exit_message)
                 .setNegativeButton(R.string.exam_exit_continue, null)
-                .setPositiveButton(R.string.exam_exit_confirm, (dialog, which) -> finish())
-                .show();
+                .setPositiveButton(R.string.exam_exit_confirm, (dialog, which) -> finish()));
     }
 
     private void observeViewModel() {
@@ -273,12 +283,90 @@ public class ExamTakingActivity extends AppCompatActivity {
                     color(isWarning ? R.color.lori_error : R.color.lori_inverse_surface)));
             tvTimer.setTextColor(color(isWarning ? R.color.lori_on_error : R.color.lori_inverse_on_surface));
         });
-        //Hết giờ: Ngày 4 sẽ tự nộp bài, hiện tại chỉ báo bằng Toast
+        //Hết giờ: ViewModel tự nộp bài, ở đây chỉ báo cho người dùng biết
         viewModel.getTimeUp().observe(this, timeUp -> {
             if (Boolean.TRUE.equals(timeUp)) {
                 Toast.makeText(this, R.string.exam_time_up_toast, Toast.LENGTH_LONG).show();
             }
         });
+
+        //Nộp bài: hộp thoại tiến trình / hộp thoại lỗi đều dựng lại từ trạng thái ViewModel (xoay màn hình không mất)
+        viewModel.getSubmitting().observe(this, submitting -> renderSubmitting(Boolean.TRUE.equals(submitting)));
+        viewModel.getSubmitError().observe(this, this::showSubmitError);
+        //Nộp xong: trả id kết quả cho màn danh sách (nó sẽ mở màn Kết quả) rồi đóng màn làm bài
+        viewModel.getSubmitResultId().observe(this, resultId -> {
+            if (resultId == null) {
+                return;
+            }
+            setResult(RESULT_OK, new Intent().putExtra(EXTRA_RESULT_ID, resultId));
+            finish();
+        });
+    }
+
+    //Bấm Nộp bài (câu cuối): hỏi lại, kèm số câu đã trả lời để người dùng biết còn bỏ sót bao nhiêu câu
+    private void confirmSubmit() {
+        showActiveDialog(new AlertDialog.Builder(this)
+                .setTitle(R.string.exam_submit_confirm_title)
+                .setMessage(getString(R.string.exam_submit_confirm_message_format,
+                        viewModel.getAnsweredCount(), viewModel.getQuestionCount(), viewModel.getFlaggedCount()))
+                .setNegativeButton(R.string.exam_exit_continue, null)
+                .setPositiveButton(R.string.exam_submit_button, (dialog, which) -> viewModel.submit()));
+    }
+
+    //Lỗi khi nộp bài (error = null nghĩa là hết lỗi → đóng hộp thoại). Hộp thoại không tắt khi chạm ra ngoài/bấm Back
+    //Lỗi tạm thời: Nộp lại / Đóng (đáp án vẫn giữ nguyên). Lỗi không cứu được: chỉ còn Thoát
+    private void showSubmitError(ExamSubmitError error) {
+        if (error == null) {
+            dismissActiveDialog();
+            return;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle(R.string.exam_submit_error_title)
+                .setMessage(error.messageRes)
+                .setCancelable(false);
+        if (error.canRetry) {
+            builder.setPositiveButton(R.string.exam_submit_retry_button, (dialog, which) -> viewModel.submit())
+                    .setNegativeButton(R.string.exam_submit_error_close, (dialog, which) -> viewModel.clearSubmitError());
+        } else {
+            builder.setPositiveButton(R.string.exam_exit_confirm, (dialog, which) -> finish());
+        }
+        showActiveDialog(builder);
+    }
+
+    //Đang nộp bài: đóng các hộp thoại khác, tạm dừng audio và hiện hộp thoại tiến trình không tắt được
+    private void renderSubmitting(boolean submitting) {
+        if (!submitting) {
+            if (submittingDialog != null) {
+                submittingDialog.dismiss();
+                submittingDialog = null;
+            }
+            return;
+        }
+        dismissActiveDialog();
+        audioPlayer.pause();
+        if (submittingDialog != null || isFinishing() || isDestroyed()) {
+            return;
+        }
+        submittingDialog = new AlertDialog.Builder(this)
+                .setView(R.layout.dialog_exam_submitting)
+                .setCancelable(false)
+                .show();
+    }
+
+    //Hiện hộp thoại xác nhận/lỗi/thoát. Hiện cái mới thì đóng cái cũ
+    private void showActiveDialog(AlertDialog.Builder builder) {
+        dismissActiveDialog();
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+        activeDialog = builder.show();
+    }
+
+    private void dismissActiveDialog() {
+        if (activeDialog != null) {
+            activeDialog.dismiss();
+            activeDialog = null;
+        }
     }
 
     //Cập nhật mọi thứ phụ thuộc câu đang xem: trang ViewPager2, header, nút dưới, dải ô, audio
@@ -363,6 +451,12 @@ public class ExamTakingActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        //Hộp thoại sẽ được dựng lại từ trạng thái ViewModel ở Activity mới
+        dismissActiveDialog();
+        if (submittingDialog != null) {
+            submittingDialog.dismiss();
+            submittingDialog = null;
+        }
         if (audioPlayer != null) {
             audioPlayer.release();
         }

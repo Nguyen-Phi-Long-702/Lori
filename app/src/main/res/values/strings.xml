@@ -261,8 +261,13 @@
     <string name="exam_unflag_button">Bỏ đánh dấu</string>
     <string name="exam_next_button">Câu tiếp theo →</string>
     <string name="exam_submit_button">Nộp bài</string>
-    <string name="exam_submit_not_ready_toast">Chức năng nộp bài đang được phát triển, sẽ có ở bước tiếp theo</string>
-    <string name="exam_time_up_toast">Đã hết giờ làm bài</string>
+    <string name="exam_time_up_toast">Đã hết giờ làm bài, đang tự động nộp bài…</string>
+    <string name="exam_submit_confirm_title">Nộp bài?</string>
+    <string name="exam_submit_confirm_message_format">Bạn đã trả lời %1$d/%2$d câu, đánh dấu %3$d câu. Sau khi nộp sẽ không thể sửa đáp án.</string>
+    <string name="exam_submitting_message">Đang nộp bài và chấm điểm…</string>
+    <string name="exam_submit_error_title">Chưa nộp được bài</string>
+    <string name="exam_submit_retry_button">Nộp lại</string>
+    <string name="exam_submit_error_close">Đóng</string>
     <string name="exam_exit_title">Thoát bài thi?</string>
     <string name="exam_exit_message">Các câu bạn đã trả lời sẽ không được lưu.</string>
     <string name="exam_exit_continue">Tiếp tục làm</string>
