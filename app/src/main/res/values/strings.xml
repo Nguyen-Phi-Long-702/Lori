@@ -286,6 +286,21 @@
     <string name="exam_navigator_title">Danh sách câu hỏi</string>
     <string name="exam_navigator_summary_format">Đã trả lời %1$d/%2$d · Đánh dấu %3$d</string>
     <string name="cd_exam_grid">Xem danh sách câu hỏi</string>
+    <!-- Đề TOEIC: khung hướng dẫn hiện ở câu đầu tiên của mỗi Part -->
+    <string name="exam_part_title_1">Part 1 · Photographs</string>
+    <string name="exam_part_title_2">Part 2 · Question-Response</string>
+    <string name="exam_part_title_3">Part 3 · Conversations</string>
+    <string name="exam_part_title_4">Part 4 · Talks</string>
+    <string name="exam_part_title_5">Part 5 · Incomplete Sentences</string>
+    <string name="exam_part_title_6">Part 6 · Text Completion</string>
+    <string name="exam_part_title_7">Part 7 · Reading Comprehension</string>
+    <string name="exam_part_directions_1">Với mỗi câu, bạn nhìn một bức ảnh và nghe 4 câu mô tả (A, B, C, D). Hãy chọn câu mô tả đúng nhất về bức ảnh. Các câu mô tả không được in trên màn hình.</string>
+    <string name="exam_part_directions_2">Bạn sẽ nghe một câu hỏi hoặc câu nói, sau đó nghe 3 câu đáp lại (A, B, C). Hãy chọn câu đáp lại phù hợp nhất. Nội dung không được in trên màn hình.</string>
+    <string name="exam_part_directions_3">Bạn sẽ nghe các đoạn hội thoại giữa hai hoặc nhiều người. Mỗi đoạn có 3 câu hỏi, hãy chọn đáp án đúng nhất cho mỗi câu. Một số câu có kèm hình hoặc bảng biểu.</string>
+    <string name="exam_part_directions_4">Bạn sẽ nghe các bài nói ngắn của một người. Mỗi bài có 3 câu hỏi, hãy chọn đáp án đúng nhất cho mỗi câu. Một số câu có kèm hình hoặc bảng biểu.</string>
+    <string name="exam_part_directions_5">Mỗi câu có một chỗ trống. Hãy chọn từ hoặc cụm từ đúng nhất trong 4 đáp án để hoàn thành câu.</string>
+    <string name="exam_part_directions_6">Hãy đọc các đoạn văn bên dưới, mỗi đoạn có một số chỗ trống. Với mỗi chỗ trống, hãy chọn từ, cụm từ hoặc câu đúng nhất trong 4 đáp án.</string>
+    <string name="exam_part_directions_7">Hãy đọc các đoạn văn (một, hai hoặc ba đoạn) rồi trả lời các câu hỏi. Chọn đáp án đúng nhất cho mỗi câu.</string>
     <string name="cd_audio_play">Phát</string>
     <string name="cd_audio_pause">Tạm dừng</string>
     <string name="cd_audio_rewind">Lùi 10 giây</string>

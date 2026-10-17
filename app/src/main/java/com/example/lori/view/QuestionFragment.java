@@ -35,6 +35,16 @@ public class QuestionFragment extends Fragment {
     //Ba lựa chọn cố định của dạng Đúng/Sai/Không có thông tin; cũng là giá trị đáp án gửi cho Backend
     private static final List<String> TRUE_FALSE_NOT_GIVEN_OPTIONS = Arrays.asList("TRUE", "FALSE", "NOT GIVEN");
 
+    //Tên Part và hướng dẫn của Part TOEIC 1-7 (phần tử i ứng với Part i + 1)
+    private static final int[] PART_TITLES = {
+            R.string.exam_part_title_1, R.string.exam_part_title_2, R.string.exam_part_title_3,
+            R.string.exam_part_title_4, R.string.exam_part_title_5, R.string.exam_part_title_6,
+            R.string.exam_part_title_7};
+    private static final int[] PART_DIRECTIONS = {
+            R.string.exam_part_directions_1, R.string.exam_part_directions_2, R.string.exam_part_directions_3,
+            R.string.exam_part_directions_4, R.string.exam_part_directions_5, R.string.exam_part_directions_6,
+            R.string.exam_part_directions_7};
+
     private ExamTakingViewModel viewModel;
     private ExamQuestionItem item;
 
@@ -78,6 +88,7 @@ public class QuestionFragment extends Fragment {
         TextView tvQuestionText = view.findViewById(R.id.tvQuestionText);
 
         tvSection.setText(item.sectionTitle);
+        bindPartDirections(view);
         if (item.passageText != null) {
             tvPassage.setText(item.passageText);
             cardPassage.setVisibility(View.VISIBLE);
@@ -99,6 +110,19 @@ public class QuestionFragment extends Fragment {
         //Tô lại lựa chọn đang chọn mỗi khi đáp án thay đổi (kể cả khi chọn từ bảng khác)
         viewModel.getAnswers().observe(getViewLifecycleOwner(),
                 answers -> renderSelection(answers.get(item.questionId)));
+    }
+
+    //Câu đầu tiên của mỗi Part TOEIC: hiện tên Part và hướng dẫn làm bài (như phần Directions của đề thật)
+    //Các câu khác và đề IELTS (toeicPart = 0) không hiện khung này
+    private void bindPartDirections(@NonNull View view) {
+        if (!item.firstOfPart || item.toeicPart < 1 || item.toeicPart > PART_TITLES.length) {
+            return;
+        }
+        TextView tvPartTitle = view.findViewById(R.id.tvPartTitle);
+        TextView tvPartDirections = view.findViewById(R.id.tvPartDirections);
+        tvPartTitle.setText(PART_TITLES[item.toeicPart - 1]);
+        tvPartDirections.setText(PART_DIRECTIONS[item.toeicPart - 1]);
+        view.findViewById(R.id.cardPartDirections).setVisibility(View.VISIBLE);
     }
 
     //Dạng điền từ: hiện ô nhập, khôi phục chữ đã nhập trước đó và lưu vào ViewModel mỗi khi gõ

@@ -24,6 +24,46 @@
             android:textStyle="bold"
             tools:text="Part 3 - Conversation 1 (Q41-43)" />
 
+        <!-- Hướng dẫn của Part (đề TOEIC): chỉ hiện ở câu đầu tiên của mỗi Part -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardPartDirections"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="?attr/colorPrimaryContainer"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:id="@+id/tvPartTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnPrimaryContainer"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="Part 3 · Conversations" />
+
+                <TextView
+                    android:id="@+id/tvPartDirections"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:lineSpacingMultiplier="1.15"
+                    android:textColor="?attr/colorOnPrimaryContainer"
+                    android:textSize="13sp"
+                    tools:text="Bạn sẽ nghe các đoạn hội thoại giữa hai hoặc nhiều người..." />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Đoạn văn của section (Reading); ẩn khi section không có -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardPassage"
