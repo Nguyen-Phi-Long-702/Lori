@@ -10,7 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.lori.R;
 import com.example.lori.data.remote.dto.ExamResultResponse;
@@ -84,6 +87,7 @@ public class ExamResultFragment extends Fragment {
         view.findViewById(R.id.btnExamResultBack).setOnClickListener(v ->
                 Navigation.findNavController(v).popBackStack(R.id.examListFragment, false));
         view.findViewById(R.id.btnExamResultRetry).setOnClickListener(v -> viewModel.retry());
+        view.findViewById(R.id.btnExamResultReview).setOnClickListener(v -> openReview());
 
         viewModel.getLoading().observe(getViewLifecycleOwner(), loading ->
                 progress.setVisibility(Boolean.TRUE.equals(loading) ? View.VISIBLE : View.INVISIBLE));
@@ -99,6 +103,19 @@ public class ExamResultFragment extends Fragment {
 
         //Id cùng với lần trước (xoay màn hình, quay lại từ Xem lại) thì ViewModel không gọi mạng lại
         viewModel.load(requireArguments().getString(ARG_RESULT_ID));
+    }
+
+    //Sang màn Xem lại (dữ liệu đã có trong ViewModel, chỉ cần truyền lại id)
+    //Chỉ chuyển khi đang ở màn Kết quả: chạm nhanh hai lần sẽ không chuyển lần hai (action không còn hợp lệ từ màn khác sẽ làm app văng)
+    private void openReview() {
+        NavController navController = NavHostFragment.findNavController(this);
+        NavDestination current = navController.getCurrentDestination();
+        if (current == null || current.getId() != R.id.examResultFragment) {
+            return;
+        }
+        Bundle args = new Bundle();
+        args.putString(ARG_RESULT_ID, requireArguments().getString(ARG_RESULT_ID));
+        navController.navigate(R.id.action_examResultFragment_to_examReviewFragment, args);
     }
 
     //Gán dữ liệu lên giao diện; result = null (đang tải/lỗi) thì ẩn phần nội dung

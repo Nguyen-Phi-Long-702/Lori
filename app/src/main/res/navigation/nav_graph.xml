@@ -122,6 +122,23 @@
         <argument
             android:name="resultId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_examResultFragment_to_examReviewFragment"
+            app:destination="@id/examReviewFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/examReviewFragment"
+        android:name="com.example.lori.view.ExamReviewFragment"
+        android:label="@string/exam_review_title"
+        tools:layout="@layout/fragment_exam_review">
+        <argument
+            android:name="resultId"
+            app:argType="string" />
     </fragment>
 
     <fragment

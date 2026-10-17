@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         if (destinationId == R.id.settingsFragment) {
             return R.id.profileFragment;
         }
-        if (destinationId == R.id.examResultFragment) {
+        if (destinationId == R.id.examResultFragment || destinationId == R.id.examReviewFragment) {
             return R.id.examListFragment;
         }
         if (destinationId == R.id.translateFragment) {

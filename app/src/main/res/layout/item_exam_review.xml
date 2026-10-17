@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Một câu ở màn Xem lại: trạng thái, nội dung, các lựa chọn (ExamReviewAdapter thêm item_exam_review_option vào layoutReviewOptions), giải thích -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="20dp">
+
+    <!-- Nhãn Đúng / Sai / Bỏ trống: nền trắng của bg_exam_badge được tô màu bằng backgroundTint trong adapter -->
+    <TextView
+        android:id="@+id/tvReviewStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_exam_badge"
+        android:paddingStart="9dp"
+        android:paddingTop="3dp"
+        android:paddingEnd="9dp"
+        android:paddingBottom="3dp"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        tools:text="Sai" />
+
+    <TextView
+        android:id="@+id/tvReviewQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:lineSpacingMultiplier="1.15"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="Câu 24. What does the woman ask the man to do?" />
+
+    <LinearLayout
+        android:id="@+id/layoutReviewOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="vertical" />
+
+    <!-- Giải thích: ẩn khi câu không có -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardReviewExplanation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="?attr/colorSurfaceInverse"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="0dp"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/tvReviewExplanation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingMultiplier="1.15"
+            android:padding="14dp"
+            android:textColor="?attr/colorOnSurfaceInverse"
+            android:textSize="13sp"
+            tools:text="Giải thích: Trong đoạn hội thoại, người phụ nữ nói..." />
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

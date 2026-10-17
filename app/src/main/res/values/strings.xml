@@ -310,6 +310,20 @@
     <string name="exam_result_back_button">Về danh sách đề thi</string>
     <string name="exam_result_error_not_found">Không tìm thấy kết quả này</string>
     <string name="exam_result_error_premium">Gói Premium của bạn không còn hiệu lực. Hãy nâng cấp để xem kết quả</string>
+    <string name="exam_result_review_button">Xem lại từng câu</string>
+
+    <!-- Màn Xem lại bài làm -->
+    <string name="exam_review_title">Xem lại bài làm</string>
+    <string name="exam_review_question_format">Câu %1$d. %2$s</string>
+    <string name="exam_review_question_no_text_format">Câu %1$d</string>
+    <string name="exam_review_status_correct">Đúng</string>
+    <string name="exam_review_status_wrong">Sai</string>
+    <string name="exam_review_status_skipped">➖ Bỏ trống</string>
+    <string name="exam_review_tag_yours">bạn chọn</string>
+    <string name="exam_review_tag_yours_written">bạn viết</string>
+    <string name="exam_review_tag_correct">đáp án đúng</string>
+    <string name="exam_review_unanswered_row">Bạn chưa trả lời câu này</string>
+    <string name="exam_review_explanation_format">Giải thích: %1$s</string>
 
     <string name="settings_premium_row_status_active">Đang hoạt động</string>
 </resources>
