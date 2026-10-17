@@ -108,6 +108,7 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - Flyway tự chạy khi Backend khởi động (cả local lẫn Render), dùng chung kết nối `NEON_URL`.
 - `V1__init_schema.sql`: `users`, `refresh_tokens`, `user_progress`, `subscriptions`.
 - `V2__exam_tables.sql`: `exam_papers`, `exam_sections`, `exam_questions`, `exam_results`.
+- `V3__exam_section_image.sql`: thêm cột `exam_sections.image_url` (ảnh của section đề thi, cho phép NULL).
 - **Không sửa migration đã chạy** (Flyway kiểm tra checksum); muốn đổi schema thì tạo migration mới.
 
 
@@ -141,7 +142,8 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
   - `options` là mảng JSON theo thứ tự A, B, C… (không kèm tiền tố "A."; riêng TOEIC Part 1–2 không in nội dung lựa chọn nên là `["A","B","C","D"]` / `["A","B","C"]`); `correct_answer` của `MULTIPLE_CHOICE`/`MATCHING` là một chữ cái.
   - TOEIC: `order_index` câu hỏi là số câu TOEIC 1–200. Mỗi câu Part 1–2 là 1 section có audio riêng; mỗi hội thoại/bài nói Part 3–4 là 1 section; Part 5 là 1 section; mỗi đoạn Part 6–7 là 1 section có `passage_text`. Transcript và lời giải nằm ở `explanation`.
   - IELTS: Y/N/NG lưu dạng `MULTIPLE_CHOICE` (YES/NO/NOT GIVEN); hướng dẫn, bảng, đoạn tóm tắt và hộp từ của dạng điền từ nằm trong `question_text`.
-- **Giới hạn đã biết:** chưa có ảnh cho câu TOEIC Part 1 và một số câu đồ họa Part 3–4 (V2 chưa có cột ảnh); một số câu điền từ IELTS có đáp án thay thế hợp lệ nhưng hệ thống chỉ chấp nhận đáp án chính.
+- **Ảnh (TOEIC):** cột `exam_sections.image_url` (Flyway `V3__exam_section_image.sql`, NULL nếu section không có ảnh). TOEIC test 1 có 10 section có ảnh: 6 câu Part 1 (Photographs), 3 hội thoại đồ họa Part 3 (Conversation 11–13) và 1 bài nói đồ họa Part 4 (Talk 10). File ảnh để trong bucket `lori-audio`, thư mục `toeic-test-1/images/`; `image_url` được nạp bằng câu lệnh `UPDATE` sau khi nhập đề (script `toeic_to_sql.py` chưa sinh `image_url`). Backend trả `imageUrl` trong `GET /api/exams/{examId}`; app hiện ảnh bằng Glide. Màn Xem lại bài làm chưa hiện ảnh.
+- **Giới hạn đã biết:** một số câu điền từ IELTS có đáp án thay thế hợp lệ nhưng hệ thống chỉ chấp nhận đáp án chính.
 
 
 ## 12. Dịch thuật (LibreTranslate) và Thanh toán mock
