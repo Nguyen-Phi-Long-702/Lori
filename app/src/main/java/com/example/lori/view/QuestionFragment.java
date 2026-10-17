@@ -1,12 +1,14 @@
 package com.example.lori.view;
 
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
@@ -16,6 +18,11 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.lori.R;
 import com.example.lori.viewmodel.ExamQuestionItem;
 import com.example.lori.viewmodel.ExamTakingViewModel;
@@ -89,6 +96,7 @@ public class QuestionFragment extends Fragment {
 
         tvSection.setText(item.sectionTitle);
         bindPartDirections(view);
+        bindSectionImage(view);
         if (item.passageText != null) {
             tvPassage.setText(item.passageText);
             cardPassage.setVisibility(View.VISIBLE);
@@ -123,6 +131,39 @@ public class QuestionFragment extends Fragment {
         tvPartTitle.setText(PART_TITLES[item.toeicPart - 1]);
         tvPartDirections.setText(PART_DIRECTIONS[item.toeicPart - 1]);
         view.findViewById(R.id.cardPartDirections).setVisibility(View.VISIBLE);
+    }
+
+    //Ảnh của section (TOEIC Part 1, câu đồ họa Part 3-4): tải bằng Glide, lỗi thì hiện thông báo và chạm để tải lại
+    private void bindSectionImage(@NonNull View view) {
+        if (item.imageUrl == null) {
+            return;
+        }
+        view.findViewById(R.id.cardSectionImage).setVisibility(View.VISIBLE);
+        ImageView ivSectionImage = view.findViewById(R.id.ivSectionImage);
+        TextView tvSectionImageError = view.findViewById(R.id.tvSectionImageError);
+        tvSectionImageError.setOnClickListener(v -> loadSectionImage(ivSectionImage, tvSectionImageError));
+        loadSectionImage(ivSectionImage, tvSectionImageError);
+    }
+
+    private void loadSectionImage(ImageView imageView, TextView tvError) {
+        tvError.setVisibility(View.GONE);
+        Glide.with(this)
+                .load(item.imageUrl)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<Drawable> target, boolean isFirstResource) {
+                        tvError.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                })
+                .into(imageView);
     }
 
     //Dạng điền từ: hiện ô nhập, khôi phục chữ đã nhập trước đó và lưu vào ViewModel mỗi khi gõ

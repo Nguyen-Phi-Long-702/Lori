@@ -89,6 +89,48 @@
                 tools:text="Đoạn văn của section..." />
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Ảnh của section (TOEIC Part 1, câu đồ họa Part 3-4); ẩn khi section không có ảnh -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardSectionImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:strokeColor="?attr/colorOutlineVariant"
+            app:strokeWidth="1dp"
+            tools:visibility="visible">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/ivSectionImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@string/exam_image_description"
+                    android:minHeight="160dp"
+                    android:scaleType="fitCenter" />
+
+                <!-- Hiện khi tải ảnh lỗi; chạm để tải lại -->
+                <TextView
+                    android:id="@+id/tvSectionImageError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="@string/exam_image_error"
+                    android:textColor="?attr/colorError"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Nội dung câu hỏi; ẩn khi câu không có (vd TOEIC Part 1-2) -->
         <TextView
             android:id="@+id/tvQuestionText"

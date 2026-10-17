@@ -301,6 +301,9 @@
     <string name="exam_part_directions_5">Mỗi câu có một chỗ trống. Hãy chọn từ hoặc cụm từ đúng nhất trong 4 đáp án để hoàn thành câu.</string>
     <string name="exam_part_directions_6">Hãy đọc các đoạn văn bên dưới, mỗi đoạn có một số chỗ trống. Với mỗi chỗ trống, hãy chọn từ, cụm từ hoặc câu đúng nhất trong 4 đáp án.</string>
     <string name="exam_part_directions_7">Hãy đọc các đoạn văn (một, hai hoặc ba đoạn) rồi trả lời các câu hỏi. Chọn đáp án đúng nhất cho mỗi câu.</string>
+    <!-- Ảnh của câu hỏi (TOEIC Part 1 và các câu đồ họa Part 3-4) -->
+    <string name="exam_image_description">Hình ảnh của câu hỏi</string>
+    <string name="exam_image_error">Không tải được hình ảnh. Chạm vào đây để thử lại</string>
     <string name="cd_audio_play">Phát</string>
     <string name="cd_audio_pause">Tạm dừng</string>
     <string name="cd_audio_rewind">Lùi 10 giây</string>
