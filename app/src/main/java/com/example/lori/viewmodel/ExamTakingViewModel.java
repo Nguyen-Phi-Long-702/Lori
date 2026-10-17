@@ -13,6 +13,8 @@ import androidx.lifecycle.Observer;
 import com.example.lori.R;
 import com.example.lori.data.remote.dto.ExamDetailResponse;
 import com.example.lori.data.remote.dto.StartExamResponse;
+import com.example.lori.data.remote.dto.ExamResultResponse;
+import com.example.lori.data.remote.dto.SubmitExamRequest;
 import com.example.lori.repository.ApiResult;
 import com.example.lori.repository.ExamRepository;
 
@@ -23,7 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-//Quản lý màn làm bài thi: tải nội dung đề, giữ đáp án/câu đã đánh dấu/câu đang xem, đồng hồ đếm ngược
+//Quản lý màn làm bài thi: tải nội dung đề + xin phiên làm bài, giữ đáp án/câu đã đánh dấu/câu đang xem,
+//đồng hồ đếm ngược, nộp bài (tự nộp khi hết giờ)
 //ViewModel gắn với ExamTakingActivity nên xoay màn hình không làm mất đáp án và đồng hồ vẫn chạy tiếp
 //Giao diện chỉ quan sát các LiveData bên dưới; thông báo lỗi là mã chuỗi R.string (null = không lỗi)
 public class ExamTakingViewModel extends AndroidViewModel {
@@ -53,6 +56,11 @@ public class ExamTakingViewModel extends AndroidViewModel {
     private final MutableLiveData<Long> remainingSeconds = new MutableLiveData<>();
     private final MutableLiveData<Boolean> timerWarning = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> timeUp = new MutableLiveData<>(false);
+
+    //Nộp bài: đang gọi API / lỗi gần nhất (null = không lỗi) / id kết quả khi nộp thành công (null = chưa nộp)
+    private final MutableLiveData<Boolean> submitting = new MutableLiveData<>(false);
+    private final MutableLiveData<ExamSubmitError> submitError = new MutableLiveData<>();
+    private final MutableLiveData<String> submitResultId = new MutableLiveData<>();
 
     private String examId;
     //Mã phiên làm bài do Backend cấp ở /start; gửi lại khi nộp bài (dùng một lần, chống nộp lặp). null = chưa bắt đầu
@@ -197,6 +205,8 @@ public class ExamTakingViewModel extends AndroidViewModel {
                 remainingSeconds.setValue(0L);
                 timerWarning.setValue(true);
                 timeUp.setValue(true);
+                //Hết giờ: tự nộp bài như thu bài ở phòng thi thật
+                submit();
             }
         }.start();
     }
@@ -279,6 +289,63 @@ public class ExamTakingViewModel extends AndroidViewModel {
         return list == null ? 0 : list.size();
     }
 
+    //Số câu đã trả lời (map chỉ chứa câu có đáp án) và số câu đang đánh dấu, hiện trong hộp thoại xác nhận nộp bài
+    public int getAnsweredCount() {
+        Map<String, String> current = answers.getValue();
+        return current == null ? 0 : current.size();
+    }
+
+    public int getFlaggedCount() {
+        Set<String> current = flagged.getValue();
+        return current == null ? 0 : current.size();
+    }
+
+    //Nộp bài: gửi sessionToken + các câu đã trả lời, Backend chấm điểm và trả id kết quả
+    //Gọi từ nút Nộp bài, nút Nộp lại sau khi lỗi, và tự động khi hết giờ
+    //Bỏ qua nếu chưa có phiên làm bài, đang nộp, đã nộp xong, hoặc lần nộp trước gặp lỗi không cứu được
+    public void submit() {
+        ExamSubmitError lastError = submitError.getValue();
+        if (questions.getValue() == null || sessionToken == null || examId == null
+                || Boolean.TRUE.equals(submitting.getValue()) || submitResultId.getValue() != null
+                || (lastError != null && !lastError.canRetry)) {
+            return;
+        }
+        //Chỉ gửi các câu đã trả lời; câu bỏ trống Backend tự tính là sai
+        List<SubmitExamRequest.Answer> body = new ArrayList<>();
+        for (Map.Entry<String, String> entry : answers.getValue().entrySet()) {
+            body.add(new SubmitExamRequest.Answer(entry.getKey(), entry.getValue()));
+        }
+        submitError.setValue(null);
+        submitting.setValue(true);
+        LiveData<ApiResult<ExamResultResponse>> source =
+                examRepository.submit(examId, new SubmitExamRequest(sessionToken, body));
+        source.observeForever(new Observer<ApiResult<ExamResultResponse>>() {
+            @Override
+            public void onChanged(ApiResult<ExamResultResponse> result) {
+                source.removeObserver(this);
+                handleSubmit(result);
+            }
+        });
+    }
+
+    private void handleSubmit(ApiResult<ExamResultResponse> result) {
+        submitting.setValue(false);
+        if (result.isSuccess() && result.getData() != null && result.getData().id != null) {
+            //Đã nộp xong: dừng đồng hồ (để hết giờ không tự nộp thêm lần nữa) rồi báo Activity chuyển sang màn kết quả
+            if (timer != null) {
+                timer.cancel();
+            }
+            submitResultId.setValue(result.getData().id);
+            return;
+        }
+        submitError.setValue(submitErrorFor(result));
+    }
+
+    //Đóng thông báo lỗi nộp bài (người dùng chọn Đóng): xoay màn hình sẽ không hiện lại hộp thoại
+    public void clearSubmitError() {
+        submitError.setValue(null);
+    }
+
     //Ghi nhớ vị trí đang nghe của file audio khi màn hình dừng
     public void saveAudioPosition(String audioUrl, long positionMs) {
         savedAudioUrl = audioUrl;
@@ -294,6 +361,43 @@ public class ExamTakingViewModel extends AndroidViewModel {
     protected void onCleared() {
         if (timer != null) {
             timer.cancel();
+        }
+    }
+
+    //Lỗi khi nộp bài → câu thông báo + có cho nộp lại không. Chỉ lỗi tạm thời mới nộp lại được
+    //(mất mạng giữa chừng có thể khiến Backend đã nhận bài: nộp lại sẽ gặp 400 và câu thông báo 400 chỉ người dùng sang tab Lịch sử)
+    private static ExamSubmitError submitErrorFor(ApiResult<?> result) {
+        if (result.isPremiumRequired()) {
+            return new ExamSubmitError(R.string.exam_taking_error_premium, false);
+        }
+        switch (result.getStatus()) {
+            case OFFLINE:
+                return new ExamSubmitError(R.string.exam_submit_error_offline, true);
+            case TIMEOUT:
+                return new ExamSubmitError(R.string.exam_submit_error_timeout, true);
+            case NETWORK_ERROR:
+                return new ExamSubmitError(R.string.exam_submit_error_network, true);
+            default:
+                return submitErrorForHttp(result.getHttpCode());
+        }
+    }
+
+    private static ExamSubmitError submitErrorForHttp(int httpCode) {
+        switch (httpCode) {
+            //400: phiên làm bài không hợp lệ / đã dùng / hết hạn (Backend không phân biệt)
+            case 400:
+                return new ExamSubmitError(R.string.exam_submit_error_session, false);
+            case 401:
+                return new ExamSubmitError(R.string.premium_error_session_expired, false);
+            //403 còn lại là Backend từ chối ứng dụng (sai API key / chữ ký), không phải do Premium
+            case 403:
+                return new ExamSubmitError(R.string.auth_error_forbidden, false);
+            case 404:
+                return new ExamSubmitError(R.string.exam_taking_error_not_found, false);
+            case 429:
+                return new ExamSubmitError(R.string.auth_error_too_many_requests, true);
+            default:
+                return new ExamSubmitError(R.string.exam_submit_error_server, true);
         }
     }
 
@@ -342,4 +446,10 @@ public class ExamTakingViewModel extends AndroidViewModel {
     public LiveData<Boolean> getTimerWarning() { return timerWarning; }
     //true khi đã hết giờ làm bài
     public LiveData<Boolean> getTimeUp() { return timeUp; }
+    //true khi đang gọi API nộp bài
+    public LiveData<Boolean> getSubmitting() { return submitting; }
+    //Lỗi nộp bài gần nhất; null = không lỗi
+    public LiveData<ExamSubmitError> getSubmitError() { return submitError; }
+    //Id kết quả khi nộp thành công; null = chưa nộp
+    public LiveData<String> getSubmitResultId() { return submitResultId; }
 }

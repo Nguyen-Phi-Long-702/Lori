@@ -270,6 +270,11 @@
     <string name="exam_taking_error_empty">Đề thi này chưa có câu hỏi</string>
     <string name="exam_taking_error_not_found">Không tìm thấy đề thi này</string>
     <string name="exam_taking_error_premium">Gói Premium của bạn không còn hiệu lực. Hãy nâng cấp để tiếp tục làm bài</string>
+    <string name="exam_submit_error_offline">Không có kết nối Internet. Bài làm của bạn vẫn được giữ nguyên, hãy bật mạng rồi bấm Nộp lại</string>
+    <string name="exam_submit_error_timeout">Máy chủ phản hồi chậm nên chưa biết bài đã được nộp chưa. Hãy bấm Nộp lại; nếu báo phiên làm bài không còn hiệu lực thì bài đã được nộp, bạn xem kết quả trong tab Lịch sử</string>
+    <string name="exam_submit_error_network">Mất kết nối khi đang nộp bài nên chưa biết bài đã được nộp chưa. Hãy kiểm tra mạng rồi bấm Nộp lại; nếu báo phiên làm bài không còn hiệu lực thì bài đã được nộp, bạn xem kết quả trong tab Lịch sử</string>
+    <string name="exam_submit_error_server">Máy chủ đang gặp sự cố. Bài làm của bạn vẫn được giữ nguyên, hãy thử nộp lại sau ít giây</string>
+    <string name="exam_submit_error_session">Phiên làm bài không còn hiệu lực (đã hết hạn hoặc bài này đã được nộp). Hãy xem tab Lịch sử của màn Đề thi: nếu chưa thấy bài này thì bạn cần làm lại đề</string>
     <string name="exam_fill_blank_hint">Nhập đáp án của bạn</string>
     <string name="exam_audio_time_format">%1$s / %2$s</string>
     <string name="exam_audio_error">Không phát được audio. Hãy kiểm tra kết nối mạng rồi bấm phát lại</string>
