@@ -24,8 +24,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-//Quản lý màn làm bài thi: tải nội dung đề + xin phiên làm bài, giữ đáp án/câu đã đánh dấu/câu đang xem,
+//Quản lý màn làm bài thi tải nội dung đề + xin phiên làm bài, giữ đáp án/câu đã đánh dấu/câu đang xem,
 //đồng hồ đếm ngược, nộp bài (tự nộp khi hết giờ)
 //ViewModel gắn với ExamTakingActivity nên xoay màn hình không làm mất đáp án và đồng hồ vẫn chạy tiếp
 //Giao diện chỉ quan sát các LiveData bên dưới; thông báo lỗi là mã chuỗi R.string (null = không lỗi)
@@ -36,6 +38,10 @@ public class ExamTakingViewModel extends AndroidViewModel {
     public static final String TYPE_TRUE_FALSE_NOT_GIVEN = "TRUE_FALSE_NOT_GIVEN";
     public static final String TYPE_FILL_BLANK = "FILL_BLANK";
     public static final String TYPE_MATCHING = "MATCHING";
+
+    //Loại đề TOEIC (examType Backend trả về) và mẫu tên section "Part 3 - Conversation 1 (Q32-34)" để biết section thuộc Part nào
+    private static final String EXAM_TYPE_TOEIC = "TOEIC";
+    private static final Pattern TOEIC_PART_PATTERN = Pattern.compile("^Part\\s+([1-7])\\b");
 
     //Còn từ 5 phút trở xuống thì đồng hồ chuyển sang màu cảnh báo
     private static final long WARNING_THRESHOLD_SECONDS = 5 * 60L;
@@ -165,22 +171,39 @@ public class ExamTakingViewModel extends AndroidViewModel {
         if (detail.sections == null) {
             return items;
         }
+        boolean toeic = EXAM_TYPE_TOEIC.equals(detail.examType);
+        //Part của câu liền trước, để biết câu nào là câu đầu tiên của một Part
+        int previousPart = 0;
         for (ExamDetailResponse.Section section : detail.sections) {
             if (section.questions == null) {
                 continue;
             }
+            int part = toeic ? toeicPartOf(section.title) : 0;
             for (ExamDetailResponse.Question question : section.questions) {
                 items.add(new ExamQuestionItem(
                         question.id,
                         section.title,
                         emptyToNull(section.audioUrl),
+                        emptyToNull(section.imageUrl),
                         emptyToNull(section.passageText),
                         question.questionType,
                         emptyToNull(question.questionText),
-                        question.options));
+                        question.options,
+                        part,
+                        part != 0 && part != previousPart));
+                previousPart = part;
             }
         }
         return items;
+    }
+
+    //Số Part (1-7) đọc từ tên section của đề TOEIC, vd "Part 3 - Conversation 1 (Q32-34)" → 3; 0 nếu tên không theo dạng đó
+    private static int toeicPartOf(String sectionTitle) {
+        if (sectionTitle == null) {
+            return 0;
+        }
+        Matcher matcher = TOEIC_PART_PATTERN.matcher(sectionTitle);
+        return matcher.find() ? Integer.parseInt(matcher.group(1)) : 0;
     }
 
     private static String emptyToNull(String text) {

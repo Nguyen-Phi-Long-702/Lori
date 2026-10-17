@@ -17,6 +17,7 @@ public class ExamDetailResponse {
         public String title;
         public int orderIndex;
         public String audioUrl;
+        public String imageUrl;
         public String passageText;
         public List<Question> questions;
     }
