@@ -189,3 +189,49 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 | `GET /api/progress/pull` | 258.65ms | 530.25ms | Chưa đạt |
 | `POST /api/progress/sync` | 313.74ms | 479.06ms | Chưa đạt |
 | `GET /api/exams` | 293.78ms | 556.9ms | Chưa đạt |
+
+
+## 14. Kiểm thử module đề thi (Tuần 7 – Ngày 7)
+
+### Công cụ
+
+- `tools/exam-import/verify_exam_data.sql`: kiểm tra toàn vẹn dữ liệu đề (mọi `bad_rows` phải bằng 0).
+- `tools/exam-import/exam_test_expected.sql`: tính **kết quả kỳ vọng** cho các kịch bản test (chỉ đọc, không sửa dữ liệu). Cách chạy (PowerShell, ở thư mục gốc repo, sau khi đặt các biến môi trường `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`, `PGSSLMODE`; chỉ ghi tên biến, không ghi giá trị):
+  `docker run --rm -e PGHOST -e PGPORT -e PGDATABASE -e PGUSER -e PGPASSWORD -e PGSSLMODE -v "${PWD}\tools\exam-import:/work" postgres:16-alpine psql -f /work/exam_test_expected.sql`
+  (đổi tên file thành `verify_exam_data.sql` để chạy kiểm tra toàn vẹn).
+- Kiểm tra link audio/ảnh: `HEAD` từng `audio_url`/`image_url` lấy từ DB (tất cả phải trả 200).
+
+### Kết quả kỳ vọng (tính từ DB ngày 19/10/2026)
+
+| Kịch bản | Cách làm | Kết quả kỳ vọng |
+|---|---|---|
+| B – TOEIC nộp bài trắng | Vào câu 200, nộp khi chưa trả lời câu nào | Listening 5 + Reading 5 = 10/990; 0/200 đúng |
+| A – TOEIC chạy đủ 200 câu | Chọn A mọi câu, trừ câu 10, 50, 120, 180 để trống | Listening 130/495 (26 đúng), Reading 85/495 (16 đúng), tổng 215 (42 câu đúng) |
+| C – TOEIC hết giờ | Tạm đổi `duration_minutes` thành 6, chỉ chọn A ở câu 1–5, đợi hết giờ rồi **khôi phục 120** | Tổng 15 (1 câu đúng: Listening 10, Reading 5) |
+| IELTS – theo bảng hành động | Làm theo cột `hanh_dong` (mục 2 của `exam_test_expected.sql`) | Listening 21/40 → Band 5.5; Reading 18/40 → Band 5.0; tổng Band 5.5 |
+| Premium gate | 6 endpoint `/api/exams/*` với user Free → 403 `PREMIUM_REQUIRED`; sau `mock-purchase` hết bị chặn | Đạt |
+
+Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreUtil` (Listening/Reading, raw ≥ ngưỡng).
+
+### Kết quả kiểm thử ngày 19/10/2026
+
+| Hạng mục | Kết quả |
+|---|---|
+| Dữ liệu đề (toàn vẹn, 58 link audio, 10 link ảnh) | Đạt (sau khi sửa dữ liệu, xem bên dưới) |
+| Premium gate (Backend + app) | Chưa kiểm thử |
+| Danh sách đề + bộ lọc + Sắp ra mắt | Chưa kiểm thử |
+| TOEIC: timer, audio, điều hướng, nộp bài, điểm, hết giờ tự nộp | Chưa kiểm thử |
+| IELTS: Listening + Reading + điểm band | Chưa kiểm thử |
+| `GET /api/exams/{id}` (TOEIC 200 câu) | Chưa đo |
+
+### Lỗi dữ liệu đã sửa trong ngày
+
+- `exam_sections.image_url` còn trống vì script nhập đề không nạp cột này; đã nạp bằng `UPDATE` cho 10 section (6 Part 1, 3 hội thoại Part 3, 1 bài nói Part 4).
+- 9 trong 10 file ảnh trên Supabase có đuôi `.jpg` (nội dung thực là PNG), riêng `4294338.png` là `.png`; đã sửa `image_url` cho khớp. Sửa dữ liệu trong DB nên không có commit code.
+
+### Giới hạn đã biết (không sửa)
+
+- Câu điền từ IELTS chỉ chấp nhận đáp án chính (chưa hỗ trợ đáp án thay thế).
+- Màn Xem lại chưa hiện ảnh và đoạn văn của đề.
+- Điểm TOEIC quy đổi bằng công thức tuyến tính gần đúng (ETS không công bố bảng quy đổi chính thức).
+- Section Listening Part 4 có `passage_text` chứa dòng hướng dẫn *"refer to the following …"* (Talk 9–10 còn có biên nhận/danh sách cần cho câu hỏi); đây là dữ liệu đúng thiết kế, không phải transcript.
