@@ -313,6 +313,16 @@
     <string name="exam_passage_title">Đoạn văn</string>
     <string name="cd_passage_toggle">Thu gọn hoặc mở rộng đoạn văn</string>
 
+    <!-- Đề IELTS: số câu theo đề, khung giới thiệu section ở câu đầu tiên của mỗi section -->
+    <string name="exam_ielts_question_number_format">Question %1$d · %2$s</string>
+    <string name="exam_ielts_listening_title_format">Listening · Section %1$d · Questions %2$d–%3$d</string>
+    <string name="exam_ielts_reading_title_format">Reading · Passage %1$d · Questions %2$d–%3$d</string>
+    <string name="exam_ielts_listening_directions_1">Bạn sẽ nghe một cuộc hội thoại giữa hai người trong tình huống đời sống hằng ngày (vd gọi điện hỏi thông tin hoặc đặt dịch vụ). Hãy làm theo hướng dẫn của từng dạng câu hỏi.</string>
+    <string name="exam_ielts_listening_directions_2">Bạn sẽ nghe một bài nói của một người trong bối cảnh đời sống hằng ngày (vd buổi thông báo hoặc giới thiệu một địa điểm). Hãy làm theo hướng dẫn của từng dạng câu hỏi.</string>
+    <string name="exam_ielts_listening_directions_3">Bạn sẽ nghe cuộc trao đổi giữa tối đa bốn người trong bối cảnh học tập hoặc đào tạo (vd sinh viên thảo luận bài tập với giảng viên). Hãy làm theo hướng dẫn của từng dạng câu hỏi.</string>
+    <string name="exam_ielts_listening_directions_4">Bạn sẽ nghe một bài giảng của một người về một chủ đề học thuật. Hãy làm theo hướng dẫn của từng dạng câu hỏi.</string>
+    <string name="exam_ielts_reading_directions">Hãy đọc đoạn văn ở khung phía trên rồi trả lời các câu hỏi bên dưới. Bạn có thể thu gọn khung đoạn văn khi cần thêm chỗ làm bài. Hãy làm theo hướng dẫn của từng dạng câu hỏi.</string>
+
     <!-- Màn Kết quả bài thi -->
     <string name="exam_result_title">Kết quả bài thi</string>
     <string name="exam_result_headline_format">%1$s · Đã hoàn thành</string>

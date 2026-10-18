@@ -52,6 +52,11 @@ public class QuestionFragment extends Fragment {
             R.string.exam_part_directions_4, R.string.exam_part_directions_5, R.string.exam_part_directions_6,
             R.string.exam_part_directions_7};
 
+    //Mô tả của Section 1-4 phần Listening IELTS (phần tử i ứng với Section i + 1)
+    private static final int[] IELTS_LISTENING_DIRECTIONS = {
+            R.string.exam_ielts_listening_directions_1, R.string.exam_ielts_listening_directions_2,
+            R.string.exam_ielts_listening_directions_3, R.string.exam_ielts_listening_directions_4};
+
     private ExamTakingViewModel viewModel;
     private ExamQuestionItem item;
 
@@ -94,7 +99,14 @@ public class QuestionFragment extends Fragment {
 
         tvSection.setText(item.sectionTitle);
         bindPartDirections(view);
+        bindIeltsInfo(view);
         bindSectionImage(view);
+        if (item.instruction != null) {
+            TextView tvQuestionInstruction = view.findViewById(R.id.tvQuestionInstruction);
+            tvQuestionInstruction.setText(item.instruction);
+            tvQuestionInstruction.setVisibility(View.VISIBLE);
+        }
+
         if (item.questionText != null) {
             tvQuestionText.setText(item.questionText);
             tvQuestionText.setVisibility(View.VISIBLE);
@@ -124,6 +136,47 @@ public class QuestionFragment extends Fragment {
         TextView tvPartDirections = view.findViewById(R.id.tvPartDirections);
         tvPartTitle.setText(PART_TITLES[item.toeicPart - 1]);
         tvPartDirections.setText(PART_DIRECTIONS[item.toeicPart - 1]);
+        view.findViewById(R.id.cardPartDirections).setVisibility(View.VISIBLE);
+    }
+
+    //Đề IELTS: mọi câu hiện số câu theo đề ("Question 37 · Reading"); câu đầu tiên của mỗi section còn hiện khung giới thiệu section
+    //Khung giới thiệu dùng chung khung hướng dẫn Part của TOEIC (cardPartDirections); một câu chỉ thuộc một loại đề nên hai cách hiện không bao giờ trùng nhau
+    private void bindIeltsInfo(@NonNull View view) {
+        ExamQuestionItem.IeltsInfo ielts = item.ielts;
+        if (ielts == null) {
+            return;
+        }
+        boolean listening = ExamTakingViewModel.SKILL_LISTENING.equals(ielts.skill);
+
+        TextView tvIeltsQuestionNumber = view.findViewById(R.id.tvIeltsQuestionNumber);
+        tvIeltsQuestionNumber.setText(getString(R.string.exam_ielts_question_number_format,
+                ielts.questionNumber,
+                getString(listening ? R.string.exam_skill_listening : R.string.exam_skill_reading)));
+        tvIeltsQuestionNumber.setVisibility(View.VISIBLE);
+
+        if (!ielts.firstOfSection) {
+            return;
+        }
+        TextView tvPartTitle = view.findViewById(R.id.tvPartTitle);
+        TextView tvPartDirections = view.findViewById(R.id.tvPartDirections);
+        int directions;
+        if (listening) {
+            tvPartTitle.setText(getString(R.string.exam_ielts_listening_title_format,
+                    ielts.sectionNumber, ielts.firstQuestionNumber, ielts.lastQuestionNumber));
+            //Chỉ có mô tả cho Section 1-4; đề có nhiều hơn 4 section thì chỉ hiện tên section
+            directions = ielts.sectionNumber >= 1 && ielts.sectionNumber <= IELTS_LISTENING_DIRECTIONS.length
+                    ? IELTS_LISTENING_DIRECTIONS[ielts.sectionNumber - 1] : 0;
+        } else {
+            tvPartTitle.setText(getString(R.string.exam_ielts_reading_title_format,
+                    ielts.sectionNumber, ielts.firstQuestionNumber, ielts.lastQuestionNumber));
+            directions = R.string.exam_ielts_reading_directions;
+        }
+        if (directions != 0) {
+            tvPartDirections.setText(directions);
+            tvPartDirections.setVisibility(View.VISIBLE);
+        } else {
+            tvPartDirections.setVisibility(View.GONE);
+        }
         view.findViewById(R.id.cardPartDirections).setVisibility(View.VISIBLE);
     }
 

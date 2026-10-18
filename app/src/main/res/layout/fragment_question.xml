@@ -24,6 +24,20 @@
             android:textStyle="bold"
             tools:text="Part 3 - Conversation 1 (Q41-43)" />
 
+
+        <!-- Số câu theo đánh số của đề IELTS, vd "Question 37 · Reading"; chỉ hiện ở đề IELTS -->
+        <TextView
+            android:id="@+id/tvIeltsQuestionNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:text="Question 37 · Reading"
+            tools:visibility="visible" />
+
         <!-- Hướng dẫn của Part (đề TOEIC): chỉ hiện ở câu đầu tiên của mỗi Part -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardPartDirections"
@@ -105,6 +119,19 @@
                     android:visibility="gone" />
             </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <!-- Hướng dẫn dạng bài (câu điền từ / matching của đề IELTS), tách khỏi nội dung câu; ẩn khi không có -->
+        <TextView
+            android:id="@+id/tvQuestionInstruction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:lineSpacingMultiplier="1.15"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="13sp"
+            android:visibility="gone"
+            tools:text="Complete the booking form below. Write NO MORE THAN TWO WORDS AND/OR A NUMBER for each answer."
+            tools:visibility="visible" />
 
         <!-- Nội dung câu hỏi; ẩn khi câu không có (vd TOEIC Part 1-2) -->
         <TextView

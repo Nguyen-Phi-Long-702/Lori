@@ -46,6 +46,9 @@ public class ExamTakingViewModel extends AndroidViewModel {
     private static final String EXAM_TYPE_TOEIC = "TOEIC";
     private static final Pattern TOEIC_PART_PATTERN = Pattern.compile("^Part\\s+([1-7])\\b");
 
+    //Câu điền từ / matching của đề IELTS lưu "hướng dẫn + dòng trống + nội dung" trong questionText (tools/exam-import/ielts_to_sql.py)
+    private static final String INSTRUCTION_SEPARATOR = "\n\n";
+
     //Còn từ 5 phút trở xuống thì đồng hồ chuyển sang màu cảnh báo
     private static final long WARNING_THRESHOLD_SECONDS = 5 * 60L;
 
@@ -196,6 +199,16 @@ public class ExamTakingViewModel extends AndroidViewModel {
             int lastNumber = section.questions.get(section.questions.size() - 1).orderIndex;
             boolean firstOfSection = true;
             for (ExamDetailResponse.Question question : section.questions) {
+                String instruction = null;
+                String questionText = emptyToNull(question.questionText);
+                //Đề IELTS: tách hướng dẫn dạng bài ra khỏi nội dung câu để hiện riêng
+                if (!toeic && questionText != null && hasInstruction(question.questionType)) {
+                    int separator = questionText.indexOf(INSTRUCTION_SEPARATOR);
+                    if (separator > 0) {
+                        instruction = emptyToNull(questionText.substring(0, separator).trim());
+                        questionText = emptyToNull(questionText.substring(separator + INSTRUCTION_SEPARATOR.length()).trim());
+                    }
+                }
                 ExamQuestionItem.IeltsInfo ielts = toeic ? null : new ExamQuestionItem.IeltsInfo(
                         section.skill, sectionNumber, question.orderIndex, firstOfSection, firstNumber, lastNumber);
                 items.add(new ExamQuestionItem(
@@ -206,8 +219,8 @@ public class ExamTakingViewModel extends AndroidViewModel {
                         emptyToNull(section.imageUrl),
                         emptyToNull(section.passageText),
                         question.questionType,
-                        null,
-                        emptyToNull(question.questionText),
+                        instruction,
+                        questionText,
                         question.options,
                         part,
                         part != 0 && part != previousPart,
@@ -217,6 +230,11 @@ public class ExamTakingViewModel extends AndroidViewModel {
             }
         }
         return items;
+    }
+
+    //Dạng câu mà đề IELTS ghép hướng dẫn vào đầu questionText
+    private static boolean hasInstruction(String questionType) {
+        return TYPE_FILL_BLANK.equals(questionType) || TYPE_MATCHING.equals(questionType);
     }
 
     //Số Part (1-7) đọc từ tên section của đề TOEIC, vd "Part 3 - Conversation 1 (Q32-34)" → 3; 0 nếu tên không theo dạng đó
