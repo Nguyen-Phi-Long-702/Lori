@@ -39,6 +39,9 @@ public class ExamTakingViewModel extends AndroidViewModel {
     public static final String TYPE_FILL_BLANK = "FILL_BLANK";
     public static final String TYPE_MATCHING = "MATCHING";
 
+    //Giá trị skill của section mà Backend trả về (CHECK trong V2__exam_tables.sql): LISTENING hoặc READING
+    public static final String SKILL_LISTENING = "LISTENING";
+
     //Loại đề TOEIC (examType Backend trả về) và mẫu tên section "Part 3 - Conversation 1 (Q32-34)" để biết section thuộc Part nào
     private static final String EXAM_TYPE_TOEIC = "TOEIC";
     private static final Pattern TOEIC_PART_PATTERN = Pattern.compile("^Part\\s+([1-7])\\b");
@@ -165,7 +168,7 @@ public class ExamTakingViewModel extends AndroidViewModel {
     }
 
     //Gộp các section thành một danh sách câu hỏi phẳng. Backend đã xếp section và câu hỏi đúng thứ tự làm bài
-    //Số thứ tự câu hiển thị là vị trí trong danh sách này (IELTS đánh số lại từ 1 ở mỗi kỹ năng nên không dùng orderIndex)
+    //Số thứ tự câu hiển thị là vị trí trong danh sách này; số câu theo đề IELTS (đánh số lại từ 1 ở mỗi kỹ năng) nằm riêng trong ExamQuestionItem.ielts
     private static List<ExamQuestionItem> flatten(ExamDetailResponse detail) {
         List<ExamQuestionItem> items = new ArrayList<>();
         if (detail.sections == null) {
@@ -174,24 +177,41 @@ public class ExamTakingViewModel extends AndroidViewModel {
         boolean toeic = EXAM_TYPE_TOEIC.equals(detail.examType);
         //Part của câu liền trước, để biết câu nào là câu đầu tiên của một Part
         int previousPart = 0;
+        //Số section đã gặp của từng kỹ năng, để biết một section là Section/Passage thứ mấy (đề IELTS)
+        int listeningSections = 0;
+        int readingSections = 0;
         for (ExamDetailResponse.Section section : detail.sections) {
-            if (section.questions == null) {
+            if (section.questions == null || section.questions.isEmpty()) {
                 continue;
             }
             int part = toeic ? toeicPartOf(section.title) : 0;
+            int sectionNumber = 0;
+            if (!toeic) {
+                sectionNumber = SKILL_LISTENING.equals(section.skill) ? ++listeningSections : ++readingSections;
+            }
+            //Dải số câu của section theo đề (Backend đã xếp câu theo orderIndex tăng dần)
+            int firstNumber = section.questions.get(0).orderIndex;
+            int lastNumber = section.questions.get(section.questions.size() - 1).orderIndex;
+            boolean firstOfSection = true;
             for (ExamDetailResponse.Question question : section.questions) {
+                ExamQuestionItem.IeltsInfo ielts = toeic ? null : new ExamQuestionItem.IeltsInfo(
+                        section.skill, sectionNumber, question.orderIndex, firstOfSection, firstNumber, lastNumber);
                 items.add(new ExamQuestionItem(
                         question.id,
+                        section.id,
                         section.title,
                         emptyToNull(section.audioUrl),
                         emptyToNull(section.imageUrl),
                         emptyToNull(section.passageText),
                         question.questionType,
+                        null,
                         emptyToNull(question.questionText),
                         question.options,
                         part,
-                        part != 0 && part != previousPart));
+                        part != 0 && part != previousPart,
+                        ielts));
                 previousPart = part;
+                firstOfSection = false;
             }
         }
         return items;
