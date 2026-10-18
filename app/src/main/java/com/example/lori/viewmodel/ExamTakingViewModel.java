@@ -65,6 +65,8 @@ public class ExamTakingViewModel extends AndroidViewModel {
     private final MutableLiveData<Long> remainingSeconds = new MutableLiveData<>();
     private final MutableLiveData<Boolean> timerWarning = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> timeUp = new MutableLiveData<>(false);
+    //Khung đoạn văn (Reading) đang mở rộng (true) hay thu gọn (false). Mở sẵn; tự mở lại khi sang section khác
+    private final MutableLiveData<Boolean> passageExpanded = new MutableLiveData<>(true);
 
     //Nộp bài: đang gọi API / lỗi gần nhất (null = không lỗi) / id kết quả khi nộp thành công (null = chưa nộp)
     private final MutableLiveData<Boolean> submitting = new MutableLiveData<>(false);
@@ -264,6 +266,11 @@ public class ExamTakingViewModel extends AndroidViewModel {
         if (current != null && current == position) {
             return;
         }
+        //Sang section khác: mở lại khung đoạn văn để đọc đoạn mới (người dùng có thể đã thu gọn khung ở section trước)
+        ExamQuestionItem from = current == null ? null : getQuestion(current);
+        if (from != null && from.sectionId != null && !from.sectionId.equals(list.get(position).sectionId)) {
+            passageExpanded.setValue(true);
+        }
         currentPosition.setValue(position);
     }
 
@@ -389,6 +396,11 @@ public class ExamTakingViewModel extends AndroidViewModel {
         submitError.setValue(null);
     }
 
+    //Thu gọn / mở rộng khung đoạn văn (bấm thanh tiêu đề của khung)
+    public void togglePassage() {
+        passageExpanded.setValue(!Boolean.TRUE.equals(passageExpanded.getValue()));
+    }
+
     //Ghi nhớ vị trí đang nghe của file audio khi màn hình dừng
     public void saveAudioPosition(String audioUrl, long positionMs) {
         savedAudioUrl = audioUrl;
@@ -489,6 +501,8 @@ public class ExamTakingViewModel extends AndroidViewModel {
     public LiveData<Boolean> getTimerWarning() { return timerWarning; }
     //true khi đã hết giờ làm bài
     public LiveData<Boolean> getTimeUp() { return timeUp; }
+    //true khi khung đoạn văn đang mở rộng
+    public LiveData<Boolean> getPassageExpanded() { return passageExpanded; }
     //true khi đang gọi API nộp bài
     public LiveData<Boolean> getSubmitting() { return submitting; }
     //Lỗi nộp bài gần nhất; null = không lỗi

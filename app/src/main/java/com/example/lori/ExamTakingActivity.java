@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +47,8 @@ public class ExamTakingActivity extends AppCompatActivity {
 
     private static final String EXTRA_EXAM_ID = "exam_id";
     private static final String EXTRA_RESULT_ID = "result_id";
+    //Khi khung đoạn văn mở rộng: khung chiếm 2 phần, trang câu hỏi chiếm 3 phần của chỗ còn lại (khớp layout_weight trong activity_exam_taking.xml)
+    private static final float PASSAGE_WEIGHT = 2f;
 
     private ExamTakingViewModel viewModel;
     private ExamAudioPlayer audioPlayer;
@@ -74,6 +78,14 @@ public class ExamTakingActivity extends AppCompatActivity {
     private TextView tvAudioError;
     private LinearProgressIndicator progressAudio;
     private ImageButton btnAudioPlay;
+
+    //Khung đoạn văn (Reading) nằm ngoài ViewPager2 nên vuốt qua lại giữa các câu vẫn giữ chỗ đang đọc
+    private View layoutPassage;
+    private View scrollPassage;
+    private View ivPassageToggle;
+    private TextView tvExamPassage;
+    //Đoạn văn đang hiện trong khung, để chỉ nạp lại chữ khi sang đoạn khác
+    private String shownPassage;
 
     //Mở màn làm bài cho một đề. Chỉ cần id đề, nội dung đề được tải từ Backend
     public static Intent newIntent(Context context, String examId) {
@@ -141,6 +153,10 @@ public class ExamTakingActivity extends AppCompatActivity {
         tvAudioError = findViewById(R.id.tvAudioError);
         progressAudio = findViewById(R.id.progressAudio);
         btnAudioPlay = findViewById(R.id.btnAudioPlay);
+        layoutPassage = findViewById(R.id.layoutExamPassage);
+        scrollPassage = findViewById(R.id.scrollPassage);
+        ivPassageToggle = findViewById(R.id.ivPassageToggle);
+        tvExamPassage = findViewById(R.id.tvExamPassage);
     }
 
     //Trình phát audio chỉ báo trạng thái về đây để cập nhật nút Phát/Tạm dừng, thanh tiến trình, thông báo lỗi
@@ -207,6 +223,7 @@ public class ExamTakingActivity extends AppCompatActivity {
         findViewById(R.id.btnAudioRewind).setOnClickListener(v -> audioPlayer.rewind());
         findViewById(R.id.btnAudioForward).setOnClickListener(v -> audioPlayer.forward());
         btnAudioPlay.setOnClickListener(v -> audioPlayer.togglePlayPause());
+        findViewById(R.id.btnPassageToggle).setOnClickListener(v -> viewModel.togglePassage());
     }
 
     //Bấm Back (nút trên header hoặc nút hệ thống) khi đang làm bài thì hỏi lại để không mất đáp án do bấm nhầm
@@ -264,6 +281,7 @@ public class ExamTakingActivity extends AppCompatActivity {
         });
 
         viewModel.getCurrentPosition().observe(this, position -> renderPosition());
+        viewModel.getPassageExpanded().observe(this, expanded -> renderPassage());
         viewModel.getAnswers().observe(this, answers -> renderNavigation());
         viewModel.getFlagged().observe(this, flagged -> {
             renderNavigation();
@@ -389,6 +407,7 @@ public class ExamTakingActivity extends AppCompatActivity {
         renderFlagButton();
         scrollStripTo(position);
         bindAudio(questions.get(position));
+        bindPassage(questions.get(position));
     }
 
     private void renderNavigation() {
@@ -411,6 +430,34 @@ public class ExamTakingActivity extends AppCompatActivity {
     private void scrollStripTo(int position) {
         rvStrip.post(() -> stripLayoutManager.scrollToPositionWithOffset(
                 position, Math.max(0, rvStrip.getWidth() / 2 - dp(22))));
+    }
+
+    //Section của câu đang xem có đoạn văn thì hiện khung đoạn văn, không có thì ẩn khung
+    //Chỉ nạp lại chữ (và cuộn về đầu) khi sang đoạn khác nên đổi giữa các câu cùng section không làm mất chỗ đang đọc
+    private void bindPassage(ExamQuestionItem item) {
+        if (item.passageText == null) {
+            layoutPassage.setVisibility(View.GONE);
+            shownPassage = null;
+            return;
+        }
+        layoutPassage.setVisibility(View.VISIBLE);
+        if (!item.passageText.equals(shownPassage)) {
+            shownPassage = item.passageText;
+            tvExamPassage.setText(shownPassage);
+            scrollPassage.scrollTo(0, 0);
+        }
+    }
+
+    //Mở rộng: khung cao theo tỉ lệ weight và hiện chữ; thu gọn: khung chỉ cao bằng thanh tiêu đề
+    private void renderPassage() {
+        boolean expanded = Boolean.TRUE.equals(viewModel.getPassageExpanded().getValue());
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) layoutPassage.getLayoutParams();
+        params.height = expanded ? 0 : ViewGroup.LayoutParams.WRAP_CONTENT;
+        params.weight = expanded ? PASSAGE_WEIGHT : 0f;
+        layoutPassage.setLayoutParams(params);
+        scrollPassage.setVisibility(expanded ? View.VISIBLE : View.GONE);
+        //Mũi tên hướng xuống = bấm để mở rộng; xoay lên khi đang mở rộng
+        ivPassageToggle.setRotation(expanded ? 180f : 0f);
     }
 
     //Section của câu đang xem có audio thì hiện trình phát; sang section khác (file khác) thì nạp file mới

@@ -90,17 +90,11 @@ public class QuestionFragment extends Fragment {
 
         layoutOptions = view.findViewById(R.id.layoutOptions);
         TextView tvSection = view.findViewById(R.id.tvQuestionSection);
-        View cardPassage = view.findViewById(R.id.cardPassage);
-        TextView tvPassage = view.findViewById(R.id.tvPassage);
         TextView tvQuestionText = view.findViewById(R.id.tvQuestionText);
 
         tvSection.setText(item.sectionTitle);
         bindPartDirections(view);
         bindSectionImage(view);
-        if (item.passageText != null) {
-            tvPassage.setText(item.passageText);
-            cardPassage.setVisibility(View.VISIBLE);
-        }
         if (item.questionText != null) {
             tvQuestionText.setText(item.questionText);
             tvQuestionText.setVisibility(View.VISIBLE);

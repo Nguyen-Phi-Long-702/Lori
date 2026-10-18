@@ -64,31 +64,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Đoạn văn của section (Reading); ẩn khi section không có -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardPassage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:visibility="gone"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:cardCornerRadius="14dp"
-            app:cardElevation="0dp"
-            app:strokeColor="?attr/colorOutlineVariant"
-            app:strokeWidth="1dp"
-            tools:visibility="visible">
-
-            <TextView
-                android:id="@+id/tvPassage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:lineSpacingMultiplier="1.2"
-                android:padding="16dp"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="15sp"
-                tools:text="Đoạn văn của section..." />
-        </com.google.android.material.card.MaterialCardView>
-
         <!-- Ảnh của section (TOEIC Part 1, câu đồ họa Part 3-4); ẩn khi section không có ảnh -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardSectionImage"

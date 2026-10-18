@@ -309,6 +309,10 @@
     <string name="cd_audio_rewind">Lùi 10 giây</string>
     <string name="cd_audio_forward">Tiến 10 giây</string>
 
+    <!-- Khung đoạn văn (Reading) ở màn làm bài -->
+    <string name="exam_passage_title">Đoạn văn</string>
+    <string name="cd_passage_toggle">Thu gọn hoặc mở rộng đoạn văn</string>
+
     <!-- Màn Kết quả bài thi -->
     <string name="exam_result_title">Kết quả bài thi</string>
     <string name="exam_result_headline_format">%1$s · Đã hoàn thành</string>
