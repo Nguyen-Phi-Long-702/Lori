@@ -46,6 +46,8 @@ public class ExamListViewModel extends AndroidViewModel {
     private final MediatorLiveData<List<ExamSummaryResponse>> visibleExams = new MediatorLiveData<>();
     //Lỗi của tab đang chọn; null = không lỗi
     private final MediatorLiveData<Integer> errorMessage = new MediatorLiveData<>();
+    //true khi cần hiện hai thẻ "Sắp ra mắt" (IELTS Writing, IELTS Speaking): chỉ ở tab IELTS
+    private final MediatorLiveData<Boolean> showComingSoon = new MediatorLiveData<>();
 
     //Số request đang chạy; loading = true khi còn request chưa xong
     private int pendingRequests = 0;
@@ -58,6 +60,7 @@ public class ExamListViewModel extends AndroidViewModel {
         errorMessage.addSource(examsError, value -> updateErrorMessage());
         errorMessage.addSource(resultsError, value -> updateErrorMessage());
         errorMessage.addSource(selectedTab, value -> updateErrorMessage());
+        showComingSoon.addSource(selectedTab, tab -> showComingSoon.setValue(TAB_IELTS.equals(tab)));
     }
 
     //Chọn chip. Dữ liệu đã tải sẵn nên chỉ đổi cách hiển thị, không gọi lại mạng
@@ -201,4 +204,6 @@ public class ExamListViewModel extends AndroidViewModel {
     public LiveData<List<ExamResultResponse>> getResults() { return results; }
     //Lỗi của tab đang chọn; null = không lỗi
     public LiveData<Integer> getErrorMessage() { return errorMessage; }
+    //true khi cần hiện hai thẻ "Sắp ra mắt" (tab IELTS)
+    public LiveData<Boolean> getShowComingSoon() { return showComingSoon; }
 }

@@ -323,6 +323,13 @@
     <string name="exam_ielts_listening_directions_4">Bạn sẽ nghe một bài giảng của một người về một chủ đề học thuật. Hãy làm theo hướng dẫn của từng dạng câu hỏi.</string>
     <string name="exam_ielts_reading_directions">Hãy đọc đoạn văn ở khung phía trên rồi trả lời các câu hỏi bên dưới. Bạn có thể thu gọn khung đoạn văn khi cần thêm chỗ làm bài. Hãy làm theo hướng dẫn của từng dạng câu hỏi.</string>
 
+    <!-- Tab IELTS: kỹ năng chưa có -->
+    <string name="exam_coming_soon_badge">Sắp ra mắt</string>
+    <string name="exam_coming_soon_writing_title">IELTS Writing</string>
+    <string name="exam_coming_soon_writing_desc">Bài thi viết (Task 1 và Task 2)</string>
+    <string name="exam_coming_soon_speaking_title">IELTS Speaking</string>
+    <string name="exam_coming_soon_speaking_desc">Bài thi nói (Part 1, 2 và 3)</string>
+
     <!-- Màn Kết quả bài thi -->
     <string name="exam_result_title">Kết quả bài thi</string>
     <string name="exam_result_headline_format">%1$s · Đã hoàn thành</string>

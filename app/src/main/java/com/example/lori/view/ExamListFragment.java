@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -81,8 +82,10 @@ public class ExamListFragment extends Fragment {
                 examTakingLauncher.launch(ExamTakingActivity.newIntent(requireContext(), exam.id)));
         //Bấm một dòng Lịch sử: mở màn Kết quả của lần thi đó
         ExamResultAdapter resultAdapter = new ExamResultAdapter(item -> openResult(item.id));
+        //Hai thẻ "Sắp ra mắt" nối vào cuối danh sách đề; ViewModel quyết định khi nào hiện (tab IELTS)
+        ExamComingSoonAdapter comingSoonAdapter = new ExamComingSoonAdapter();
         rvExams.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvExams.setAdapter(examAdapter);
+        rvExams.setAdapter(new ConcatAdapter(examAdapter, comingSoonAdapter));
         rvResults.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvResults.setAdapter(resultAdapter);
 
@@ -109,6 +112,7 @@ public class ExamListFragment extends Fragment {
             render();
         });
         viewModel.getLocked().observe(getViewLifecycleOwner(), locked -> render());
+        viewModel.getShowComingSoon().observe(getViewLifecycleOwner(), comingSoonAdapter::setVisible);
         viewModel.getVisibleExams().observe(getViewLifecycleOwner(), exams -> {
             examAdapter.setExams(exams);
             render();
