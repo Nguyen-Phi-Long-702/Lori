@@ -25,4 +25,16 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query("update User u set u.premium = false "
             + "where u.premium = true and u.premiumExpiresAt is not null and u.premiumExpiresAt <= :now")
     int downgradeExpiredPremium(@Param("now") Instant now);
+
+    /**
+     * Cong them EXP bang 1 cau lenh nguyen tu tren DB (khong doc roi ghi lai), nen hai request cung luc
+     * (vd dong bo tien trinh va nop bai thi) khong ghi de len nhau. Tra ve so dong da cap nhat.
+     */
+    @Modifying
+    @Query(value = "UPDATE users SET total_exp = total_exp + :amount WHERE id = :userId", nativeQuery = true)
+    int addExp(@Param("userId") UUID userId, @Param("amount") int amount);
+
+    /** Tong EXP hien tai cua user; null neu khong co user nay. */
+    @Query(value = "SELECT total_exp FROM users WHERE id = :userId", nativeQuery = true)
+    Integer findTotalExp(@Param("userId") UUID userId);
 }
