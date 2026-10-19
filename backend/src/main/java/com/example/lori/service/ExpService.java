@@ -6,6 +6,8 @@ import com.example.lori.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -43,6 +45,7 @@ public class ExpService {
     private final UserRepository userRepository;
     private final StreakService streakService;
     private final ExamResultRepository examResultRepository;
+    private final LeaderboardService leaderboardService;
 
     // ===== Doc EXP / level =====
 
@@ -69,10 +72,20 @@ public class ExpService {
 
     // ===== Cong EXP =====
 
-    /** Cong EXP cho user (amount <= 0 thi bo qua). */
+    /**
+     * Cong EXP cho user (amount <= 0 thi bo qua), roi cap nhat bang xep hang SAU KHI transaction commit:
+     * neu transaction bi hoan tac thi EXP khong duoc ghi o DB va bang xep hang cung khong bi cong nham.
+     * (award chi duoc goi tu cac ham @Transactional ben duoi nen luon co transaction dang chay.)
+     */
     private void award(UUID userId, int amount) {
         if (amount > 0) {
             userRepository.addExp(userId, amount);
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    leaderboardService.updateScore(userId, amount);
+                }
+            });
         }
     }
 
