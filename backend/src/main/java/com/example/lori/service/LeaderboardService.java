@@ -134,4 +134,21 @@ public class LeaderboardService {
             log.warn("Khong nap duoc leaderboard:global tu DB luc khoi dong: {}", e.toString());
         }
     }
+
+    // ===== Reset bang tuan/thang =====
+
+    /** Xoa bang tuan (LeaderboardResetScheduler goi vao 00:00 thu Hai). */
+    public void resetWeekly() {
+        reset(LeaderboardPeriod.WEEKLY);
+    }
+
+    /** Xoa bang thang (LeaderboardResetScheduler goi vao 00:00 ngay 1). */
+    public void resetMonthly() {
+        reset(LeaderboardPeriod.MONTHLY);
+    }
+
+    private void reset(LeaderboardPeriod period) {
+        redisTemplate.delete(period.getRedisKey());
+        log.info("Da reset {}", period.getRedisKey());
+    }
 }
