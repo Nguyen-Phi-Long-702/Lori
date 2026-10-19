@@ -57,6 +57,7 @@ public class ExamService {
     private final ExamQuestionRepository examQuestionRepository;
     private final ExamResultRepository examResultRepository;
     private final StringRedisTemplate redisTemplate;
+    private final ExpService expService;
 
     // ===== Danh sach + chi tiet =====
 
@@ -188,6 +189,10 @@ public class ExamService {
             readingScore = toScore(reading);
             totalScore = toScore(IeltsScoreUtil.overallBand(listening, reading));
         }
+
+        // Tinh EXP + streak TRUOC khi luu ket qua, de lan nop nay chua bi tinh la "da nop hom nay"
+        expService.awardForExam(userId, paper.getId(),
+                listeningCorrect + readingCorrect, listeningTotal + readingTotal);
 
         ExamResult result = new ExamResult();
         result.setUserId(userId);
