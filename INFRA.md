@@ -263,3 +263,30 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - EXP quiz dựa trên số câu đúng/sai app gửi lên (app bị sửa có thể gửi số đẹp); biện pháp chống gian lận chỉ ở mức giới hạn ngày và 1 lần/mục/ngày.
 - Ngày học lấy từ `lastStudiedAt` do thiết bị gửi, nên thiết bị lệch giờ quá 7 ngày hoặc ở tương lai (kể cả giả lập có đồng hồ sai) sẽ không được tính EXP/streak.
 - Màn Profile (Android) vẫn tự tính streak trên máy từ `user_progress_local`, chưa đọc từ server.
+
+
+## 16. Bảng xếp hạng (Tuần 8)
+
+- Dữ liệu bảng xếp hạng nằm ở Redis (Upstash), kiểu Sorted Set, 3 key: `leaderboard:global`, `leaderboard:weekly`, `leaderboard:monthly`. Member = `userId`, score = EXP.
+- `global` = tổng EXP (khớp `users.total_exp`); `weekly` / `monthly` = EXP kiếm được từ đầu tuần / đầu tháng (giờ Việt Nam).
+- Mọi lần cộng EXP (`ExpService.award()`) gọi `LeaderboardService.updateScore()` để cộng điểm vào cả 3 bảng, **sau khi** transaction DB commit. Redis lỗi chỉ ghi log, không làm hỏng request của user.
+- Mỗi lần Backend khởi động, `leaderboard:global` được nạp lại từ `users.total_exp` (user có EXP từ trước khi có bảng xếp hạng, hoặc Redis mất dữ liệu, vẫn có mặt trong bảng). Dòng log: `Nap leaderboard:global tu DB: N user`.
+- Reset: `LeaderboardResetScheduler` xóa `leaderboard:weekly` lúc 00:00 thứ Hai và `leaderboard:monthly` lúc 00:00 ngày 1 hằng tháng (giờ Việt Nam). Bảng `global` không bao giờ bị reset. Biến môi trường tùy chọn: `LEADERBOARD_WEEKLY_RESET_CRON` (mặc định `0 0 0 * * MON`), `LEADERBOARD_MONTHLY_RESET_CRON` (mặc định `0 0 0 1 * *`); cron 6 trường của Spring.
+- Bảng xếp hạng không lưu ở PostgreSQL nên không cần backup riêng; backup Neon hàng tuần ở mục 6 vẫn giữ `users.total_exp`.
+- Free hay Premium đều xem được; yêu cầu đăng nhập và các header `X-API-Key`, `X-App-Signature` như mọi API khác.
+
+| Method | Endpoint | Mô tả |
+|---|---|---|
+| GET | `/api/leaderboard/{period}?page=0&size=20` | Một trang bảng xếp hạng, điểm cao nhất trước. `period` = `global` / `weekly` / `monthly`; `page` từ 0; `size` 1–50. Mỗi dòng: `rank`, `displayName`, `avatarUrl`, `score` |
+| GET | `/api/leaderboard/{period}/me` | Hạng và điểm của chính user (`rank` = `null`, `score` = 0 nếu chưa có điểm trong bảng đó) |
+
+- `period` sai, `page` < 0, `size` ngoài 1–50 → `400`.
+- Mỗi lần cộng EXP tốn 3 lệnh Redis; xem một trang bảng tốn 1 lệnh, xem "vị trí của tôi" tốn 2 lệnh.
+
+### Giới hạn đã biết (không sửa)
+
+- Reset tuần/tháng chạy bằng `@Scheduled` trong Backend: nếu Backend không chạy đúng lúc 00:00 (đang deploy lại, hoặc Render ngủ), lần reset đó bị bỏ qua và bảng tuần/tháng giữ điểm cũ đến lần reset kế tiếp. UptimeRobot (mục 7) giữ Backend luôn thức nên trường hợp này hiếm.
+- Hai user bằng điểm được Redis xếp theo thứ tự chữ của `userId`, không theo ai đạt điểm trước.
+- Bảng tuần/tháng không dựng lại được nếu Redis mất dữ liệu (DB không lưu lịch sử EXP theo ngày); chỉ bảng `global` được nạp lại khi khởi động.
+- EXP kiếm được trước khi có bảng xếp hạng chỉ có mặt trong bảng `global`, không có trong bảng tuần/tháng.
+- Nếu Redis lỗi đúng lúc cộng EXP, DB vẫn có EXP nhưng bảng xếp hạng bị thiếu điểm đó cho đến khi Backend khởi động lại (bảng `global` được nạp lại; bảng tuần/tháng không).
