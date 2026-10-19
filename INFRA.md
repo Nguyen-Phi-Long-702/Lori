@@ -109,6 +109,7 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - `V1__init_schema.sql`: `users`, `refresh_tokens`, `user_progress`, `subscriptions`.
 - `V2__exam_tables.sql`: `exam_papers`, `exam_sections`, `exam_questions`, `exam_results`.
 - `V3__exam_section_image.sql`: thêm cột `exam_sections.image_url` (ảnh của section đề thi, cho phép NULL).
+- `V4__exp_streak.sql`: thêm `users.total_exp` (tổng EXP) và bảng `user_study_days` (mỗi dòng = 1 ngày user đã học, tính theo giờ Việt Nam).
 - **Không sửa migration đã chạy** (Flyway kiểm tra checksum); muốn đổi schema thì tạo migration mới.
 
 
@@ -235,3 +236,30 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - Màn Xem lại chưa hiện ảnh và đoạn văn của đề.
 - Điểm TOEIC quy đổi bằng công thức tuyến tính gần đúng (ETS không công bố bảng quy đổi chính thức).
 - Section Listening Part 4 có `passage_text` chứa dòng hướng dẫn *"refer to the following …"* (Talk 9–10 còn có biên nhận/danh sách cần cho câu hỏi); đây là dữ liệu đúng thiết kế, không phải transcript.
+
+
+## 15. Hệ thống EXP và Streak (Tuần 8)
+
+- Toàn bộ việc tính EXP và streak nằm ở Backend (`ExpService`, `StreakService`); không tin con số EXP do app gửi. Tổng EXP lưu ở `users.total_exp` (chỉ cộng bằng `UPDATE ... SET total_exp = total_exp + n`). Streak không lưu sẵn mà tính từ bảng `user_study_days`. Mọi lần cộng EXP đều đi qua `ExpService.award()`.
+- Nguồn tính EXP: `POST /api/progress/sync` (mỗi mục tiến trình vừa được ghi) và `POST /api/exams/{id}/submit`.
+
+| Sự kiện | EXP |
+|---|---|
+| Hoàn thành bài ngữ pháp (`grammar_lesson`) | +15 |
+| Hoàn thành quiz từ vựng (`vocab_quiz_topic`) | 10 + 20 × tỉ lệ đúng (10–30) |
+| Hoàn thành quiz ngữ pháp (`grammar_quiz_lesson`) | 15 + 25 × tỉ lệ đúng (15–40) |
+| Nộp bài thi | 50 + 150 × tỉ lệ đúng (50–200) |
+| Ngày học mới | +20 |
+
+- Cấp độ: cấp *n* cần 50·n·(n−1) EXP tích lũy (cấp 2 = 100, cấp 5 = 1.000, cấp 10 = 4.500).
+- Ngày học và "hôm nay" tính theo giờ Việt Nam (`Asia/Ho_Chi_Minh`). Chỉ nhận ngày học từ 7 ngày trước đến hôm nay; dữ liệu ngoài khoảng đó vẫn được đồng bộ nhưng không tính EXP/streak.
+- Chống cộng thừa: mỗi mục tiến trình tối đa 1 lần được tính EXP mỗi ngày; mỗi đề thi tối đa 1 lần mỗi ngày; gửi lại dữ liệu cũ không bị cộng đôi.
+- `GET /api/users/me/stats` trả thêm `totalExp`, `level`, `currentStreak`, `longestStreak`.
+
+### Giới hạn đã biết (không sửa)
+
+- Chưa có EXP "học từ vựng +5" của kế hoạch: flashcard chưa ghi tiến độ vào `user_progress_local` nên server không có sự kiện để cộng.
+- Tiến trình đã đồng bộ trước khi có tính năng này không được cộng EXP hồi tố.
+- EXP quiz dựa trên số câu đúng/sai app gửi lên (app bị sửa có thể gửi số đẹp); biện pháp chống gian lận chỉ ở mức giới hạn ngày và 1 lần/mục/ngày.
+- Ngày học lấy từ `lastStudiedAt` do thiết bị gửi, nên thiết bị lệch giờ quá 7 ngày hoặc ở tương lai (kể cả giả lập có đồng hồ sai) sẽ không được tính EXP/streak.
+- Màn Profile (Android) vẫn tự tính streak trên máy từ `user_progress_local`, chưa đọc từ server.
