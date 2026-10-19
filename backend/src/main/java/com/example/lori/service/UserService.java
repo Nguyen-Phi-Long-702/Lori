@@ -34,6 +34,8 @@ public class UserService {
     private final UserProgressRepository userProgressRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ExpService expService;
+    private final StreakService streakService;
 
     @Transactional(readOnly = true)
     public UserResponse getMe(UUID userId) {
@@ -51,7 +53,10 @@ public class UserService {
         return toResponse(user);
     }
 
-    /** Thong ke tu user_progress: so muc "completed" theo loai + tong dung/sai cua moi dong (moi trang thai). */
+    /**
+     * Thong ke tu user_progress: so muc "completed" theo loai + tong dung/sai cua moi dong (moi trang thai),
+     * kem tong EXP, cap do va streak.
+     */
     @Transactional(readOnly = true)
     public UserStatsResponse getStats(UUID userId) {
         long grammarLessons = 0;
@@ -74,7 +79,10 @@ public class UserService {
                 }
             }
         }
-        return new UserStatsResponse(grammarLessons, vocabQuizTopics, grammarQuizLessons, totalCorrect, totalIncorrect);
+        int totalExp = expService.getTotalExp(userId);
+        StreakService.Streak streak = streakService.getStreak(userId);
+        return new UserStatsResponse(grammarLessons, vocabQuizTopics, grammarQuizLessons, totalCorrect, totalIncorrect,
+                totalExp, ExpService.levelOf(totalExp), streak.current(), streak.longest());
     }
 
     /**
