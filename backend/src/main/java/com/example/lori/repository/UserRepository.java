@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,4 +38,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     /** Tong EXP hien tai cua user; null neu khong co user nay. */
     @Query(value = "SELECT total_exp FROM users WHERE id = :userId", nativeQuery = true)
     Integer findTotalExp(@Param("userId") UUID userId);
+
+    /** Moi user co EXP > 0 duoi dang [id, total_exp]; dung de nap lai bang xep hang toan thoi gian vao Redis. */
+    @Query(value = "SELECT id, total_exp FROM users WHERE total_exp > 0", nativeQuery = true)
+    List<Object[]> findAllWithExp();
 }

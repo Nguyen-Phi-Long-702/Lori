@@ -11,12 +11,16 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.core.DefaultTypedTuple;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.HashSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -105,5 +109,29 @@ public class LeaderboardService {
         }
         Double score = redisTemplate.opsForZSet().score(period.getRedisKey(), member);
         return new LeaderboardMeResponse(rank.intValue() + 1, score == null ? 0L : Math.round(score));
+    }
+
+    // ===== Nap lai bang toan thoi gian tu DB =====
+
+    /**
+     * Moi lan Backend khoi dong: nap lai leaderboard:global tu users.total_exp (ZADD dat diem tuyet doi, chay lai bao nhieu
+     * lan cung ra cung ket qua). Can vi user co EXP tu truoc khi co bang xep hang, hoac Redis mat du lieu, se khong co mat
+     * trong bang. Bang tuan/thang khong nap lai duoc vi DB khong luu lich su EXP theo ngay.
+     * Loi (vd Redis tam thoi khong toi duoc) chi ghi log, khong lam Backend khoi dong that bai.
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void seedGlobalFromDatabase() {
+        try {
+            Set<ZSetOperations.TypedTuple<String>> tuples = new HashSet<>();
+            for (Object[] row : userRepository.findAllWithExp()) {
+                tuples.add(new DefaultTypedTuple<>(String.valueOf(row[0]), ((Number) row[1]).doubleValue()));
+            }
+            if (!tuples.isEmpty()) {
+                redisTemplate.opsForZSet().add(LeaderboardPeriod.GLOBAL.getRedisKey(), tuples);
+            }
+            log.info("Nap leaderboard:global tu DB: {} user", tuples.size());
+        } catch (RuntimeException e) {
+            log.warn("Khong nap duoc leaderboard:global tu DB luc khoi dong: {}", e.toString());
+        }
     }
 }
