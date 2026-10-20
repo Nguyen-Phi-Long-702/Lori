@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <ImageButton
+            android:id="@+id/btnBackLeaderboard"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cd_back"
+            android:src="@drawable/ic_action_back"
+            app:tint="?attr/colorOnSurface" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/leaderboard_title"
+            android:textAppearance="@style/TextAppearance.Lori.Title"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Ba bảng theo prototype v7: chọn một, luôn có một chip được chọn -->
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupLeaderboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        app:chipSpacingHorizontal="8dp"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipLeaderboardGlobal"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/leaderboard_period_global" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipLeaderboardWeekly"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/leaderboard_period_weekly" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipLeaderboardMonthly"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/leaderboard_period_monthly" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <!-- Vùng nội dung: mỗi lúc chỉ hiện một khối trong 4 khối (LeaderboardFragment.render quyết định) -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Khung xương khi đang tải lần đầu; hiệu ứng chạy do LeaderboardFragment bật/tắt -->
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmerLeaderboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:shimmer_auto_start="false"
+            app:shimmer_base_alpha="0.25"
+            app:shimmer_highlight_alpha="0.6">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:orientation="horizontal"
+                    android:paddingStart="24dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="24dp"
+                    android:paddingBottom="12dp">
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="108dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_leaderboard_skeleton" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="136dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_leaderboard_skeleton" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="92dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_leaderboard_skeleton" />
+                </LinearLayout>
+
+                <include layout="@layout/item_leaderboard_skeleton_row" />
+
+                <include layout="@layout/item_leaderboard_skeleton_row" />
+
+                <include layout="@layout/item_leaderboard_skeleton_row" />
+
+                <include layout="@layout/item_leaderboard_skeleton_row" />
+
+                <include layout="@layout/item_leaderboard_skeleton_row" />
+
+                <include layout="@layout/item_leaderboard_skeleton_row" />
+            </LinearLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+        <!-- Kéo xuống để làm mới -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeLeaderboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvLeaderboard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="8dp"
+                tools:listitem="@layout/item_leaderboard_row" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <TextView
+            android:id="@+id/tvLeaderboardEmpty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="24dp"
+            android:text="@string/leaderboard_empty"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/layoutLeaderboardError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvLeaderboardError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="?attr/colorError"
+                android:textSize="14sp"
+                tools:text="Cần kết nối Internet để tiếp tục" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLeaderboardRetry"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/leaderboard_retry_button" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- Thẻ "Vị trí của tôi" ghim ở đáy màn: chỉ hiện khi đã có hạng/điểm từ Backend -->
+    <LinearLayout
+        android:id="@+id/cardLeaderboardMe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurfaceInverse"
+        android:elevation="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingTop="13dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="13dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvMeRank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="44dp"
+            android:textColor="?attr/colorPrimaryInverse"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="#34" />
+
+        <com.example.lori.view.AvatarView
+            android:id="@+id/avatarMe"
+            android:layout_width="32dp"
+            android:layout_height="32dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvMeName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/colorOnSurfaceInverse"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                tools:text="Minh Anh" />
+
+            <TextView
+                android:id="@+id/tvMeSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:alpha="0.7"
+                android:textColor="?attr/colorOnSurfaceInverse"
+                android:textSize="10sp"
+                tools:text="Vị trí của bạn" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvMeScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurfaceInverse"
+            android:textSize="12.5sp"
+            android:textStyle="bold"
+            tools:text="⭐ 2.480" />
+    </LinearLayout>
+</LinearLayout>
