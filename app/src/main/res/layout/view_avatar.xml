@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Chữ cái đầu của tên: luôn nằm dưới, là avatar mặc định khi chưa có ảnh -->
+    <TextView
+        android:id="@+id/tvAvatarInitial"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_leaderboard_avatar"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
+
+    <!-- Ảnh avatar: invisible (không phải gone) để Glide vẫn đo được kích thước và tải ảnh -->
+    <ImageView
+        android:id="@+id/ivAvatarPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        android:visibility="invisible" />
+
+</merge>
