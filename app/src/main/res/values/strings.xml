@@ -380,4 +380,8 @@
     <string name="leaderboard_me_label">Vị trí của bạn</string>
     <string name="leaderboard_me_no_rank_value">–</string>
     <string name="leaderboard_me_no_rank">Chưa có điểm trong bảng này</string>
+
+    <string name="profile_explore_section_title">Khám phá</string>
+    <string name="profile_leaderboard_title">Bảng xếp hạng</string>
+    <string name="profile_leaderboard_desc">Xem thứ hạng của bạn</string>
 </resources>

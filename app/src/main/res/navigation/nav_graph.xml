@@ -180,7 +180,20 @@
             app:exitAnim="@anim/nav_fade_out"
             app:popEnterAnim="@anim/nav_fade_in"
             app:popExitAnim="@anim/nav_fade_out" />
+        <action
+            android:id="@+id/action_profileFragment_to_leaderboardFragment"
+            app:destination="@id/leaderboardFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
+
+    <fragment
+        android:id="@+id/leaderboardFragment"
+        android:name="com.example.lori.view.LeaderboardFragment"
+        android:label="@string/leaderboard_title"
+        tools:layout="@layout/fragment_leaderboard" />
 
     <fragment
         android:id="@+id/grammarListFragment"

@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -59,6 +61,15 @@ public class ProfileFragment extends Fragment {
         //Banner Premium mở thẳng màn mua
         cardPremiumBanner.setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), PremiumPurchaseActivity.class)));
+
+        //Mở màn Bảng xếp hạng. Chỉ chuyển khi đang đứng ở màn Hồ sơ: chạm nhanh hai lần sẽ không chuyển lần hai (action không còn hợp lệ từ màn khác sẽ làm app văng)
+        view.findViewById(R.id.cardLeaderboard).setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(v);
+            NavDestination current = navController.getCurrentDestination();
+            if (current != null && current.getId() == R.id.profileFragment) {
+                navController.navigate(R.id.action_profileFragment_to_leaderboardFragment);
+            }
+        });
 
         btnOpenSettings.setOnClickListener(v ->
                 Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_settingsFragment));

@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 || destinationId == R.id.quizFragment) {
             return R.id.topicListFragment;
         }
-        if (destinationId == R.id.settingsFragment) {
+        if (destinationId == R.id.settingsFragment || destinationId == R.id.leaderboardFragment) {
             return R.id.profileFragment;
         }
         if (destinationId == R.id.examResultFragment || destinationId == R.id.examReviewFragment) {
