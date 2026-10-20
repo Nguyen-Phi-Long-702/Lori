@@ -21,6 +21,7 @@ import com.example.lori.data.remote.dto.RefreshTokenRequest;
 import com.example.lori.data.local.AppDatabase;
 import com.example.lori.data.sync.SyncManager;
 import com.example.lori.utils.PremiumManager;
+import com.example.lori.utils.ExpManager;
 import com.example.lori.utils.NetworkStateManager;
 
 import java.net.SocketTimeoutException;
@@ -169,6 +170,8 @@ public class AuthViewModel extends AndroidViewModel {
                 if (response.isSuccessful() && body != null
                         && body.accessToken != null && body.refreshToken != null) {
                     sessionManager.saveTokens(body.accessToken, body.refreshToken);
+                    //Đăng nhập mới (có thể là tài khoản khác): bỏ mốc EXP của phiên trước để Home không hiện nhầm "+XX EXP"
+                    ExpManager.clear(getApplication());
                     //Giữ loading = true: màn hình sắp chuyển sang MainActivity, tránh nút bật lại trong chốc lát
                     authenticated.setValue(true);
                     return;
