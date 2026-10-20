@@ -114,6 +114,10 @@ dependencies {
     // WorkManager
     implementation("androidx.work:work-runtime:2.9.1")
 
+    // Kéo để làm mới + khung xương khi tải (bảng xếp hạng)
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+
     // Lưu JWT mã hóa (EncryptedSharedPreferences) – Tuần 6 Ngày 3-4
     implementation("androidx.security:security-crypto:1.1.0")
 
