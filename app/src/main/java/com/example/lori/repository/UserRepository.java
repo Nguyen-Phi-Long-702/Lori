@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.lori.data.remote.api.UserApi;
 import com.example.lori.data.remote.dto.UserResponse;
+import com.example.lori.data.remote.dto.UserStatsResponse;
 
 //Hồ sơ của user đang đăng nhập
 public class UserRepository extends BaseRepository {
@@ -20,5 +21,10 @@ public class UserRepository extends BaseRepository {
     //Hồ sơ của chính user (GET /api/users/me)
     public LiveData<ApiResult<UserResponse>> me() {
         return execute(userApi.getMe());
+    }
+
+    //Thống kê học tập kèm tổng EXP, cấp độ, streak (GET /api/users/me/stats)
+    public LiveData<ApiResult<UserStatsResponse>> stats() {
+        return execute(userApi.getStats());
     }
 }
