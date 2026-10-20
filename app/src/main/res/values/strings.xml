@@ -14,6 +14,15 @@
     <string name="home_progress_subtitle">Chưa có tiến độ — hãy học bài đầu tiên!</string>
     <string name="home_cta_button">Bắt đầu học ngay →</string>
 
+    <string name="home_exp_label">Tổng EXP</string>
+    <string name="home_exp_format">⭐ %1$s</string>
+    <string name="home_exp_placeholder">⭐ –</string>
+    <string name="home_exp_gain_format">+%1$s EXP</string>
+    <string name="home_level_format">Lv %1$d</string>
+    <string name="home_level_placeholder">Lv –</string>
+    <string name="home_streak_format">🔥 %1$d ngày</string>
+    <string name="home_streak_placeholder">🔥 – ngày</string>
+
     <string name="stub_dictionary">Tra cứu\n(hoàn thiện ở Ngày 6)</string>
 
 
