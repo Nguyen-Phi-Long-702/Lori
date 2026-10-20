@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bục Top 3: thứ tự trái -> phải là hạng 2, hạng 1, hạng 3 (cột cao nhất ở giữa) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="bottom|center_horizontal"
+    android:orientation="horizontal"
+    android:paddingStart="20dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="8dp">
+
+    <LinearLayout
+        android:id="@+id/slotSecond"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <com.example.lori.view.AvatarView
+            android:id="@+id/avatarSecond"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:id="@+id/tvNameSecond"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            tools:text="Hùng" />
+
+        <TextView
+            android:id="@+id/tvBarSecond"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_leaderboard_podium_bar"
+            android:gravity="center_horizontal"
+            android:paddingTop="8dp"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="2" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/slotFirst"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <com.example.lori.view.AvatarView
+            android:id="@+id/avatarFirst"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:id="@+id/tvNameFirst"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="Linh Chi" />
+
+        <TextView
+            android:id="@+id/tvBarFirst"
+            android:layout_width="match_parent"
+            android:layout_height="78dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_leaderboard_podium_bar"
+            android:gravity="center_horizontal"
+            android:paddingTop="8dp"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/slotThird"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <com.example.lori.view.AvatarView
+            android:id="@+id/avatarThird"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:id="@+id/tvNameThird"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            tools:text="Trang" />
+
+        <TextView
+            android:id="@+id/tvBarThird"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_leaderboard_podium_bar"
+            android:gravity="center_horizontal"
+            android:paddingTop="8dp"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="3" />
+    </LinearLayout>
+</LinearLayout>
