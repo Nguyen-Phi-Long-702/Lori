@@ -365,4 +365,19 @@
     <string name="exam_review_explanation_format">Giải thích: %1$s</string>
 
     <string name="settings_premium_row_status_active">Đang hoạt động</string>
+
+    <!-- Màn Bảng xếp hạng -->
+    <string name="leaderboard_title">Bảng xếp hạng</string>
+    <string name="leaderboard_period_global">Toàn thời gian</string>
+    <string name="leaderboard_period_weekly">Tuần này</string>
+    <string name="leaderboard_period_monthly">Tháng này</string>
+    <string name="leaderboard_rank_format">#%1$d</string>
+    <string name="leaderboard_score_format">⭐ %1$s</string>
+    <string name="leaderboard_empty">Chưa có ai trên bảng xếp hạng</string>
+    <string name="leaderboard_retry_button">Thử lại</string>
+    <string name="leaderboard_load_more_error">Không tải thêm được. Chạm để thử lại</string>
+    <string name="leaderboard_me_default_name">Bạn</string>
+    <string name="leaderboard_me_label">Vị trí của bạn</string>
+    <string name="leaderboard_me_no_rank_value">–</string>
+    <string name="leaderboard_me_no_rank">Chưa có điểm trong bảng này</string>
 </resources>

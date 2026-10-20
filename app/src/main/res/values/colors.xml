@@ -58,4 +58,9 @@
     <color name="exam_question_answered">#1F9E86</color>
     <color name="exam_question_flagged">#E8A33D</color>
     <color name="exam_question_flagged_text">#3B2C00</color>
+
+    <color name="leaderboard_gold">#E8A33D</color>
+    <color name="leaderboard_silver">#5C86A3</color>
+    <color name="leaderboard_bronze">#1F9E86</color>
+    <color name="leaderboard_score">#1F9E86</color>
 </resources>
