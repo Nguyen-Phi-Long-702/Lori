@@ -104,6 +104,15 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - **Lưu ý:** monitor 5 phút/lần giữ Render luôn thức (~744/750 giờ miễn phí mỗi tháng) → không chạy thêm service Free thứ hai trong cùng workspace Render.
 - `SecurityConfig`, `ApiKeyFilter` và `RateLimitFilter` của Backend phải luôn bỏ qua `/actuator/health/**` (UptimeRobot không gửi `X-API-Key`); nếu không, UptimeRobot sẽ nhận 401/403/429 và báo Down. Danh sách đường dẫn mở nằm ở `SecurityPaths`.
 
+### Monitor AI Service (Vercel)
+
+- Monitor: `Lori AI Service (Vercel)`, loại **Keyword**, kiểm tra mỗi 5 phút, báo qua email (cùng người nhận với monitor Backend).
+- URL theo dõi: `https://lori-ai-service.vercel.app/` (đường dẫn gốc `GET /`, công khai, không cần chữ ký).
+- Keyword: `Lori AI Service`; cảnh báo khi keyword **không xuất hiện** trong nội dung trả về (`GET /` trả `{"message":"Hello from Lori AI Service"}`).
+- **Vì sao dùng Keyword mà không dùng HTTP(s):** monitor HTTP(s) của UptimeRobot mặc định gửi `HEAD`, và chỉ gói Pro mới đổi được sang `GET`. Route `GET /` của FastAPI không tự nhận `HEAD` nên trả `405` → báo Down giả. Monitor Keyword mặc định gửi `GET` và dùng được ở gói Free.
+- **Không theo dõi `POST /ai/ping`:** endpoint này cần chữ ký HMAC mà UptimeRobot không tạo được.
+- Mỗi 5 phút là 1 lần gọi hàm của Vercel: khoảng 8.640 lần/tháng, chưa tới 1% hạn mức 1.000.000 lần gọi/tháng của gói Hobby.
+- Nếu đổi nội dung trả về của `GET /` thì phải đổi keyword của monitor cho khớp, nếu không UptimeRobot sẽ báo Down.
 
 ## 8. Database migration (Flyway)
 
