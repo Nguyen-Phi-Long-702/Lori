@@ -10,11 +10,12 @@
 Android App
    ↓ HTTPS
 Spring Boot Backend — Render (Web Service, Docker)
-   ↓ TLS                       ↓ TLS
-PostgreSQL — Neon           Redis — Upstash
+   ↓ TLS                       ↓ TLS          ↓ HTTPS + chữ ký HMAC
+PostgreSQL — Neon           Redis — Upstash   AI Service (FastAPI) — Vercel
 
 GitHub Actions (repo lori-db-backup, riêng tư) --pg_dump hàng tuần--> Neon
 UptimeRobot --kiểm tra mỗi 5 phút--> Render
+UptimeRobot --kiểm tra mỗi 5 phút--> AI Service (Vercel)
 ```
 
 | Thành phần | Dịch vụ | Gói | Ghi chú giới hạn |
@@ -25,8 +26,10 @@ UptimeRobot --kiểm tra mỗi 5 phút--> Render
 | CI/CD + Backup | GitHub Actions | Free | — |
 | Giám sát | UptimeRobot | Free | 50 monitor, kiểm tra mỗi 5 phút |
 | Audio đề thi | Supabase Storage | Free (không cần thẻ) | 1 GB lưu trữ, 50 MB/file, 5 GB egress; project bị tạm dừng sau 1 tuần không hoạt động |
+| AI Service | Vercel (Hobby) | Free (không cần thẻ) | 1.000.000 lần gọi hàm và 4 CPU-giờ hoạt động/tháng; chỉ dùng phi thương mại |
 
 > Kế hoạch gốc dùng Google Cloud Run; vì team không dùng thẻ tín dụng nên Backend chạy trên **Render**.
+> Kế hoạch gốc đặt AI Service trên VM Oracle Cloud Always Free (Docker Compose, DuckDNS, Caddy); vì team không dùng thẻ tín dụng nên AI Service chạy trên **Vercel Hobby**. Vercel tự cấp HTTPS và tên miền `*.vercel.app`.
 
 ## 2. Neon (PostgreSQL)
 
