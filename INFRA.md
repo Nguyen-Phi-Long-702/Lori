@@ -302,3 +302,31 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - Bảng tuần/tháng không dựng lại được nếu Redis mất dữ liệu (DB không lưu lịch sử EXP theo ngày); chỉ bảng `global` được nạp lại khi khởi động.
 - EXP kiếm được trước khi có bảng xếp hạng chỉ có mặt trong bảng `global`, không có trong bảng tuần/tháng.
 - Nếu Redis lỗi đúng lúc cộng EXP, DB vẫn có EXP nhưng bảng xếp hạng bị thiếu điểm đó cho đến khi Backend khởi động lại (bảng `global` được nạp lại; bảng tuần/tháng không).
+
+## 17. AI Service (Vercel) — Tuần 9
+
+- Dịch vụ: **Vercel Hobby** (không cần thẻ tín dụng). Mã nguồn ở thư mục `ai-service/` (FastAPI); Root Directory của project Vercel = `ai-service`; URL production: **https://lori-ai-service.vercel.app**.
+- Kế hoạch gốc chạy AI Service trên VM Oracle Cloud Always Free (Docker Compose, DuckDNS, Caddy); vì team không dùng thẻ tín dụng nên chuyển sang Vercel. Không có VM hay container tự quản lý nên **không có** `restart: always` và không có bước kiểm tra khởi động lại VM; nền tảng tự lo việc chạy hàm.
+- Biến môi trường (chỉ ghi tên, không ghi giá trị):
+
+| Nơi đặt | Tên biến | Ý nghĩa |
+|---|---|---|
+| Vercel (project AI Service) | `AI_SERVICE_SHARED_SECRET` | Khóa dùng chung để ký/kiểm tra HMAC, ≥ 32 ký tự |
+| Render (Backend) | `AI_SERVICE_SHARED_SECRET` | Cùng giá trị với biến trên Vercel |
+| Render (Backend) | `AI_SERVICE_BASE_URL` | URL gốc của AI Service, không có `/` ở cuối (không đặt thì mặc định `http://localhost:8000`) |
+
+| Method | Đường dẫn | Xác thực | Mô tả |
+|---|---|---|---|
+| GET | `/` | Không | Trả `{"message":"Hello from Lori AI Service"}`; UptimeRobot theo dõi đường dẫn này (mục 7) |
+| POST | `/ai/ping` | Chữ ký HMAC | Trả `{"status":"ok"}`; Backend gọi qua `AiServiceClient.ping()` |
+
+### Xác thực Server-to-Server
+
+- Backend ký mỗi request gửi sang AI Service bằng HMAC-SHA256, khóa là `AI_SERVICE_SHARED_SECRET`. Chuỗi được ký: `timestamp \n METHOD \n path \n sha256-hex(body)`. Chữ ký (hex) nằm ở header `X-Lori-Signature`, thời điểm (giây epoch) ở `X-Lori-Timestamp`.
+- AI Service (`ai-service/guardrails/s2s_auth.py`) tính lại chữ ký, so sánh bằng `hmac.compare_digest` và chỉ nhận request lệch thời gian không quá 300 giây. Thiếu header, sai chữ ký, timestamp sai định dạng hoặc hết hạn → `401 Unauthorized`.
+- Fail closed: nếu `AI_SERVICE_SHARED_SECRET` chưa đặt hoặc ngắn hơn 32 ký tự, AI Service từ chối mọi request cần chữ ký (401). Phía Backend, `AiServiceClient` trả `503 AI service unavailable` khi chưa có secret hoặc khi AI Service lỗi/từ chối.
+- Công thức ký được khóa bằng một test vector chung: `AiServiceSignerTest` (Backend) và `test_s2s_auth.py` (AI Service) phải cho cùng một chữ ký.
+
+### Giới hạn đã biết (không sửa)
+
+- Vercel Hobby: mỗi tháng 1.000.000 lần gọi hàm, 4 CPU-giờ hoạt động, 360 GB-giờ bộ nhớ; chỉ dùng cho mục đích phi thương mại. Vượt hạn mức thì tính năng bị tạm dừng, thường phải chờ 30 ngày.
