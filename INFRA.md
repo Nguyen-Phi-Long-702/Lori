@@ -329,6 +329,26 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - Fail closed: nếu `AI_SERVICE_SHARED_SECRET` chưa đặt hoặc ngắn hơn 32 ký tự, AI Service từ chối mọi request cần chữ ký (401). Phía Backend, `AiServiceClient` trả `503 AI service unavailable` khi chưa có secret hoặc khi AI Service lỗi/từ chối.
 - Công thức ký được khóa bằng một test vector chung: `AiServiceSignerTest` (Backend) và `test_s2s_auth.py` (AI Service) phải cho cùng một chữ ký.
 
+### Tài nguyên thực tế của AI Service (Vercel Hobby)
+
+> Kế hoạch gốc yêu cầu đo RAM/CPU của VM Oracle bằng lệnh hệ thống. Không có VM nên không có số đo đó; bảng dưới là giới hạn của hàm Vercel Hobby, lấy từ tài liệu chính thức (https://vercel.com/docs/functions/limitations) ngày 22/10/2026.
+
+| Hạng mục | Giá trị (gói Hobby) |
+|---|---|
+| Bộ nhớ / CPU mỗi hàm | 2 GB / 1 vCPU |
+| Thời gian chạy tối đa mỗi lần gọi | 300 giây |
+| Dung lượng gói triển khai (chưa nén), runtime Python | 500 MB |
+| Kích thước tối đa của request/response body | 4,5 MB |
+| Vùng chạy hàm (theo Settings của project) | sin1 |
+
+- Hàm chỉ chạy khi có request, không có tiến trình nền chạy liên tục. Container image trên Vercel cũng chạy như hàm và dùng cùng các giới hạn trên.
+- Hạn mức hàng tháng (số lần gọi, CPU-giờ, GB-giờ) xem ở mục "Giới hạn đã biết" bên dưới.
+
+### LLM runtime (Ollama): chưa có nơi chạy
+
+- Kế hoạch gốc cài Ollama trên VM Oracle ở Tuần 9. Vì AI Service chạy trên Vercel nên **không cài Ollama**: Ollama là dịch vụ chạy nền liên tục, còn hàm Vercel chỉ chạy theo request với các giới hạn ở bảng trên.
+- Hiện chưa có nơi chạy LLM tự quản lý. Nơi chạy LLM và cách benchmark phải được chốt trước khi benchmark ở Tuần 10 (kế hoạch gốc giả định VM Oracle).
+
 ### Giới hạn đã biết (không sửa)
 
 - Vercel Hobby: mỗi tháng 1.000.000 lần gọi hàm, 4 CPU-giờ hoạt động, 360 GB-giờ bộ nhớ; chỉ dùng cho mục đích phi thương mại. Vượt hạn mức thì tính năng bị tạm dừng, thường phải chờ 30 ngày.
