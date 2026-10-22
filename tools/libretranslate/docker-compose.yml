@@ -1,6 +1,4 @@
-# LibreTranslate (dich EN-VI, self-host mien phi)
-# Tam thoi chay tren may Dev de dev/test; tu Tuan 9 chuyen len VM cua AI Service.
-# Khong co bi mat nao trong file nay (repo Public).
+   # Tam thoi chay tren may Dev de dev/test; noi chay co dinh chua chot (xem INFRA.md muc 12).
 services:
   libretranslate:
     container_name: libretranslate

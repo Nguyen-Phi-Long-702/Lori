@@ -168,7 +168,7 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - Backend gọi `POST /translate` của LibreTranslate từ `POST /api/translate` (tối đa 500 ký tự, hai chiều `en` ↔ `vi`, đăng nhập là dùng được, không cần Premium).
 - **Hiện tại chạy tạm trên máy Dev** (kế hoạch v5, Tuần 5 Ngày 6): file `tools/libretranslate/docker-compose.yml`, chạy `docker compose up -d` trong thư mục đó, mở `http://localhost:5000`. Chỉ nạp 2 ngôn ngữ `en`, `vi` (`LT_LOAD_ONLY=en,vi`); lần chạy đầu phải tải model.
 - Biến môi trường của Backend: `LIBRETRANSLATE_URL` (địa chỉ gốc, không có `/` ở cuối). Không đặt thì mặc định `http://localhost:5000`. Khi chạy Backend bằng Docker trên máy Dev, đặt `http://host.docker.internal:5000`.
-- **Trên Render chưa có LibreTranslate** (Render không với tới máy Dev) → `POST /api/translate` trả `503 Translation service unavailable`; các API khác không bị ảnh hưởng. Chỗ chạy cố định sẽ chốt ở Tuần 9 (cùng AI Service).
+- **Trên Render chưa có LibreTranslate** (Render không với tới máy Dev) → `POST /api/translate` trả `503 Translation service unavailable`; các API khác không bị ảnh hưởng. Kế hoạch dự định chạy LibreTranslate chung VM Oracle với AI Service từ Tuần 9; AI Service nay chạy trên Vercel, không có VM chung, nên chỗ chạy cố định vẫn chưa chốt.
 
 ### Thanh toán mock và hết hạn Premium
 
