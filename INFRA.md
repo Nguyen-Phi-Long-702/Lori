@@ -70,6 +70,8 @@ UptimeRobot --kiểm tra mỗi 5 phút--> AI Service (Vercel)
 | `GOOGLE_CLIENT_ID` | Web client ID của Google OAuth; Backend dùng để kiểm tra `aud` của Google ID Token |
 | `BREVO_API_KEY` | API key (v3) của Brevo để Backend gửi email đặt lại mật khẩu (xem mục 10) |
 | `MAIL_SENDER_EMAIL` | Email người gửi đã được xác minh trên Brevo (xem mục 10) |
+| `AI_SERVICE_BASE_URL` | URL gốc của AI Service trên Vercel, không có `/` ở cuối (xem mục 17) |
+| `AI_SERVICE_SHARED_SECRET` | Khóa dùng chung để ký HMAC khi Backend gọi AI Service, ≥ 32 ký tự, cùng giá trị với biến trên Vercel (xem mục 17) |
 
 - Auto-Deploy (Render → Settings → Build & Deploy): **Off**.
 
