@@ -27,9 +27,11 @@ UptimeRobot --kiểm tra mỗi 5 phút--> AI Service (Vercel)
 | Giám sát | UptimeRobot | Free | 50 monitor, kiểm tra mỗi 5 phút |
 | Audio đề thi | Supabase Storage | Free (không cần thẻ) | 1 GB lưu trữ, 50 MB/file, 5 GB egress; project bị tạm dừng sau 1 tuần không hoạt động |
 | AI Service | Vercel (Hobby) | Free (không cần thẻ) | 1.000.000 lần gọi hàm và 4 CPU-giờ hoạt động/tháng; chỉ dùng phi thương mại |
+| LLM (suy luận) | Cloudflare Workers AI | Free (không cần thẻ) | 10.000 Neurons/ngày, reset 00:00 UTC; vượt hạn mức thì request lỗi chứ không tính tiền; model do Cloudflare chạy |
 
 > Kế hoạch gốc dùng Google Cloud Run; vì team không dùng thẻ tín dụng nên Backend chạy trên **Render**.
 > Kế hoạch gốc đặt AI Service trên VM Oracle Cloud Always Free (Docker Compose, DuckDNS, Caddy); vì team không dùng thẻ tín dụng nên AI Service chạy trên **Vercel Hobby**. Vercel tự cấp HTTPS và tên miền `*.vercel.app`.
+> Kế hoạch gốc chạy LLM tự host (Ollama) trên VM Oracle; vì không có VM và không có nền tảng miễn phí nào không cần thẻ đủ RAM để tự host LLM, LLM chạy trên **Cloudflare Workers AI** (xem mục 17).
 
 ## 2. Neon (PostgreSQL)
 
@@ -344,10 +346,15 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - Hàm chỉ chạy khi có request, không có tiến trình nền chạy liên tục. Container image trên Vercel cũng chạy như hàm và dùng cùng các giới hạn trên.
 - Hạn mức hàng tháng (số lần gọi, CPU-giờ, GB-giờ) xem ở mục "Giới hạn đã biết" bên dưới.
 
-### LLM runtime (Ollama): chưa có nơi chạy
+### LLM: Cloudflare Workers AI
 
 - Kế hoạch gốc cài Ollama trên VM Oracle ở Tuần 9. Vì AI Service chạy trên Vercel nên **không cài Ollama**: Ollama là dịch vụ chạy nền liên tục, còn hàm Vercel chỉ chạy theo request với các giới hạn ở bảng trên.
-- Hiện chưa có nơi chạy LLM tự quản lý. Nơi chạy LLM và cách benchmark phải được chốt trước khi benchmark ở Tuần 10 (kế hoạch gốc giả định VM Oracle).
+- Không có nền tảng miễn phí nào không cần thẻ đủ RAM để tự host LLM (Vercel Hobby tối đa 2 GB RAM; Render/Railway Free dưới 1 GB; Hugging Face Spaces yêu cầu gói PRO để tạo Docker Space; Oracle yêu cầu thẻ tín dụng thật). LLM vì vậy chạy trên **Cloudflare Workers AI**: model open-weight do Cloudflare chạy, gọi qua HTTPS API.
+- Gói **Workers Free**, không cần thẻ, tài khoản không gắn phương thức thanh toán. Hạn mức **10.000 Neurons/ngày**, reset lúc 00:00 UTC (07:00 giờ Việt Nam). Vượt hạn mức thì request lỗi, **không bị tính tiền**; chỉ gói Workers Paid mới tính phí. Không nâng cấp gói. Nguồn: https://developers.cloudflare.com/workers-ai/platform/pricing/ (kiểm tra ngày 22/10/2026).
+- Cần 2 giá trị để gọi API: **Account ID** và **API token** (tạo từ template "Workers AI" ở Workers AI → Use REST API). Chỉ lưu ở trình quản lý mật khẩu; **không commit**. Khi chạy thử bằng PowerShell dùng tên biến `CLOUDFLARE_ACCOUNT_ID` và `CLOUDFLARE_API_TOKEN`.
+- Endpoint: `https://api.cloudflare.com/client/v4/accounts/<ACCOUNT_ID>/ai/v1/chat/completions` (tương thích OpenAI) hoặc `…/ai/run/<MODEL_ID>`; header `Authorization: Bearer <API_TOKEN>`.
+- Danh sách model ứng viên: `ai-service/BENCHMARK.md`.
+- Khác kế hoạch gốc: vì model do Cloudflare chạy nên không đo được RAM, CPU, quantization, thời gian nạp model.
 
 ### Giới hạn đã biết (không sửa)
 
