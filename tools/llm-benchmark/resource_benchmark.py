@@ -68,14 +68,14 @@ PROMPTS = {
 }
 
 
-def call_model(account_id, token, model, prompt):
+def call_model(account_id, token, model, prompt, system_prompt=SYSTEM_PROMPT, max_tokens=MAX_TOKENS):
     body = json.dumps(
         {
             "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},
             ],
-            "max_tokens": MAX_TOKENS,
+            "max_tokens": max_tokens,
             "temperature": TEMPERATURE,
         }
     ).encode("utf-8")
