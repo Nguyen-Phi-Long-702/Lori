@@ -4,6 +4,7 @@ import os
 import sys
 import time
 import urllib.error
+import http.client
 
 import resource_benchmark as base
 
@@ -58,9 +59,9 @@ def timed_request(account_id, token, model, prompt, system_prompt=base.SYSTEM_PR
         outcome["latency"] = time.perf_counter() - started
         outcome["error"] = f"HTTP {error.code}: {error.read().decode('utf-8', 'replace')[:300]}"
         return outcome
-    except (urllib.error.URLError, TimeoutError, RuntimeError, ValueError, KeyError) as error:
+    except (urllib.error.URLError, http.client.HTTPException, OSError, RuntimeError, ValueError, KeyError) as error:
         outcome["latency"] = time.perf_counter() - started
-        outcome["error"] = str(error)
+        outcome["error"] = f"{type(error).__name__}: {error}"
         return outcome
 
     rate_in, rate_out = base.MODELS[model]
