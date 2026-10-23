@@ -1,0 +1,1256 @@
+{
+  "kind": "quality",
+  "timestamp_utc": "20261023-102737",
+  "system_prompt": "You are an English tutor for Vietnamese learners. Answer in clear, simple English.",
+  "max_tokens": 2048,
+  "models": [
+    "@cf/meta/llama-3.2-1b-instruct",
+    "@cf/meta/llama-3.2-3b-instruct",
+    "@cf/meta/llama-3.1-8b-instruct-fp8",
+    "@cf/google/gemma-4-26b-a4b-it",
+    "@cf/qwen/qwen3-30b-a3b-fp8",
+    "@cf/meta/llama-3.1-8b-instruct"
+  ],
+  "items": [
+    {
+      "id": "Q01",
+      "category": "grammar",
+      "prompt": "Correct this sentence and explain the mistake: \"If I will have time tomorrow, I will call you.\"",
+      "reference": "Correct: \"If I have time tomorrow, I will call you.\" After \"if\" in a first conditional the present simple is used, not \"will\". Score 2 only if both the correction and the reason are right.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "The corrected sentence is: \"If I have time tomorrow, I will call you.\"\n\nThe mistake in the original sentence is the use of \"will have\" instead of \"have\". \n\nIn this sentence, \"will have\" is used to talk about a future situation that is not certain. It implies that you are not sure if you will have time tomorrow. \n\nHowever, in this sentence, you are talking about a future situation that you are certain about. You are saying that if a certain condition (having time) is true, then you will call the person. \n\nSo, the correct verb form to use is \"have\", which is a present tense verb. It shows that you are talking about a future situation that is certain.",
+          "truncated": false,
+          "neurons": 13.0407,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "The correct sentence is:\n\n\"If I have time tomorrow, I will call you.\"\n\nThe mistake is in the verb \"will have\" instead of \"have\". The correct verb to use in this sentence is \"have\", which is a present tense verb that indicates the present simple form of the verb \"to have\".",
+          "truncated": false,
+          "neurons": 1.2801,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "Here is the correction and the explanation:\n\n**Correct sentence:** \"If I **have** time tomorrow, I will call you.\"\n\n### The Mistake\nYou used \"**will have**\" in the \"if-clause\" (the part of the sentence that starts with *if*). \n\nIn English, when we talk about a possible future situation (this is called the **First Conditional**), we follow this rule:\n\n1.  **The If-clause:** Use the **Present Simple** tense.\n2.  **The Main clause:** Use **will + verb**.\n\n### Why is this confusing?\nMany learners make this mistake because, in your native language, you might use a word that means \"will\" in both parts of the sentence. However, in English, we do not use \"will\" immediately after \"if\" to talk about the future.\n\n### More Examples:\n*   ❌ **Incorrect:** If it **will rain**, I will stay home.\n*   ✅ **Correct:** If it **rains**, I will stay home.\n\n\n*   ❌ **Incorrect:** If I **will see** him, I will tell him.\n*   ✅ **Correct:** If I **see** him, I will tell him.\n\n**Summary Rule:**\n**If + Present Simple, ... will + verb.**",
+          "truncated": false,
+          "neurons": 23.5002,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "The corrected sentence is: \"If I have time tomorrow, I will call you.\"\n\nThe mistake is the use of \"will have\" instead of \"have\". In this sentence, \"will have\" is not necessary because we are talking about a future situation that is dependent on another condition (having time tomorrow). The correct phrase is \"If I have time\", which means \"if I have time available\".",
+          "truncated": false,
+          "neurons": 2.8727,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "**Corrected sentence:** \"If I have time tomorrow, I will call you.\"  \n\n**Mistake explanation:**  \nIn English, the structure for a **first conditional** (used to talk about real or possible future situations) is:  \n**\"If + present simple, will + base verb.\"**  \n\nIn your sentence, \"If I **will have** time...\" is incorrect because:  \n1. The **\"if\" clause** should use the **present simple** (\"have\"), not the future tense (\"will have\").  \n2. The **main clause** (\"I will call you\") is correct because it uses \"will\" for the future.  \n\n**Why it's wrong:**  \n- \"Will have\" is not used in the \"if\" clause. The \"if\" clause describes a condition (a present or future possibility), so it uses the present tense.  \n\n**Correct structure:**  \n**\"If I have time tomorrow (condition), I will call you (result).\"**  \n\nThis rule applies to all first conditionals, even when the time (like \"tomorrow\") is in the future.",
+          "truncated": false,
+          "neurons": 20.0095,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "The corrected sentence is: \"If I have time tomorrow, I will call you.\"\n\nThe mistake in the original sentence is the use of \"will have\" instead of \"have\". \n\n\"Will have\" is used to express future plans or predictions, but it's not the correct choice here. \n\n\"Have\" is a verb that can be used to express possession, ability, or existence, and it's the correct choice in this sentence because it's asking about the availability of time.\n\nSo, \"If I have time tomorrow, I will call you\" is a more natural and idiomatic way to express the idea.",
+          "truncated": false,
+          "neurons": 4.1729,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "category": "grammar",
+      "prompt": "Correct this sentence and explain the mistake: \"She has finished the report yesterday.\"",
+      "reference": "Correct: \"She finished the report yesterday.\" The present perfect cannot be used with a finished-time word such as \"yesterday\"; the past simple is needed.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "The correct sentence is: \"She finished the report yesterday.\"\n\nThe mistake is in the verb \"has finished\". The verb \"has finished\" is the present perfect tense, which is used to describe an action that started in the past and continues up to the present moment. However, in this sentence, we are talking about a completed action that happened in the past, so we should use the simple past tense \"finished\".\n\nThe simple past tense \"finished\" is used to describe a completed action that happened at a specific time in the past, and it's the correct choice here because we are talking about a completed action that happened yesterday.",
+          "truncated": false,
+          "neurons": 4.2107,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "The corrected sentence is: \"She finished the report yesterday.\"\n\nThe mistake is the use of the verb \"has finished\". In this sentence, \"yesterday\" is a specific time in the past, so we use the simple past tense \"finished\" instead of the present perfect tense \"has finished\". The present perfect tense is used to talk about actions that started in the past and continue up to the present moment, but in this case, the action is complete and finished, so the simple past tense is more suitable.",
+          "truncated": false,
+          "neurons": 3.4048,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "**Corrected sentence:** \"She finished the report yesterday.\"  \n\n**Mistake explanation:**  \nThe original sentence uses the **present perfect tense** (\"has finished\"), which is used for actions that happened at an unspecified time before now or actions that continue to the present. However, \"yesterday\" is a **specific time in the past**, which cannot be used with the present perfect.  \n\n**Rule:**  \n- Use **simple past** (\"finished\") for actions completed at a **specific time in the past** (e.g., \"yesterday,\" \"last week\").  \n- Use **present perfect** (\"has finished\") for actions that happened at an **unspecified time** (e.g., \"recently,\" \"already,\" \"never\").  \n\n**Example:**  \n- Correct: \"She finished the report **yesterday**.\" (specific time)  \n- Correct: \"She has finished the report **already**.\" (no specific time)",
+          "truncated": false,
+          "neurons": 15.7808,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "The correct sentence is: \"She finished the report yesterday.\"\n\nThe mistake is the use of \"yesterday\" as a verb. \"Yesterday\" is a noun, not a verb. In English, we use \"yesterday\" to describe a time in the past, whereas \"yesterday\" is used to describe a point in the past.\n\nIn this sentence, \"yesterday\" is describing the time when the report was finished, not the person. To fix the sentence, we need to use a verb that describes the action of finishing the report, such as \"finished\" or \"completed\".",
+          "truncated": false,
+          "neurons": 2.3264,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "**Correct sentence:** \"She **finished** the report yesterday.\"\n\n### The Mistake\nYou used the **Present Perfect** tense (*has finished*) with a **specific time** (*yesterday*). In English, these two things do not go together.\n\n### The Rule\n\n**1. Use Past Simple (finished) when you mention a specific time.**\nIf you say *when* something happened (yesterday, last week, two hours ago, in 2010), you must use the Past Simple.\n*   *Example:* I **saw** him **yesterday**. (Correct)\n*   *Example:* I ~~have seen~~ him **yesterday**. (Incorrect)\n\n**2. Use Present Perfect (has finished) when the time is not specific.**\nUse this tense when you want to say an action is completed, but you don't say exactly *when*.\n*   *Example:* She **has finished** the report. (Correct — we don't know when, we just know it is done).\n\n### Summary Table\n\n| Tense | When to use | Example |\n| :--- | :--- | :--- |\n| **Past Simple** | With a specific time (yesterday, last night, etc.) | She **finished** it **yesterday**. |\n| **Present Perfect** | When the time is not mentioned or not important. | She **has finished** it. |",
+          "truncated": false,
+          "neurons": 24.3002,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "The corrected sentence is: \"She finished the report yesterday.\"\n\nThe mistake is the use of the present perfect tense (\"has finished\") instead of the simple past tense (\"finished\"). \n\nIn this sentence, \"yesterday\" is a specific time in the past, so we use the simple past tense to talk about a completed action. The present perfect tense is used to talk about an action that started in the past and continues up to the present or has a connection to the present. \n\nFor example, if we want to talk about an action that started in the past and continues up to the present, we would use the present perfect tense: \"She has been working on the report all day.\"",
+          "truncated": false,
+          "neurons": 12.2363,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "category": "grammar",
+      "prompt": "Correct this sentence and explain the mistake: \"I am interested on this job.\"",
+      "reference": "Correct: \"I am interested in this job.\" The adjective \"interested\" is followed by the preposition \"in\".",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "The corrected sentence is: \"I am interested in this job.\"\n\nThe mistake is the use of \"on\" instead of \"in\". \n\n- \"On\" is used to show a location or position, like \"I am sitting on the chair.\"\n- \"In\" is used to show a relationship or connection, like \"I am interested in this job.\"\n\nSo, in this sentence, \"I am interested in this job\" means that you have a connection or interest in the job, which is the correct meaning.",
+          "truncated": false,
+          "neurons": 3.5097,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "The corrected sentence is: \"I am interested in this job.\"\n\nThe mistake is the word \"on\". In English, we use \"in\" to talk about interests or preferences, not \"on\". For example:\n\n* I am interested in reading books. (Here, \"in\" shows that you like reading books.)\n* I am interested in learning English. (Here, \"in\" shows that you like learning English.)\n\nSo, in the original sentence, \"on\" is not the correct preposition to use.",
+          "truncated": false,
+          "neurons": 3.4048,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "The corrected sentence is: \"I am interested in this job.\"\n\nThe mistake is the word \"on\". In English, we use \"in\" to talk about interests or things we like. For example, \"I am interested in reading books\" or \"I am interested in learning English\".\n\nThe word \"on\" is used to talk about things that are happening or are true at a particular time. For example, \"I am on holiday\" or \"I am on the phone\".\n\nSo, in the sentence \"I am interested on this job\", the word \"on\" is not the correct choice. We should use \"in\" to talk about the interest in the job.",
+          "truncated": false,
+          "neurons": 12.0109,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "**Corrected sentence:** \"I am interested **in** this job.\"  \n\n**Mistake explanation:**  \nThe word **\"interested\"** is an adjective, and it always needs the preposition **\"in\"** when talking about something you are interested in (e.g., a job, a topic, a hobby).  \n\n- **Incorrect:** \"interested **on**\" (the preposition \"on\" is wrong here).  \n- **Correct:** \"interested **in**\" (the preposition \"in\" is correct).  \n\n**Why?**  \nIn English, we say \"interested **in**\" to show the subject of your interest. For example:  \n- \"I am interested **in** learning Spanish.\"  \n- \"She is interested **in** art.\"  \n\nThe preposition **\"on\"** is used for different purposes, like \"talk **on** a topic\" or \"write **on** a subject,\" but not with \"interested.\"  \n\n**Simple rule:**  \n**\"interested\" + \"in\"** = something you are curious or want to do.",
+          "truncated": false,
+          "neurons": 17.4874,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "The correct sentence is:\n\n\"I am interested in this job.\"\n\nThe mistake is the word \"on\" instead of \"in\". \"On\" is a preposition that means \"at\" or \"near\", whereas \"in\" is a preposition that means \"inside\" or \"within\". In this sentence, \"on\" is used to indicate that the speaker is interested in the job, whereas \"in\" would indicate that the speaker is interested in the job's location or surroundings.\n\nFor example:\n\n* \"I am interested in the job.\" (meaning the speaker is interested in the job itself)\n* \"I am interested in this job.\" (meaning the speaker is interested in the job's location or surroundings)",
+          "truncated": false,
+          "neurons": 2.7462,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "The correct sentence is: **\"I am interested in this job.\"**\n\n### The Mistake\nThe mistake is the preposition **\"on.\"** \n\nIn English, certain adjectives are always paired with specific prepositions. This is called a **dependent preposition**. The adjective **\"interested\"** must always be followed by the preposition **\"in.\"**\n\n### The Rule\nThe pattern is: **Subject + be + interested + in + something/doing something.**\n\n### More Examples\nTo help you remember, here are a few more examples using **\"interested in\"**:\n\n*   \"She is **interested in** photography.\"\n*   \"Are you **interested in** playing football?\"\n*   \"They are **interested in** buying a new house.\"\n\n**Tip for learners:** Don't try to translate directly from Vietnamese to English. Instead, try to learn \"interested in\" as one single phrase!",
+          "truncated": false,
+          "neurons": 15.6274,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "category": "grammar",
+      "prompt": "Correct this sentence and explain the mistake: \"Each of the employees have to sign the form.\"",
+      "reference": "Correct: \"Each of the employees has to sign the form.\" \"Each\" takes a singular verb.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "The corrected sentence is: \"Each of the employees has to sign the form.\"\n\nThe mistake is in the verb \"have\". In this sentence, we are talking about employees, which are people. People use the verb \"has\" to talk about themselves, not \"have\".\n\nIn English, \"have\" is used for things that belong to someone or something, like \"I have a book\". But when we talk about people, we use \"has\" instead, like \"I have a job\".\n\nSo, in this sentence, \"has\" is the correct verb to use because we are talking about employees, not things.",
+          "truncated": false,
+          "neurons": 4.1636,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "The correct sentence is:\n\n\"Each employee has to sign the form.\"\n\nThe mistake is the word \"have\" instead of \"has\". \"Has\" is the past tense of the verb \"to have\", whereas \"have\" is the present tense.",
+          "truncated": false,
+          "neurons": 1.0562,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "**Correction:**\n\"Each of the employees **has** to sign the form.\"\n\n---\n\n**Explanation:**\n\nThe mistake is in the verb **\"have.\"** It should be **\"has.\"**\n\nHere is why:\n\n1.  **Find the real subject:** In this sentence, the subject is not \"employees.\" The subject is **\"Each.\"**\n2.  **\"Each\" is always singular:** In English, the word \"Each\" is a singular pronoun. It means \"every single one\" (one by one).\n3.  **The \"of\" phrase is extra information:** The phrase *\"of the employees\"* just tells us which group we are talking about. It does not change the subject.\n\n**Think of it like this:**\n*   Incorrect: Each ~~have~~...\n*   Correct: **Each has**...\n\n**More examples to help you:**\n\n*   **Incorrect:** Each of the students **are** here.\n*   **Correct:** Each of the students **is** here. (Because \"Each\" is singular).\n\n*   **Incorrect:** Each of the apples **taste** sweet.\n*   **Correct:** Each of the apples **tastes** sweet. (Because \"Each\" is singular).",
+          "truncated": false,
+          "neurons": 20.182,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "**Corrected sentence:** \"Each of the employees **has** to sign the form.\"  \n\n**Mistake explanation:**  \nThe subject \"Each of the employees\" is **singular** (because \"each\" refers to one person at a time), but the verb \"have\" is **plural**. This is a **subject-verb agreement error**.  \n\n- **\"Each\"** is a singular pronoun, so it requires a **singular verb** (e.g., \"has\" instead of \"have\").  \n- The phrase \"each of the employees\" means \"every individual employee,\" not \"all employees together.\"  \n\n**Simple rule:**  \nIf the subject is \"each,\" \"every,\" or \"one,\" use a **singular verb**.  \nExample: \"Each student **has** to complete the task.\" ✅  \nNot: \"Each student **have** to complete the task.\" ❌",
+          "truncated": false,
+          "neurons": 14.5757,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "The corrected sentence is: \"Each employee has to sign the form.\"\n\nThe mistake is the use of the plural verb \"have\" instead of the singular verb \"has\". \n\nIn English, when we talk about a group of people (in this case, \"each of the employees\"), we use the plural form of the noun (\"employees\"). However, when we use the word \"each\" to refer to one person in the group, we use the singular form of the verb (\"has\").\n\nThink of it like this: \"Each employee\" means one employee, so we use \"has\". If we said \"The employees have to sign the form\", it would mean all of them have to sign, so we use \"have\".",
+          "truncated": false,
+          "neurons": 12.8392,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "The corrected sentence is: \"Each employee has to sign the form.\"\n\nThe mistake is the use of the plural verb \"have\" instead of the singular verb \"has\". This is because \"each\" is a singular determiner, referring to one employee at a time. When we use \"each\" with a singular noun, we use the singular form of the verb.",
+          "truncated": false,
+          "neurons": 2.6623,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "category": "vocabulary",
+      "prompt": "Explain the word \"meticulous\": give its meaning, two example sentences, one synonym and one antonym.",
+      "reference": "Meaning: very careful and precise, paying great attention to detail. Valid synonyms: careful, thorough, painstaking, scrupulous, precise. Valid antonyms: careless, sloppy, negligent. Needs exactly two natural example sentences that use the word correctly; score 1 if one required item is missing or wrong.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "**Meaning**: \"Meticulous\" means being very careful and paying close attention to details. It describes someone who is thorough and precise in their work or habits.  \n\n**Example 1**: *The scientist was meticulous in recording every detail of the experiment.*  \n**Example 2**: *She is meticulous about her appearance, always dressing perfectly for every occasion.*  \n\n**Synonym**: *Thorough* (someone who checks everything carefully).  \n**Antonym**: *Sloppy* (someone who does things carelessly or without attention to detail).",
+          "truncated": false,
+          "neurons": 16.118,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "Hello! I am happy to help you learn this word.\n\n### **Meticulous** (adjective)\n\n**Meaning:**\nBeing very careful and paying great attention to every small detail. When you are meticulous, you want everything to be perfect and correct.\n\n**Example Sentences:**\n1. She is a **meticulous** worker; she always checks her reports many times to make sure there are no mistakes.\n2. The artist was **meticulous** with every brushstroke to make the painting look real.\n\n**Synonym (a word with a similar meaning):**\n* **Thorough** (This means doing something completely and carefully).\n\n**Antonym (a word with the opposite meaning):**\n* **Careless** (This means not paying attention to details or making mistakes easily).",
+          "truncated": false,
+          "neurons": 18.582,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "Hello! I'm happy to help you learn English.\n\n**Meticulous** is an adjective that means very careful and detailed in your work or actions. It describes someone who pays close attention to small things and makes sure everything is perfect.\n\n**Example sentences:**\n\n1. She was a meticulous artist, spending hours to paint every detail of the picture.\n2. The chef was meticulous about following the recipe to make sure the dish was delicious.\n\n**Synonym:** **Precise** - This word also means careful and accurate in your work or actions.\n\n**Antonym:** **Careless** - This word means not paying attention to details and making mistakes.\n\nI hope this helps you understand the word \"meticulous\" better!",
+          "truncated": false,
+          "neurons": 12.9416,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "The word \"meticulous\" is an adjective that means very careful and precise in your work or actions. It describes someone who pays attention to every detail and is not satisfied with anything less than perfect.\n\nHere are two example sentences:\n\n1. The artist was meticulous in her painting, making sure every brushstroke was perfect and every color was just right.\n2. The engineer was meticulous in her calculations, double-checking every step to ensure the project was completed correctly.\n\nA synonym for \"meticulous\" is \"thorough\".\n\nA antonym for \"meticulous\" is \"careless\".\n\nI hope this helps you understand the word \"meticulous\" better!",
+          "truncated": false,
+          "neurons": 4.3954,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "**Meticulous** (adjective)\n\nMeaning: Carefully and thoroughly careful, precise, and exact in one's work or actions.\n\nExample sentences:\n\n1. She was meticulous in her research, double-checking every fact and detail before submitting her report.\n2. He was meticulous in his cooking, making sure every ingredient was measured and prepared correctly.\n\nSynonym: **Precise**: (meaning careful and exact in one's work or actions)\n\nAntonym: **Lax**: (meaning careless or sloppy in one's work or actions)\n\nIn the context of language learning, being meticulous means paying attention to small details, such as grammar, vocabulary, and pronunciation, to ensure accuracy and quality.",
+          "truncated": false,
+          "neurons": 2.7269,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "Hello! Today, we learn a new word: \"meticulous\".\n\n**Meaning:** Meticulous means very careful and paying a lot of attention to details. It means you are very careful and precise in what you do.\n\n**Example sentences:**\n\n1. She is a meticulous artist, so her paintings are very beautiful and detailed.\n2. He is a meticulous researcher, so he double-checks all the facts before writing his report.\n\n**Synonym:** Precise\n\n**Antonym:** Careless\n\nI hope you understand the word \"meticulous\" now!",
+          "truncated": false,
+          "neurons": 3.7886,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q06",
+      "category": "vocabulary",
+      "prompt": "What does the phrasal verb \"put off\" mean? Give the main meanings with one example for each.",
+      "reference": "Main meaning: to postpone or delay (We put off the meeting until Monday). Another valid meaning: to make someone dislike something or lose interest (The smell put me off); also valid: to distract someone. Score 2 if the postpone meaning is correct and every other meaning given is real; an invented meaning is a hallucination.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "The phrasal verb **\"put off\"** has several meanings. Here are the main ones with examples:\n\n1. **To delay or postpone something**  \n   *Example:* \"We had to **put off** the meeting until next week.\"  \n   (Meaning: Change the time of an event to a later date.)\n\n2. **To make someone feel disgusted or repelled**  \n   *Example:* \"His bad breath **put me off**.\"  \n   (Meaning: Make someone feel uncomfortable or not want to be near someone or something.)\n\n3. **To reject or refuse something**  \n   *Example:* \"She **put off** his marriage proposal.\"  \n   (Meaning: Say \"no\" to an offer or idea.)\n\nLet me know if you need more examples! 😊",
+          "truncated": false,
+          "neurons": 18.1293,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "The phrasal verb \"put off\" has several meanings. Here are the main ones:\n\n1. **To delay or postpone something**: \nExample: \"I was going to go to the beach today, but the rain put off my plans.\"\n\n(In this example, the rain caused the speaker to delay their plans to go to the beach.)\n\n2. **To make someone feel less confident or less interested**: \nExample: \"Her criticism put off the new employee, making him feel nervous about his work.\"\n\n(In this example, the criticism made the new employee feel less confident and less interested in his work.)\n\n3. **To remove something from a surface**: \nExample: \"Can you put off the sticker from the wall?\"\n\n(In this example, the speaker is asking someone to remove the sticker from the wall.)\n\n4. **To put something on a person or an animal (usually a coat or a jacket)**: \nExample: \"Put off your coat, it's too hot in here.\"\n\n(In this example, the speaker is asking someone to take off their coat because it's too hot in the room.)\n\nThese are the main meanings of the phrasal verb \"put off\".",
+          "truncated": false,
+          "neurons": 7.0024,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "Hello! I am happy to help you understand this phrasal verb. **\"Put off\"** is very common in English. It has two main meanings that you should know.\n\n### 1. To delay or postpone something\nThis is the most common meaning. It means you decide to do something at a later time instead of doing it now.\n\n*   **Example:** \"Don't **put off** your homework until tomorrow; do it now!\"\n*   *(Vietnamese equivalent: Trì hoãn)*\n\n### 2. To make someone dislike something\nThis means to make someone lose interest in something or to make them feel that something is unpleasant.\n\n*   **Example:** \"The bad smell in the restaurant really **put me off** my food.\"\n*   *(Vietnamese equivalent: Làm cho ai đó mất hứng/không thích)*\n\n***\n\n### 💡 A small grammar tip for you:\n\"Put off\" is a **separable** phrasal verb. This means you can put the object in the middle.\n\n*   You can say: \"Don't **put off** the meeting.\" (Correct)\n*   You can also say: \"Don't **put** the meeting **off**.\" (Correct)\n\n**Note:** If you use a pronoun like **\"it\"** or **\"them,\"** you **must** put it in the middle:\n*   \"Don't **put it off**.\" (Correct)\n*   ~~\"Don't put off it.\"~~ (Incorrect)\n\nI hope this helps! Do you want to try writing your own example sentence? I can check it for you.",
+          "truncated": false,
+          "neurons": 26.2003,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "The phrasal verb \"put off\" has two main meanings:\n\n1. **Delay or postpone something**: \nExample: \"I need to put off my trip to Vietnam until next year because of work.\"\n\nIn this meaning, \"put off\" means to delay or postpone an event, a plan, or an activity.\n\n2. **Remove or take off something**: \nExample: \"Please put off your shoes before entering the house.\"\n\nIn this meaning, \"put off\" means to remove or take off something, like clothes, shoes, or a jacket.\n\nIt's essential to understand the context to know which meaning is correct.",
+          "truncated": false,
+          "neurons": 11.5138,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "\"Put off\" is a phrasal verb that can have two main meanings.\n\n1. To delay or postpone something:\nExample: \"I put off my trip to the beach until next weekend.\"\n\nIn this example, \"put off\" means to delay or postpone the trip until next weekend.\n\n2. To remove or take off something:\nExample: \"Can you put off your jacket, it's too hot in here?\"\n\nIn this example, \"put off\" means to remove or take off the jacket.\n\nRemember, the key is to understand the context and the word that comes before \"put off\".",
+          "truncated": false,
+          "neurons": 4.0602,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "\"Put off\" is a phrasal verb that means to delay or postpone something, often because it is not wanted or because it is not necessary. Here are the main meanings with examples:\n\n1. **To put off a task**: To put off a task means to delay or postpone it, often because it is not wanted or because it is not necessary. For example:\n\t* \"I put off my homework until tomorrow.\" (I don't want to do it now, so I'm delaying it.)\n2. **To put off a meeting**: To put off a meeting means to delay or postpone it, often because it is not wanted or because it is not necessary. For example:\n\t* \"I put off our meeting until next week.\" (I don't want to meet now, so I'm delaying it.)\n3. **To put off a phone call**: To put off a phone call means to delay or postpone it, often because it is not wanted or because it is not necessary. For example:\n\t* \"I put off answering my phone call until later.\" (I don't want to talk to my friend now, so I'm delaying it.)\n4. **To put off a task until later**: To put off a task until later means to delay or postpone it until a later time. For example:\n\t* \"I'll put off my homework until the weekend.\" (I'll do it later, when I have more time.)\n\nIn general, \"put off\" is a useful phrasal verb that can be used to express a sense of delay or postponement.",
+          "truncated": false,
+          "neurons": 6.0488,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q07",
+      "category": "vocabulary",
+      "prompt": "Give three common collocations with the verb \"make\" and three with the verb \"do\".",
+      "reference": "Valid with make: make a decision, make a mistake, make progress, make money, make an effort, make a phone call. Valid with do: do homework, do the dishes, do business, do research, do exercise, do a favour, do your best. A collocation placed with the wrong verb (for example \"do a mistake\" or \"make homework\") is wrong.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "Here are three common collocations with the verb \"make\" and three with the verb \"do\":\n\n**Collocations with \"make\"**\n\n1. **Make a phone call**: This means to call someone on the phone.\nExample: \"I'm going to make a phone call to my friend.\"\n2. **Make a decision**: This means to choose or decide something.\nExample: \"I'm still thinking about it, I haven't made a decision yet.\"\n3. **Make a mistake**: This means to do something wrong or incorrect.\nExample: \"I made a mistake on the test, I got a low score.\"\n\n**Collocations with \"do\"**\n\n1. **Do homework**: This means to complete school assignments or tasks.\nExample: \"I have a lot of homework to do tonight.\"\n2. **Do exercise**: This means to engage in physical activity to stay healthy.\nExample: \"I'm going to do some exercise at the gym today.\"\n3. **Do business**: This means to work or operate a business.\nExample: \"My brother does business in the city.\"\n\nI hope this helps!",
+          "truncated": false,
+          "neurons": 6.6076,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "Here are three common collocations with the verb \"make\" and three with the verb \"do\":\n\n**Make:**\n\n1. Make a phone call - to call someone on the phone\n2. Make a good impression - to be well-liked or respected\n3. Make a mistake - to do something wrong\n\n**Do:**\n\n1. Do your homework - to study and complete your school tasks\n2. Do something about it - to take action to solve a problem\n3. Do your best - to try your hardest to achieve something",
+          "truncated": false,
+          "neurons": 3.7065,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "Here are three common collocations with the verb \"make\" and three with the verb \"do\":\n\n**Collocations with \"make\"**\n\n1. **Make a phone call**: This means to call someone on the phone.\nExample: \"I will make a phone call to my friend now.\"\n2. **Make a decision**: This means to choose or decide something.\nExample: \"I need to make a decision about what to eat for dinner.\"\n3. **Make a mistake**: This means to do something wrong.\nExample: \"I made a mistake on the test, so I need to retake it.\"\n\n**Collocations with \"do\"**\n\n1. **Do homework**: This means to complete school assignments.\nExample: \"I need to do my homework before I go to bed.\"\n2. **Do exercise**: This means to do physical activity to stay healthy.\nExample: \"I will do exercise every morning to stay fit.\"\n3. **Do shopping**: This means to buy things at a store.\nExample: \"I need to do shopping for groceries today.\"\n\nRemember, these are just a few examples, and there are many more collocations with \"make\" and \"do\" in English.",
+          "truncated": false,
+          "neurons": 20.0533,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "Here are three common collocations for each verb:\n\n**With \"make\":**  \n1. **Make a decision** (e.g., \"She made a quick decision.\")  \n2. **Make a mistake** (e.g., \"He made a small mistake.\")  \n3. **Make a plan** (e.g., \"They made a plan for the trip.\")  \n\n**With \"do\":**  \n1. **Do a favor** (e.g., \"Can you do me a favor?\")  \n2. **Do homework** (e.g., \"I need to do my homework.\")  \n3. **Do the dishes** (e.g., \"Who will do the dishes?\")  \n\nThese phrases are commonly used in everyday English. Let me know if you need more examples! 😊",
+          "truncated": false,
+          "neurons": 13.2958,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "To help you remember, here is a simple rule:\n*   **Make** is usually for **creating** or producing something new.\n*   **Do** is usually for **tasks**, jobs, or activities.\n\nHere are three common collocations for each:\n\n### **The verb \"Make\"**\n\n1.  **Make a mistake** (to do something wrong)\n    *   *Example:* \"Don't worry if you **make a mistake**; it is part of learning.\"\n2.  **Make a decision** (to choose something)\n    *   *Example:* \"I need to **make a decision** about which car to buy.\"\n3.  **Make a phone call** (to use the phone to talk to someone)\n    *   *Example:* \"Please wait a moment, I need to **make a phone call**.\"\n\n***\n\n### **The verb \"Do\"**\n\n1.  **Do homework** (to complete school tasks)\n    *   *Example:* \"I usually **do my homework** in the evening.\"\n2.  **Do the dishes** (to wash plates, bowls, and spoons)\n    *   *Example:* \"It is your turn to **do the dishes** after dinner.\"\n3.  **Do exercise** (to do physical activity to stay healthy)\n    *   *Example:* \"I try to **do exercise** for 30 minutes every day.\"",
+          "truncated": false,
+          "neurons": 22.6457,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "Here are three common collocations with the verb \"make\" and three with the verb \"do\":\n\n**Verb \"make\"**\n\n1. **Make a plan**: To plan something, to prepare a plan.\n2. **Make a decision**: To decide something, to make a choice.\n3. **Make a mistake**: To do something wrong, to make a mistake.\n\n**Verb \"do\"**\n\n1. **Do a test**: To try something, to do an experiment.\n2. **Do a job**: To work, to do a task.\n3. **Do something for someone**: To do something for someone, to help them.",
+          "truncated": false,
+          "neurons": 2.5163,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q08",
+      "category": "difference",
+      "prompt": "What is the difference between \"economic\" and \"economical\"? Give one example sentence for each.",
+      "reference": "\"economic\" = relating to the economy or economics (economic growth). \"economical\" = saving money, time or resources; not wasteful (an economical car). The example sentences must match these meanings.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "In English, \"economic\" and \"economical\" are often confused, but they have different meanings.\n\n\"Economic\" refers to something related to money, business, or the economy. It describes a situation, system, or activity that deals with the production, distribution, and consumption of goods and services.\n\nExample sentence: \"The government's economic policies aim to stimulate growth and reduce unemployment.\"\n\nOn the other hand, \"economical\" means careful with money or resources, and it describes a way of doing something that is cost-effective or frugal.\n\nExample sentence: \"Buying a used car was an economical choice for our family, as it saved us a lot of money.\"\n\nSo, in short: \"economic\" is about money and business, while \"economical\" is about being careful with money and resources.",
+          "truncated": false,
+          "neurons": 5.4223,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "In English, \"economic\" and \"economical\" are often confused, but they have different meanings.\n\n- \"Economic\" refers to something related to the economy or finance. It can describe a situation, a system, or a policy that affects the economy.\n\nExample: \"The economic growth in our country is very good this year.\"\n\n- \"Economical\" means using resources carefully and efficiently, often to save money. It describes a way of doing something that is cost-effective.\n\nExample: \"This new car is economical on fuel, so it's a good choice for long trips.\"\n\nRemember, if you're talking about the economy or finance, use \"economic\". If you're talking about being careful with money or resources, use \"economical\".",
+          "truncated": false,
+          "neurons": 13.4916,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "\"Economic\" and \"economical\" are two words that are often confused with each other, but they have different meanings.\n\n**Economic** refers to something that is related to the production, distribution, and consumption of goods and services in a country or society. It means that something is useful, efficient, and effective in meeting people's needs.\n\nExample sentence: \"The new economic plan aims to increase the production of renewable energy to reduce our country's reliance on fossil fuels.\"\n\n**Economical**, on the other hand, means being careful and frugal in spending or using resources. It refers to something that is wise, prudent, and efficient in its use.\n\nExample sentence: \"She was economical with her money, saving every penny to buy a new car.\"\n\nIn general, if you're talking about something that is related to the production, distribution, and consumption of goods and services, use \"economic\". If you're talking about something that is wise and frugal in its use, use \"economical\".",
+          "truncated": false,
+          "neurons": 3.9266,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "It is very common to confuse these two words because they look similar, but they have different meanings.\n\n### 1. Economic\n**Meaning:** This word relates to the **economy** (the system of money, trade, and industry in a country). Use this when you are talking about big things like money, business, or government.\n\n*   **Example:** \"The country is facing an **economic** crisis.\"\n    *(Meaning: The country's money and business system are in trouble.)*\n\n---\n\n### 2. Economical\n**Meaning:** This word means **saving money** or **not wasting** resources (like time, fuel, or food). It is similar to the word \"thrifty\" or \"efficient.\"\n\n*   **Example:** \"This small car is very **economical** because it uses very little petrol.\"\n    *(Meaning: The car helps you save money because it doesn't waste fuel.)*\n\n---\n\n### Summary Tip to remember:\n\n*   **Economic** $\\rightarrow$ Think of **Economy** (Nền kinh tế).\n*   **Economical** $\\rightarrow$ Think of **Economy/Saving** (Tiết kiệm).",
+          "truncated": false,
+          "neurons": 20.982,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "Good question!\n\nThe words \"economic\" and \"economical\" are often confused because they sound similar, but they have different meanings.\n\n**Economic** refers to something related to the economy, especially the study of how a country's wealth is produced and distributed. For example:\n\n* \"The economic growth of the country was affected by the global recession.\"\n\n**Economical**, on the other hand, means using resources carefully and not wasting them. It means being frugal or thrifty. For example:\n\n* \"She is an economical person and always buys second-hand clothes instead of new ones.\"\n\nSo, if you're talking about the economy, use \"economic\". If you're talking about being careful with money or resources, use \"economical\".",
+          "truncated": false,
+          "neurons": 4.7539,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "**\"Economic\"** relates to the **economy** (money, trade, resources, or economic systems).  \n**\"Economical\"** means **cost-effective** or **using resources wisely** (saving money or avoiding waste).  \n\n### Example sentences:  \n1. **Economic**: *The government is focusing on **economic** growth to improve the country's future.*  \n   (Here, \"economic\" refers to the economy as a whole.)  \n\n2. **Economical**: *This car is very **economical** to run because it uses little fuel.*  \n   (Here, \"economical\" means it saves money on fuel.)  \n\n### Key difference:  \n- **Economic** = about the economy (money, trade, etc.).  \n- **Economical** = about saving money or using resources efficiently.",
+          "truncated": false,
+          "neurons": 18.5772,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q09",
+      "category": "difference",
+      "prompt": "What is the difference between \"affect\" and \"effect\"? Give one example sentence for each.",
+      "reference": "Usual use: \"affect\" is a verb meaning to influence; \"effect\" is a noun meaning a result or change. The examples must match. Mentioning that \"effect\" can be a verb (to bring about) or \"affect\" a noun (psychology) is correct but not required.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "This is a very common question! The easiest way to remember the difference is to look at their **parts of speech**.\n\n### 1. Affect (Verb)\n**Affect** is usually a **verb**. It is an **action**. It means to influence something or to cause a change.\n\n*   **Tip:** Remember **A**ffect = **A**ction.\n*   **Example:** The cold weather **affects** my health. \n*(In this sentence, \"affects\" is the action happening to \"my health\".)*\n\n---\n\n### 2. Effect (Noun)\n**Effect** is usually a **noun**. It is a **thing**. It is the result or the consequence of an action.\n\n*   **Tip:** Remember **E**ffect = **E**nd result.\n*   **Example:** The cold weather had a bad **effect** on my health.\n*(In this sentence, \"effect\" is the \"thing\" or the result that happened.)*\n\n---\n\n### Summary Table\n\n| Word | Part of Speech | Meaning | Simple Trick |\n| :--- | :--- | :--- | :--- |\n| **Affect** | Verb (Action) | To change something | **A**ffect = **A**ction |\n| **Effect** | Noun (Thing) | The result of a change | **E**ffect = **E**nd result |",
+          "truncated": false,
+          "neurons": 22.2002,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "In English, \"affect\" and \"effect\" are two words that are often confused with each other. But they have different meanings.\n\n\"Affect\" is a verb, which means to influence or have an impact on something. It can also mean to pretend or fake something.\n\nExample sentence: \"The rain will affect the parade.\" (Here, \"affect\" means the rain will influence the parade.)\n\n\"Effect\", on the other hand, is a noun, which means a result or a change that happens because of something.\n\nExample sentence: \"The effect of the rain on the parade was cancelled.\" (Here, \"effect\" means the result of the rain on the parade.)\n\nSo, to remember the difference: if you're talking about something that is happening to someone or something (influence), use \"affect\". If you're talking about the result of something (change), use \"effect\".",
+          "truncated": false,
+          "neurons": 5.9358,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "In English, \"affect\" and \"effect\" are often confused, but they have different meanings.\n\n- \"Affect\" is a verb. It means to influence or have an impact on something or someone.\nExample: \"The weather will affect the crops.\" (Here, the weather is influencing the crops.)\n\n- \"Effect\" is a noun. It means a result or a change that happens because of something.\nExample: \"The effect of the rain was that the streets were flooded.\" (Here, the result of the rain was that the streets were flooded.)\n\nRemember: If you can replace the word with \"influence\" or \"impact\", use \"affect\". If you can replace the word with \"result\" or \"change\", use \"effect\".",
+          "truncated": false,
+          "neurons": 13.466,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "In English, \"affect\" and \"effect\" are two words that are often confused with each other, but they have different meanings.\n\n**Affect** is a verb, which means to influence or have an impact on something. Here's an example sentence:\n\n\"The cold weather will affect the crops.\"\n\nIn this sentence, \"affect\" is a verb, and it means that the weather will have an impact on the crops.\n\n**Effect**, on the other hand, is a noun, which means a result or a consequence. Here's an example sentence:\n\n\"The effect of the cold weather on the crops was devastating.\"\n\nIn this sentence, \"effect\" is a noun, and it means the result of the weather on the crops.\n\nTo remember the difference, you can use the following trick:\n\n* If you can replace the word with \"influence\" or \"impact\", use \"affect\".\n* If you can replace the word with \"result\" or \"consequence\", use \"effect\".",
+          "truncated": false,
+          "neurons": 3.8147,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "Nice question!\n\nIn English, \"affect\" and \"effect\" are two words that are often confused with each other, but they have different meanings.\n\n**Affect** is a verb, which means to influence or have an impact on something or someone.\n\nExample sentence: \"The rain will affect the traffic on the road.\"\n\nIn this sentence, \"affect\" means that the rain will influence or impact the traffic on the road.\n\n**Effect**, on the other hand, is a noun, which means a result or a change that happens because of a particular action or situation.\n\nExample sentence: \"The effect of the rain on the traffic was terrible.\"\n\nIn this sentence, \"effect\" means the result or change that happened because of the rain on the traffic.\n\nSo, to remember the difference:\n\n* If you're talking about something that is happening to something or someone (an influence or impact), use \"affect\".\n* If you're talking about the result or change that happens because of something, use \"effect\".",
+          "truncated": false,
+          "neurons": 6.125,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "The difference between **\"affect\"** and **\"effect\"** is:  \n- **\"Affect\"** is usually a **verb** (to influence something).  \n  Example: *The weather **affects** my mood.*  \n\n- **\"Effect\"** is usually a **noun** (a result or outcome).  \n  Example: *The **effect** of the medicine was quick.*  \n\n**Note:** Sometimes \"effect\" can also be a **verb** (to cause something to happen), but this is less common.  \nExample: *The new law will **effect** change.*  \n\nFor most learners, remember: **Affect = verb**, **Effect = noun**.",
+          "truncated": false,
+          "neurons": 12.4166,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q10",
+      "category": "difference",
+      "prompt": "When do I use \"since\" and when do I use \"for\" with the present perfect? Give two examples for each.",
+      "reference": "\"since\" + a point in time (since 2019, since Monday); \"for\" + a length of time (for three years, for two hours). The examples must use the present perfect correctly; \"since five years\" or \"for 2019\" is wrong.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "You use **\"since\"** with a **specific point in time** (e.g., a day, month, year, or moment).  \nYou use **\"for\"** with a **duration of time** (e.g., how long something lasts).  \n\n### Examples with **\"since\":**  \n1. I have lived here **since 2015**. (A specific year)  \n2. She has worked at the company **since Monday**. (A specific day)  \n\n### Examples with **\"for\":**  \n1. They have studied Spanish **for two months**. (A length of time)  \n2. We have been friends **for five years**. (A duration)  \n\n**Key difference:**  \n- **\"Since\"** = \"from [specific time] until now\"  \n- **\"For\"** = \"how long (e.g., 2 hours, 5 years)\"",
+          "truncated": false,
+          "neurons": 15.7052,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "In English, \"since\" and \"for\" are used with the present perfect to talk about time. Here are the rules:\n\n- Use \"since\" when you talk about a specific date or time in the past.\n- Use \"for\" when you talk about a period of time in the past without a specific date.\n\n**Since:**\n\n1. I have been studying English since 2020. (I started studying English on a specific date.)\n2. She has been living in the US since last year. (She moved to the US on a specific date.)\n\n**For:**\n\n1. I have been studying English for three years. (I started studying English, but I don't know the exact date.)\n2. They have been working together for five months. (They started working together, but I don't know the exact date.)\n\nRemember, \"since\" is used with a specific date, and \"for\" is used with a period of time without a specific date.",
+          "truncated": false,
+          "neurons": 17.0012,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "To understand the difference, think about **when** the action started versus **how long** it lasted.\n\n### 1. Use \"Since\" for a specific starting point\nUse **since** when you want to say *when* the action began. It points to a specific moment in the past (a date, a time, or an event).\n\n**Formula:** Since + [Starting Point]\n\n*   **Example 1:** I have lived in Hanoi **since 2010**. (2010 is the starting point).\n*   **Example 2:** She has been sick **since Monday**. (Monday is the starting point).\n\n---\n\n### 2. Use \"For\" for a period of time\nUse **for** when you want to say *how long* the action has lasted. It talks about the total amount of time (minutes, hours, days, years).\n\n**Formula:** For + [Length of Time]\n\n*   **Example 1:** I have lived in Hanoi **for 14 years**. (14 years is the total length of time).\n*   **Example 2:** She has been sick **for three days**. (Three days is the total length of time).\n\n---\n\n### Summary Table\n\n| Use **SINCE** (Starting Point) | Use **FOR** (Length of Time) |\n| :--- | :--- |\n| Since 8:00 AM | For 2 hours |\n| Since Monday | For 5 days |\n| Since January | For 6 months |\n| Since I was a child | For a long time |",
+          "truncated": false,
+          "neurons": 23.273,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "Here are the rules for using \"since\" and \"for\" with the present perfect:\n\n**Using \"since\" with the present perfect:**\n\n* \"I have eaten breakfast since yesterday.\"\n* \"I have been studying English for three years.\"\n\nIn these examples, \"since\" is used to show that the action started at a specific point in the past and continues up to the present.\n\n**Using \"for\" with the present perfect:**\n\n* \"I have been studying English for three years.\"\n* \"I have been working for five years.\"\n\nIn these examples, \"for\" is used to show that the action started at a specific point in the past and continues up to the present.\n\nRemember, the key is to use \"since\" when you're talking about a specific point in the past and \"for\" when you're talking about a general period of time.",
+          "truncated": false,
+          "neurons": 3.3549,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "In English, \"since\" and \"for\" are both used with the present perfect tense, but they have different meanings.\n\n**Use \"since\" when:**\n\n1. You want to talk about a period of time that started in the past and continues up to now.\nExample: I haven't seen my friend since I moved to a new city.\n\n2. You want to talk about a reason or a cause that started in the past and is still relevant now.\nExample: I haven't eaten breakfast since I got up early.\n\n**Use \"for\" when:**\n\n1. You want to talk about a period of time that started in the past and ended at a specific point in the past.\nExample: I've been studying English for three years.\n\n2. You want to talk about a reason or a cause that started in the past and ended at a specific point in the past.\nExample: I've been waiting for my flight for two hours.\n\nRemember, \"since\" is used for ongoing periods of time, while \"for\" is used for completed periods of time.",
+          "truncated": false,
+          "neurons": 6.9997,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "In English, \"since\" and \"for\" are both used with the present perfect tense, but they have slightly different meanings.\n\n**Since** is used to talk about a specific point in time in the past, and it emphasizes the starting point of the action. It's like a clock starting from a specific time.\n\nExamples:\n\n1. I have been studying English since 2018. (I started studying English at a specific time, 2018)\n2. She has been living in Hanoi since last year. (She started living in Hanoi at a specific time, last year)\n\n**For** is used to talk about a period of time, and it emphasizes the duration of the action. It's like a clock ticking for a certain amount of time.\n\nExamples:\n\n1. I have been studying English for three years. (I've been studying English for a certain amount of time, three years)\n2. They have been working together for five months. (They've been working together for a certain amount of time, five months)\n\nRemember, if you can say \"from\" before the time, use \"since\". If you can say \"during\" or \"in\" before the time, use \"for\".",
+          "truncated": false,
+          "neurons": 7.2789,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q11",
+      "category": "toeic_ielts",
+      "prompt": "TOEIC Part 5. Choose the correct answer and explain why: The new software will help employees ___ their work more efficiently. (A) complete (B) completing (C) completes (D) completion",
+      "reference": "Correct answer: (A) complete, because \"help\" is followed by an object and a base verb (optionally with \"to\").",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "The correct answer is (B) completing.\n\nThe reason is that the sentence is talking about the future effect of the new software. It will help employees to complete their work more efficiently. The verb \"completing\" is in the present participle form, which is used to talk about actions that are happening now or will happen in the future. \n\nFor example: The new software will help employees completing their work more efficiently. \n\nIn this sentence, \"completing\" is the present participle form of the verb \"complete\". It shows that the action of completing the work will be helped by the new software.\n\nThe other options are not correct because:\n\n- (A) complete is a simple past tense verb, which is not suitable for this sentence.\n- (C) completes is a present simple tense verb, which is not suitable for this sentence because it's talking about the future effect.\n- (D) completion is a noun, which is not suitable for this sentence because it's talking about the action of completing the work, not the result of completing the work.",
+          "truncated": false,
+          "neurons": 18.7892,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "The correct answer is **(A) complete**.\n\n### Explanation:\n\nThe key to this question is the verb **\"help.\"** In English, the verb \"help\" follows a specific grammar pattern when you want to say someone assists another person to do something.\n\n**The Rule:**\nThere are two correct ways to use \"help\" with an object:\n1.  **help + someone + verb (bare infinitive)** $\\rightarrow$ *help someone **do** something*\n2.  **help + someone + to + verb** $\\rightarrow$ *help someone **to do** something*\n\nIn your sentence:\n*   **Subject:** The new software\n*   **Verb:** will help\n*   **Object (someone):** employees\n*   **Action:** **complete** (or *to complete*)\n\nBoth \"complete\" and \"to complete\" are grammatically correct, but only **\"complete\"** is provided in the options.\n\n---\n\n### Why the other options are wrong:\n\n*   **(B) completing:** We do not use the \"-ing\" form directly after \"help + someone.\"\n*   **(C) completes:** We do not use the third-person singular (-s) after \"help + someone.\" The verb must be in its base form.\n*   **(D) completion:** This is a **noun** (sự hoàn thành). After the object \"employees,\" we need a **verb** to show what action the employees are performing.\n\n### Summary for your notes:\n> **Help + Object + Verb (base form)**\n> *Example: She helped me **fix** my car.* (Correct)\n> *Example: She helped me **to fix** my car.* (Correct)",
+          "truncated": false,
+          "neurons": 25.6184,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "The correct answer is (A) complete.\n\nExplanation: \"The new software will help employees complete their work more efficiently.\"\n\nThe correct verb to use is \"complete\", which is in the present perfect tense. The present perfect tense is used to describe an action that started in the past and continues up to the present moment.\n\n* \"Complete\" is the correct form of the verb \"complete\" in the present perfect tense, which is used to describe an action that started in the past and continues up to the present moment.\n\n* \"Completing\" is the correct form of the verb \"complete\" in the present simple tense, which is used to describe an action that started in the past and is now finished.\n* \"Completes\" is the correct form of the verb \"complete\" in the present continuous tense, which is used to describe an action that is in progress.\n* \"Completion\" is not a verb, it's a noun.\n\nSo, the correct sentence is: \"The new software will help employees complete their work more efficiently.\"",
+          "truncated": false,
+          "neurons": 4.0172,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "The correct answer is **(A) complete**.  \n\n**Explanation:**  \nThe sentence structure is:  \n**\"The new software will help employees ___ their work more efficiently.\"**  \n\n- **\"Help\"** is a verb that can be followed by a **base verb** (without \"to\") or a **gerund** (verb + -ing). However, in this case, the correct form is the **base verb**.  \n  - Example: \"help + object + base verb\" (e.g., \"help employees **complete** their work\").  \n  - \"Help\" + gerund (e.g., \"help employees **completing** their work\") is less common and often considered less natural in this context.  \n\n- **Option (B) completing** (gerund) is incorrect because the sentence requires a **verb**, not a noun or gerund.  \n- **Option (C) completes** (third-person singular) is incorrect because the subject \"employees\" is plural, and the verb should match in number.  \n- **Option (D) completion** (noun) is incorrect because the sentence needs a **verb** to complete the action.  \n\n**Final Answer:** **(A) complete**  \n**Why?** \"Help\" is followed by a base verb (e.g., \"help employees **complete** their work\").",
+          "truncated": false,
+          "neurons": 30.4118,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "The correct answer is (B) completing.\n\nThe reason is that the sentence is talking about a future action. The new software will help employees to finish their work more efficiently in the future, not that it has already helped them. So, we use the present participle form \"completing\" to show this future action.\n\nFor example: \"The new software will help employees completing their work more efficiently.\"\n\nIf we use \"complete\" (A), it means the work is already finished, which doesn't fit the context. If we use \"completes\" (C), it's a simple present tense, which also doesn't fit the context. And \"completion\" (D) is a noun, not a verb, so it can't be used in this sentence.",
+          "truncated": false,
+          "neurons": 5.1616,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "The correct answer is (A) complete.\n\nExplanation: \n\n- \"complete\" is a verb that means to finish something. In this sentence, it is used to talk about the future action of helping employees finish their work more efficiently.\n\n- \"completing\" is a present participle verb form that means to be in the process of finishing something. It is used to talk about an ongoing action.\n\n- \"complete\" and \"completing\" are not the same thing. \"Complete\" is a verb, while \"completing\" is a present participle verb form.\n\n- \"completion\" is a noun that refers to the act of finishing something. It is not used as a verb in this sentence.\n\nSo, in this sentence, \"complete\" is the correct choice because it is a verb that talks about the future action of helping employees finish their work more efficiently.",
+          "truncated": false,
+          "neurons": 5.8898,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q12",
+      "category": "toeic_ielts",
+      "prompt": "TOEIC Part 5. Choose the correct answer and explain why: The new policy will remain in effect ___ further notice. (A) until (B) by (C) at (D) during",
+      "reference": "Correct answer: (A) until. \"until further notice\" is a fixed phrase.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "The correct answer is (A) until.\n\nExplanation: \"until\" is a preposition that means \"for a certain period of time\". In this context, it means that the policy will remain in effect for a certain period of time, which is not specified. The correct sentence should be: \"The new policy will remain in effect until further notice.\"\n\nThe other options are incorrect because:\n\n* (B) \"by\" is a preposition that means \"at a certain time\" or \"during a certain time\", which is not the correct meaning in this context.\n* (C) \"at\" is a preposition that means \"to a certain place\" or \"in a certain place\", which is not the correct meaning in this context.\n* (D) \"during\" is a preposition that means \"while\" or \"for a certain period of time\", which is not the correct meaning in this context.",
+          "truncated": false,
+          "neurons": 3.5767,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "The correct answer is **(A) until**.\n\n### 1. Meaning of the sentence\n\"The new policy will remain in effect **until** further notice.\"\n*(Chính sách mới sẽ tiếp tục có hiệu lực **cho đến khi** có thông báo mới.)*\n\n---\n\n### 2. Why (A) is correct\nIn English, **\"until further notice\"** is a very common **fixed phrase** (collocation). \n\n*   **Until** is used to show that a situation will continue up to a specific point in time.\n*   In this sentence, the \"policy\" stays active from now **up to the moment** a new announcement is made.\n\n---\n\n### 3. Why the other options are wrong\n\n*   **(B) by**: We use \"by\" to talk about a **deadline** (not later than a certain time). \n    *   *Example:* \"Please finish the report **by** Friday.\" (You must finish it before or on Friday). \n    *   \"By further notice\" does not make sense here.\n\n*   **(C) at**: We use \"at\" for **specific clock times** or specific points.\n    *   *Example:* \"The meeting starts **at** 9:00 AM.\"\n    *   \"Further notice\" is not a specific time on a clock.\n\n*   **(D) during**: We use \"during\" to talk about a **period of time** (a duration).\n    *   *Example:* \"It rained **during** the night.\"\n    *   \"Further notice\" is treated as a single point in time (the moment the notice happens), not a long duration.\n\n---\n\n### 💡 Tutor's Tip for TOEIC:\nWhen you see the words **\"further notice\"** in a TOEIC exam, your brain should immediately look for the word **\"until\"**. They almost always go together!\n\n*   **Until further notice** = Cho đến khi có thông báo thêm.",
+          "truncated": false,
+          "neurons": 29.8003,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "The correct answer is **(A) until**.  \n\n**Explanation:**  \nThe phrase **\"until further notice\"** is a common expression meaning something will stay in effect **until there is a new announcement**. Here's why the other options are incorrect:  \n- **(B) by**: \"By further notice\" is not a standard phrase. \"By\" usually indicates a deadline (e.g., \"submit by Friday\").  \n- **(C) at**: \"At further notice\" is not correct. \"At\" is used for specific times or places (e.g., \"at 3 PM\").  \n- **(D) during**: \"During further notice\" is unclear. \"During\" refers to a period, but \"further notice\" is not a time period.  \n\n**Correct sentence:**  \n\"The new policy will remain in effect **until** further notice.\"  \n\nThis means the policy will stay active **until there is a new notice**.",
+          "truncated": false,
+          "neurons": 18.9181,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "The correct answer is (A) until.\n\nThe reason is that \"until\" is a preposition that means \"up to a certain time\" or \"as long as\". In this sentence, \"until further notice\" means that the new policy will continue to be in effect until someone says otherwise, which is a common idiomatic expression in English.\n\nFor example: \"The new policy will remain in effect until further notice.\" means that the policy will stay in place until someone gives a new instruction or announcement.\n\nThe other options are not correct because:\n\n* \"By\" is a preposition that means \"with the help of\" or \"before a certain time\", but it doesn't fit in this sentence.\n* \"At\" is a preposition that means \"in a particular place or time\", but it doesn't fit in this sentence.\n* \"During\" is a preposition that means \"happening or existing at a particular time\", but it doesn't fit in this sentence because it implies that the policy will be in effect for a specific period of time, not until someone says otherwise.",
+          "truncated": false,
+          "neurons": 6.82,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "The correct answer is (A) until.\n\nThe reason is that \"until\" is used to indicate a time period or a point in time when something will happen or continue. In this sentence, \"until further notice\" means that the new policy will continue to be in effect until there is a new announcement or instruction.\n\nFor example: \"The new policy will remain in effect until further notice.\" This means that the policy will continue to be in effect until there is a new announcement or instruction.\n\nThe other options are not correct because:\n\n- \"By\" is used to indicate a point in time when something will be done, not a time period. For example: \"The project will be finished by next week.\"\n- \"At\" is used to indicate a specific point in time or a location. For example: \"The meeting will be at 2 o'clock.\"\n- \"During\" is used to indicate a time period when something happens, but it is not used in this context. For example: \"The policy will be in effect during the summer.\"",
+          "truncated": false,
+          "neurons": 18.3879,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "The correct answer is (A) until.\n\nExplanation: \"Until\" is used to show the duration of something. In this sentence, \"until\" means that the new policy will remain in effect for a certain period of time, and it will stop being in effect after that period. \n\nFor example: \"The new policy will remain in effect until the end of the year.\"\n\nThe other options don't fit well in this sentence:\n\n- \"By\" is used to show the time when something happens, not the duration of something.\n- \"At\" is used to show a specific time or moment, not the duration of something.\n- \"During\" is used to show a period of time when something happens, but it doesn't fit well in this sentence because it implies that the policy is happening at the same time, not for a certain period of time.\n\nSo, \"until\" is the best choice to show that the new policy will remain in effect for a certain period of time.",
+          "truncated": false,
+          "neurons": 6.5251,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q13",
+      "category": "toeic_ielts",
+      "prompt": "TOEIC Part 5. Choose the correct answer and explain why: Despite the heavy rain, the outdoor event was ___ successful. (A) remarkable (B) remark (C) remarkably (D) remarking",
+      "reference": "Correct answer: (C) remarkably, because an adverb is needed to modify the adjective \"successful\".",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "The correct answer is **(C) remarkably**.  \n\n**Explanation:**  \nThe sentence is: \"Despite the heavy rain, the outdoor event was ___ successful.\"  \n- **\"Was\"** is a linking verb, so the blank needs an **adverb** to modify the adjective **\"successful\"** (e.g., \"was **remarkably** successful\").  \n- **(A) remarkable** is an **adjective**, but \"was remarkable successful\" is incorrect because two adjectives cannot follow \"was\" without a conjunction.  \n- **(B) remark** is a **noun/verb**, which does not fit grammatically.  \n- **(C) remarkably** is an **adverb**, correctly modifying \"successful\" to mean \"in a remarkable way.\"  \n- **(D) remarking** is a **verb form**, which does not fit the structure.  \n\n**Answer:** (C) remarkably  \n**Why?** Adverbs like \"remarkably\" describe how something happens, here modifying \"successful\" to explain the event's success despite the rain.",
+          "truncated": false,
+          "neurons": 23.5596,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "The correct answer is (A) remarkable.\n\nThe word \"remarkable\" means very good or impressive, especially in a way that is unexpected. In this sentence, \"remarkable\" is used to describe the event, meaning that it was successful despite the heavy rain, which is an unexpected or impressive situation.\n\nFor example: \"The concert was remarkable, considering the storm that night.\"\n\nThe other options are not correct:\n\n* (B) \"Remark\" is a verb that means to make a comment or notice something. It doesn't fit in this sentence.\n* (C) \"Remarkably\" is an adverb that means in a remarkable way. It's not the correct word to use in this sentence.\n* (D) \"Remarking\" is a verb that means to make a comment or notice something. It's not the correct word to use in this sentence.\n\nSo, the correct answer is (A) remarkable.",
+          "truncated": false,
+          "neurons": 5.9592,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "The correct answer is (C) remarkably.\n\nThe correct sentence is: Despite the heavy rain, the outdoor event was remarkably successful.\n\nExplanation: \"remarkably\" is an adverb that means \"in a remarkable way\" or \"in a very good way\". It is used to describe an event or situation that is impressive or successful, even though it is not perfect. In this sentence, \"remarkably\" is used to emphasize that the event was successful despite the rain, which was a challenge.",
+          "truncated": false,
+          "neurons": 2.0302,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "The correct answer is (A) remarkable.\n\nThe word \"despite\" means \"although\" or \"in spite of\". It shows that something happens even though there is a problem. In this sentence, the event happened even though it was raining heavily.\n\nThe word \"remarkable\" means \"very good\" or \"impressive\". It shows that the event was successful and impressive.\n\nSo, the sentence means that the event was very successful, even though it was raining heavily.\n\nExample: Despite the heavy rain, the outdoor event was remarkable. (This means the event was very successful and impressive.)\n\nThe other options are not correct:\n\n- (B) remark: This is a verb that means \"to say something\". It doesn't fit in this sentence.\n- (C) remarkably: This is an adverb that means \"in a remarkable way\". It's not the correct answer because it's not the main word in the sentence.\n- (D) remarking: This is a verb that means \"to say something\". It's not the correct answer because it's not the main word in the sentence.",
+          "truncated": false,
+          "neurons": 19.2657,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "The correct answer is (A) remarkable.\n\n\"Remarkable\" is an adjective that means very good or impressive. In this sentence, it is used to describe the success of the outdoor event despite the heavy rain. The word \"remarkable\" is used to show that the event was successful, even though it was not expected to be.\n\nThe other options are not correct:\n\n* (B) \"remark\" is a verb that means to notice or pay attention to something. It's not used in this context.\n* (C) \"remarkably\" is an adverb that means very or extremely. While it's related to \"remarkable\", it's not the best choice in this sentence.\n* (D) \"remarking\" is a verb that means talking or commenting on something. It's not used in this context.\n\nSo, the sentence should read: \"Despite the heavy rain, the outdoor event was remarkable.\"",
+          "truncated": false,
+          "neurons": 6.1382,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "The correct answer is **(C) remarkably**.\n\n### Explanation:\n\nTo solve this question, you need to look at the word immediately **after** the blank.\n\n1.  **Analyze the structure:**\n    The word after the blank is **\"successful\"**. \n    *   \"Successful\" is an **adjective** (tính từ).\n\n2.  **Apply the grammar rule:**\n    In English, when we want to describe or modify an adjective, we must use an **adverb** (trạng từ).\n    *   **Formula:** Adverb + Adjective\n\n3.  **Evaluate the options:**\n    *   **(A) remarkable:** This is an **adjective**. (We cannot use an adjective to describe another adjective).\n    *   **(B) remark:** This is a **noun** (lời nhận xét) or a **verb** (nhận xét).\n    *   **(C) remarkably:** This is an **adverb** (ending in *-ly*). This is the correct choice because it modifies the adjective \"successful.\"\n    *   **(D) remarking:** This is the **V-ing** form of the verb.\n\n**Sentence meaning:**\n\"Despite the heavy rain, the outdoor event was **remarkably** successful.\"\n*(Mặc dù mưa lớn, sự kiện ngoài trời đã thành công một cách đáng chú ý.)*\n\n---\n**💡 Tutor's Tip for TOEIC:**\nWhen you see a blank followed by an adjective, look for the answer ending in **-ly**. This is a very common pattern in Part 5!",
+          "truncated": false,
+          "neurons": 30.5549,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q14",
+      "category": "toeic_ielts",
+      "prompt": "Give three verbs that can replace \"shows\" in this IELTS Writing Task 1 sentence and write one full sentence for each: \"The chart shows the number of visitors.\"",
+      "reference": "Valid verbs: illustrates, indicates, presents, depicts, reveals, demonstrates, displays. Each sentence must be grammatical and keep the meaning; a wrong verb form or an unnatural collocation lowers the score.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "Hello! In IELTS Writing Task 1, using different words (synonyms) instead of repeating \"shows\" will help you get a higher score for **Lexical Resource** (vocabulary).\n\nHere are three great verbs to replace \"shows\":\n\n### 1. Illustrates\nThis is a very common and professional word for academic writing.\n*   **Sentence:** The bar chart **illustrates** the number of visitors to the museum between 2010 and 2020.\n\n### 2. Depicts\nThis word is useful when you are describing a visual representation of data.\n*   **Sentence:** The line graph **depicts** the number of visitors in three different cities.\n\n### 3. Displays\nThis is a simple but effective way to say that the information is presented in the chart.\n*   **Sentence:** The table **displays** the number of visitors recorded each month.\n\n***\n\n**💡 Tutor's Tip:** \nWhen you write your introduction, try to change the structure slightly. Instead of just changing the verb, you can also change \"the number of visitors\" to \"**how many people visited**\" to show even more variety!",
+          "truncated": false,
+          "neurons": 26.4912,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "Here are three verbs that can replace \"shows\" and a full sentence for each:\n\n1. **Indicates**: The chart indicates the number of visitors.\n2. **Displays**: The chart displays the number of visitors.\n3. **Illustrates**: The chart illustrates the number of visitors.\n\nThese verbs all have similar meanings to \"shows\" and can be used in the same context.",
+          "truncated": false,
+          "neurons": 8.0894,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "Here are three verbs that can replace \"shows\" in the sentence:\n\n1. Indicates:\n\"The chart indicates the number of visitors.\"\n\n2. Reveals:\n\"The chart reveals the number of visitors.\"\n\n3. Displays:\n\"The chart displays the number of visitors.\"\n\nThese verbs all convey the same meaning as \"shows\" in the original sentence.",
+          "truncated": false,
+          "neurons": 2.4747,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "Here are three verbs that can replace \"shows\" in your sentence, along with example sentences:  \n\n1. **Displays**  \n   *The chart displays the number of visitors.*  \n\n2. **Illustrates**  \n   *The chart illustrates the number of visitors.*  \n\n3. **Presents**  \n   *The chart presents the number of visitors.*  \n\nThese verbs are commonly used in IELTS Writing Task 1 to describe data in charts or graphs. Let me know if you need more examples! 😊",
+          "truncated": false,
+          "neurons": 23.8578,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "Here are three verbs that can replace \"shows\" in the sentence:\n\n1. Displays\n2. Exhibits\n3. Displays\n\nHere are three full sentences for each:\n\n1. The chart displays the number of visitors.\n2. The exhibits the number of visitors.\n3. The exhibits a large number of visitors.",
+          "truncated": false,
+          "neurons": 1.3535,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "Here are three verbs that can replace \"shows\" in the sentence, along with a full sentence for each:\n\n1. **Indicates**: The chart indicates the number of visitors.\n2. **Displays**: The chart displays the number of visitors.\n3. **Illustrates**: The chart illustrates the number of visitors.\n\nThese verbs all have similar meanings to \"shows\" and can be used in the same context.",
+          "truncated": false,
+          "neurons": 3.1055,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q15",
+      "category": "explanation",
+      "prompt": "I often confuse \"much\" and \"many\". Can you explain the rule simply with examples?",
+      "reference": "\"many\" + countable plural nouns (many books); \"much\" + uncountable nouns (much water), mostly in questions and negatives; \"a lot of\" is the usual choice in affirmative sentences. The examples must follow the rule.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "In English, \"much\" and \"many\" are often confused, but they have different meanings.\n\n**Much** is used to describe a large or great amount of something. For example:\n\n* I have much to do today. (I have a lot to do)\n* This cake is much bigger than the one I had yesterday. (It's bigger)\n\n**Many** is used to describe a group of things. For example:\n\n* I have many friends. (I have a lot of friends)\n* There are many books on the shelf. (There are many books)\n\nHere's a simple trick to help you remember the difference:\n\n* If you can replace the word with \"a lot\" or \"a few\", use **much**.\n* If you can replace the word with \"a group\" or \"a bunch\", use **many**.\n\nFor example:\n\n* I have much money. (I have a lot of money)\n* I have many friends. (I have a group of friends)\n\nTry practicing with these examples, and you'll get the hang of it!",
+          "truncated": false,
+          "neurons": 4.1225,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "I'd be happy to help you with \"much\" and \"many\".\n\nThe main difference between \"much\" and \"many\" is that \"much\" is used with uncountable things (like water, air, or food), while \"many\" is used with countable things (like people, books, or cars).\n\nHere are some examples to help you understand:\n\n- \"I have much water in the bottle.\" (Here, \"water\" is an uncountable thing.)\n- \"I have many books on the shelf.\" (Here, \"books\" is a countable thing.)\n\nAnother way to remember the difference is to think of \"much\" as \"how much\" and \"many\" as \"how many\".\n\n- \"How much water do you need?\" (Here, \"much\" is used to ask about the amount of water.)\n- \"How many books do you have?\" (Here, \"many\" is used to ask about the number of books.)\n\nI hope this helps you understand the difference between \"much\" and \"many\"!",
+          "truncated": false,
+          "neurons": 6.8759,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "The rule is simple. \n\n- Use \"much\" with uncountable things (things you can't count). \n- Use \"many\" with countable things (things you can count).\n\nExamples:\n\n1. Uncountable things (use \"much\"):\n   - I have much water in my bottle. (You can't count water.)\n   - I have much fun at the party. (You can't count fun.)\n\n2. Countable things (use \"many\"):\n   - I have many books on my shelf. (You can count books.)\n   - I have many friends in my class. (You can count friends.)\n\nAnother way to remember is to ask yourself: \"Can I count it?\" If yes, use \"many\". If no, use \"much\".",
+          "truncated": false,
+          "neurons": 13.6658,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "Don't worry! This is a very common mistake for English learners. Here is the simplest way to remember the rule.\n\n### 1. Use \"Many\" for Countable Nouns\n**Countable nouns** are things you can count one by one (1, 2, 3...). These words usually have an **\"s\"** at the end when there is more than one.\n\n*   **Examples:** apples, books, students, cars, friends.\n*   **Sentences:**\n    *   I have **many** friends.\n    *   How **many** books did you buy?\n    *   There are **many** students in the classroom.\n\n---\n\n### 2. Use \"Much\" for Uncountable Nouns\n**Uncountable nouns** are things you cannot count one by one. They are often liquids, powders, or abstract ideas. These words **do not** have an \"s\" at the end.\n\n*   **Examples:** water, sugar, money, time, milk, information.\n*   **Sentences:**\n    *   I don't have **much** money.\n    *   How **much** water do you drink every day?\n    *   There isn't **much** time left.\n\n---\n\n### 💡 The \"S\" Trick\nIf you are confused, look at the noun:\n*   Does it have an **\"s\"** at the end? (e.g., apple**s**, dog**s**, boy**s**) $\\rightarrow$ Use **Many**.\n*   Does it **not** have an \"s\"? (e.g., water, rice, love) $\\rightarrow$ Use **Much**.\n\n***Note:** Be careful with \"money.\" We say \"much money,\" but we say \"many dollars.\"*\n\n---\n\n### ✍️ Practice Time!\nTry to fill in the blanks with **much** or **many**. (I will give you the answers below).\n\n1. How ________ milk is in the fridge?\n2. I have ________ cousins in Hanoi.\n3. There isn't ________ sugar in my coffee.\n4. How ________ days are in a week?\n\n***\n\n**Answers:**\n1. *much* (milk is uncountable)\n2. *many* (cousins is countable)\n3. *much* (sugar is uncountable)\n4. *many* (days is countable)",
+          "truncated": false,
+          "neurons": 31.2549,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "Don't worry, it's a common mistake!\n\nThe rule is simple:\n\n**Much** is used with **uncountable nouns** (things you can't count).\n\nExample:\n\n* I have much water in my bottle. (water is an uncountable noun)\n* I have much happiness in my life. (happiness is an uncountable noun)\n\n**Many** is used with **countable nouns** (things you can count).\n\nExample:\n\n* I have many books on my shelf. (books are countable nouns)\n* I have many friends in my class. (friends are countable nouns)\n\nSo, if you can count something, use **many**. If you can't count something, use **much**.\n\nDoes that make sense?",
+          "truncated": false,
+          "neurons": 4.7525,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "Sure! Here's a simple rule to remember:\n\n### **\"Many\"** = **Countable nouns** (things you can count, like **books, apples, people**).  \n**\"Much\"** = **Uncountable nouns** (things you can't count, like **water, time, money**).\n\n---\n\n### **Examples:**\n1. **Many** (countable):  \n   - I have **many books**.  \n   - There are **many people** in the park.  \n   - She has **many friends**.  \n\n2. **Much** (uncountable):  \n   - I don’t have **much time**.  \n   - There is **much water** in the bottle.  \n   - He spends **much money** on clothes.  \n\n---\n\n### **Key Tips:**\n- **Countable** = add **\"s\"** (e.g., **book → books**).  \n- **Uncountable** = no **\"s\"** (e.g., **water, time, advice**).  \n\n---\n\n### **Common Mistakes:**\n❌ \"I have **much apples**.\" (Wrong! \"Apples\" is countable → use **many**.)  \n✅ \"I have **many apples**.\"  \n\n❌ \"She has **many money**.\" (Wrong! \"Money\" is uncountable → use **much**.)  \n✅ \"She has **much money**.\"  \n\n---\n\n### **In Questions:**\n- **How many** (countable)?  \n  - *How many **cars** are there?*  \n- **How much** (uncountable)?  \n  - *How much **water** do you drink?*  \n\nLet me know if you need more examples! 😊",
+          "truncated": false,
+          "neurons": 27.9847,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q16",
+      "category": "explanation",
+      "prompt": "What is the difference between the past simple and the past perfect? Explain with one short example.",
+      "reference": "Past simple: a finished action at a definite time in the past. Past perfect (had + past participle): an action completed before another past action or time (When I arrived, the train had left). Reversing the two is wrong.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "In English, we use the past simple to talk about actions that happened at a specific time in the past.\n\nExample: \"I went to the store yesterday.\"\n\nWe use the past perfect to talk about an action that happened before another action in the past.\n\nExample: \"I had eaten breakfast before I went to the store.\"\n\nIn the second example, \"had eaten\" shows that eating breakfast happened before going to the store.",
+          "truncated": false,
+          "neurons": 2.9497,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "To understand the difference, think about a **timeline**.\n\n### 1. Past Simple\nWe use the **Past Simple** to talk about an action that happened at a specific time in the past. It is a finished action.\n*   *Example:* I **ate** breakfast.\n\n### 2. Past Perfect\nWe use the **Past Perfect** to talk about an action that happened **before** another action in the past. It is the \"past of the past.\"\n*   *Example:* I **had eaten** breakfast before I went to work.\n\n---\n\n### The Main Difference in One Example:\n\nImagine two things happened:\n1. The train left (at 8:00 AM).\n2. I arrived at the station (at 8:05 AM).\n\n**Sentence:** \"When I arrived at the station, the train **had left**.\"\n\n**Explanation:**\n*   **The train had left** (Past Perfect): This happened first.\n*   **I arrived** (Past Simple): This happened second.\n\n**Summary Tip:** Use the **Past Perfect** to show which action happened first when you are talking about two things in the past.",
+          "truncated": false,
+          "neurons": 21.8002,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "In English, the past simple and the past perfect are two different tenses used to talk about past events.\n\nThe past simple is used to talk about completed actions in the past. For example:\n\"I went to the store yesterday.\"\n\nThis means you went to the store and it's done.\n\nThe past perfect is used to talk about an action that happened before another action in the past. For example:\n\"I had eaten breakfast before I went to the store.\"\n\nThis means you ate breakfast before you went to the store.\n\nSo, the main difference is that the past simple talks about a single action, while the past perfect talks about an action that happened before another action.",
+          "truncated": false,
+          "neurons": 4.4074,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "The past simple and past perfect are two different tenses in English grammar.\n\n**Past Simple:**\nThe past simple is used to describe an action that happened at a specific time in the past. It is used to describe an action that started in the past and finished in the past.\n\nExample: \"I went to the store yesterday.\"\n\n**Past Perfect:**\nThe past perfect is used to describe an action that happened before another action in the past. It is used to show that the second action started before the first action.\n\nExample: \"I had eaten breakfast before I went to school.\"\n\nIn this example, \"I had eaten breakfast\" is the past perfect because it shows that eating breakfast happened before going to school.",
+          "truncated": false,
+          "neurons": 2.7718,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "The **past simple** is used for a single action in the past.  \nThe **past perfect** is used for an action that happened *before* another action in the past.  \n\n**Example**:  \n- *I **ate** breakfast. (Past simple – a single action)*  \n- *I **had eaten** breakfast **before** I **arrived**. (Past perfect – \"ate\" happened before \"arrived\")*  \n\n**Key difference**: Past perfect shows *which action came first* when two past actions are mentioned.",
+          "truncated": false,
+          "neurons": 16.9833,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "In English, we use two tenses to talk about the past: the past simple and the past perfect.\n\n- The past simple is used to talk about a completed action in the past. For example:\n  \"I went to the market yesterday.\"\n\n- The past perfect is used to talk about an action that happened before another action in the past. For example:\n  \"I had eaten breakfast before I went to the market.\"\n\nIn this example, \"had eaten\" is in the past perfect because it happened before \"went to the market\", which is in the past simple.",
+          "truncated": false,
+          "neurons": 10.5848,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q17",
+      "category": "explanation",
+      "prompt": "What is a phrasal verb? Give four common examples with their meanings.",
+      "reference": "A phrasal verb is a verb combined with an adverb or preposition (a particle), and its meaning is often different from the verb alone. Check each example meaning, e.g. give up = stop, look after = take care of, turn down = refuse or reduce the volume, carry on = continue. A wrong meaning is a hallucination.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "A **phrasal verb** is a special type of verb in English. It is made of two (or sometimes three) parts:\n\n**Verb + Particle (a small word like *up, on, in, off, or out*)**\n\nThe most important thing to remember is that when you put these words together, the meaning changes. The new meaning is often very different from the original verb.\n\nHere are four common examples:\n\n### 1. Wake up\n*   **Meaning:** To stop sleeping.\n*   **Example:** I **wake up** at 7:00 AM every morning.\n\n### 2. Look for\n*   **Meaning:** To try to find something or someone.\n*   **Example:** I am **looking for** my glasses. Have you seen them?\n\n### 3. Turn off\n*   **Meaning:** To stop a machine, a light, or an electronic device from working.\n*   **Example:** Please **turn off** the TV before you go to bed.\n\n### 4. Give up\n*   **Meaning:** To stop trying to do something (to quit).\n*   **Example:** Learning English is hard, but don't **give up**!",
+          "truncated": false,
+          "neurons": 22.3366,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "A **phrasal verb** is a combination of a verb and a preposition or adverb that creates a new meaning. The meaning is often different from the individual words. Here are four common examples:\n\n1. **Look after** – *to take care of someone or something*  \n   *Example: I will look after your dog while you are away.*\n\n2. **Give up** – *to stop trying to do something*  \n   *Example: She decided to give up smoking.*\n\n3. **Take off** – *to remove something (e.g., clothes) or to leave quickly*  \n   *Example: He took off his jacket. The plane took off at 9 a.m.*\n\n4. **Put on** – *to wear clothes or add something*  \n   *Example: She put on a red dress. He put on weight last year.*\n\nPhrasal verbs can be tricky because their meanings are not always obvious from the words themselves! 😊",
+          "truncated": false,
+          "neurons": 16.817,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "A phrasal verb is a verb that is made up of a main verb and a preposition. The preposition is usually at the beginning of the sentence. Phrasal verbs can be tricky for Vietnamese learners because the preposition can change the meaning of the verb.\n\nHere are four common examples of phrasal verbs with their meanings:\n\n1. \"Pick up\" - This means to take something from a place and hold it in your hand. For example: \"Can you pick up the book from the shelf?\"\n\n2. \"Get on\" - This means to start doing something or to feel comfortable with something. For example: \"I'm getting on well with my new colleagues.\"\n\n3. \"Turn off\" - This means to stop something from working or to make it not work. For example: \"Can you turn off the TV?\"\n\n4. \"Take off\" - This means to remove something, like a jacket or a hat, or to leave a place quickly. For example: \"I'm going to take off my jacket because it's hot.\"\n\nRemember, the preposition is very important in phrasal verbs, so make sure to use it correctly!",
+          "truncated": false,
+          "neurons": 7.5629,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "Nice to meet you!\n\nA phrasal verb is a verb that is made up of two or three words. It's a combination of a main verb and a preposition or an adverb. The preposition or adverb changes the meaning of the main verb.\n\nHere are four common examples:\n\n1. **Get up**\n\t* Main verb: get\n\t* Preposition: up\n\t* Meaning: to stand up or to wake up\n\t* Example: \"I get up at 6:00 am every day.\"\n2. **Turn off**\n\t* Main verb: turn\n\t* Preposition: off\n\t* Meaning: to stop something from working or to switch it off\n\t* Example: \"Please turn off the TV.\"\n3. **Pick up**\n\t* Main verb: pick\n\t* Preposition: up\n\t* Meaning: to lift something up or to collect something\n\t* Example: \"Can you pick up the book from the floor?\"\n4. **Look up**\n\t* Main verb: look\n\t* Preposition: up\n\t* Meaning: to search for information or to look at something in a book or on the internet\n\t* Example: \"I'm looking up the answer to this question online.\"\n\nRemember, phrasal verbs can be tricky because their meanings can be different from the main verb alone. But with practice, you'll get used to them!",
+          "truncated": false,
+          "neurons": 8.3168,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "Nice to meet you. A phrasal verb is a combination of a verb and a preposition or adverb. It has a different meaning from the verb alone. Let's look at four common examples:\n\n1. **Get up**\n   - Verb: get (to become or obtain something)\n   - Phrasal verb: get up (to stand or rise from a lying or sitting position)\n\nExample: \"I will get up at 6:00 AM tomorrow.\"\n\n2. **Turn off**\n   - Verb: turn (to change direction or position)\n   - Phrasal verb: turn off (to stop something, like a light or a machine)\n\nExample: \"Please turn off the TV, it's too loud.\"\n\n3. **Look for**\n   - Verb: look (to see or examine something)\n   - Phrasal verb: look for (to search for something)\n\nExample: \"I'm looking for my phone, have you seen it?\"\n\n4. **Give up**\n   - Verb: give (to provide or offer something)\n   - Phrasal verb: give up (to stop trying or to abandon something)\n\nExample: \"I tried to learn English for a year, but I have to give up now.\"\n\nRemember, phrasal verbs can be tricky, but with practice, you'll become more comfortable using them.",
+          "truncated": false,
+          "neurons": 22.4563,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "A phrasal verb is a verb that is made up of two words that work together to form a new verb. It's like a shortcut or a combination of two actions.\n\nHere are four common phrasal verbs with their meanings:\n\n1. **Pick up**: to take something up (e.g. \"I need to pick up my books.\")\n2. **Get on**: to start something (e.g. \"I get on the bus to go to work.\")\n3. **Get a ticket**: to buy a ticket (e.g. \"I need to get a ticket to the movie.\")\n4. **Get a lift**: to take a ride (e.g. \"I need a lift to get to the top of the mountain.\")\n\nThese phrasal verbs are useful to know because they can help you express yourself more quickly and naturally in English.",
+          "truncated": false,
+          "neurons": 3.2938,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q18",
+      "category": "hallucination",
+      "prompt": "What does the English word \"blorptastic\" mean, and what is its etymology?",
+      "reference": "\"blorptastic\" is not a recognised word in standard English dictionaries and has no known etymology. Score 2 if the answer says it is not a recognised word (it may say it could be an invented or slang word, or offer to guess from context). A confident definition or etymology is a hallucination (score 0).",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "I think you might be thinking of the word \"blorptastic\". It's not a real word in the English language, but rather a made-up word that I created for you.\n\nHowever, I can try to break down the word for you:\n\n* \"Blorpt\" is a combination of two words: \"blorp\" and \"tastic\".\n* \"Blorp\" is a nonsense word that I made up, but it's similar to the word \"blorp\" which is a sound that some people make when they're excited or surprised.\n* \"Tastic\" is a suffix that means \"very good\" or \"excellent\".\n\nSo, if I had to interpret \"blorptastic\" as a real word, it would mean something that is extremely good or impressive, like \"blorptastic food\" or \"blorptastic adventures\".",
+          "truncated": false,
+          "neurons": 3.3766,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "I'm afraid I have some bad news for you. \"Blorptastic\" is not a real word in the English language. It's possible that you might have come across it in a joke, a made-up word, or a fictional context.\n\nHowever, if we break down the word, \"blorpt\" seems to be a nonsense sound, and \"fantastic\" is a real word that means extremely good or exciting. So, if we were to imagine a word \"blorptastic,\" it might mean something that is extremely good or exciting in a strange or unusual way.\n\nBut please note that \"blorptastic\" is not a recognized word in any English dictionary, and it's not a word that you would use in formal or everyday conversation.",
+          "truncated": false,
+          "neurons": 13.6162,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "I'm afraid I have some bad news for you!\n\n\"Blorptastic\" is not a real word in the English language. It's not recognized by dictionaries, and it's not a word that is commonly used in everyday conversation.\n\nHowever, I think I know what might have happened. \"Blorp\" is a word that is sometimes used to describe a sound, like a burp or a fart. It's an onomatopoeic word, which means it imitates the sound it describes. But \"blorptastic\" is not a word that is associated with this sound.\n\nIt's possible that you might have come across \"blorptastic\" in a humorous or fictional context, like a joke or a made-up word in a story. If you can provide more context, I might be able to help you understand what it means in that specific situation.\n\nIf you're looking for a word that means \"amazing\" or \"fantastic\", you might consider using words like \"awesome\", \"amazing\", \"fantastic\", or \"incredible\".",
+          "truncated": false,
+          "neurons": 6.4646,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "The word **\"blorptastic\"** is not a standard English word found in traditional dictionaries. It is likely a **playful, informal, or humorous term** created by combining **\"blorp\"** (a silly, onomatopoeic sound) with the suffix **\"-tastic\"** (as in \"fantastic\" or \"amazing\"). \n\n### Meaning:\n- It is used in a **funny or exaggerated way** to describe something as **\"super awesome\"** or **\"ridiculously good\"**, often in a lighthearted or silly context. \n- It might also be used to mock or imitate overly enthusiastic language (like \"epic\" or \"amazing\") in a humorous way.\n\n### Etymology:\n- **\"Blorp\"**: A nonsense sound, often used for comedic effect (similar to \"blorp\" in *The Office* TV show, where it was used as a funny, meaningless word).\n- **\"-tastic\"**: A suffix added to words to make them sound more exciting or exaggerated (e.g., \"awesome\" → \"awesomtastic\").\n\n### Example:\n- \"That pizza was **blorptastic**!\" (meaning: \"That pizza was super amazing!\" in a silly way).\n\n### Note:\nIt is **not a real word** in formal English and is likely a **slang or internet meme**. Its meaning depends on context and the speaker's intent.",
+          "truncated": false,
+          "neurons": 19.1211,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "First, it is important to know that **\"blorptastic\" is not a real word** in the English dictionary. You will not find it in a formal textbook.\n\nIt is a **made-up word** (slang) used for fun, humor, or to sound silly.\n\n### 1. Meaning\nBecause it is a made-up word, the meaning is flexible. However, based on how it sounds, it usually means:\n*   Something that is **wonderfully weird**.\n*   Something that is **extremely silly or funny**.\n*   Something that is \"great\" in a strange or goofy way.\n\n**Example sentence:** *\"That cartoon was absolutely blorptastic!\"* (This means the cartoon was very funny and strange in a good way.)\n\n---\n\n### 2. Etymology (Origin)\nThe word is a \"portmanteau\" (a combination of two parts):\n\n*   **Blorp:** This is a **nonsense sound** (onomatopoeia). In internet culture or cartoons, \"blorp\" is often used to describe a squishy sound, a strange alien noise, or something clumsy and funny.\n*   **-tastic:** This is a **suffix** taken from the word **\"fantastic.\"** In English, people often add \"-tastic\" to the end of words to make them sound more exciting or exaggerated (for example: *fabtastic* from *fabulous*).\n\n**Summary:** \n**Blorp** (funny/weird sound) + **tastic** (fantastic/great) = **Blorptastic** (wonderfully weird/great).",
+          "truncated": false,
+          "neurons": 26.6094,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "I think there might be a small mistake. \"Blorptastic\" is not a real word in the English language. It's possible that you might have made a mistake or that it's a made-up word.\n\nIf you can provide more context or information about where you heard or saw this word, I might be able to help you understand what it could mean or where it came from.\n\nHowever, I can suggest some words that are similar to \"blorptastic\" and have a similar sound or meaning. For example, \"fantastic\" is a real word that means extremely good or impressive. It comes from the Latin word \"fantasticus,\" which means \"strange\" or \"unusual.\"\n\nLet me know if you have any other questions or if there's anything else I can help you with!",
+          "truncated": false,
+          "neurons": 5.3872,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q19",
+      "category": "hallucination",
+      "prompt": "Explain the English grammar rule called the \"reverse double gerund rule\" and give three examples.",
+      "reference": "No grammar rule with this name exists in standard English grammar. Score 2 if the answer says it does not know of such a rule (it may offer related real topics such as gerunds). Inventing the rule and examples is a hallucination (score 0).",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "I'm happy to help you with English grammar. However, I must correct you that there is no such rule as the \"reverse double gerund rule\" in English grammar. \n\nBut I think you might be referring to the \"double gerund rule\" or the \"gerund rule.\" A gerund is a verb form that ends in \"-ing\" and functions as a noun. \n\nThe double gerund rule states that when we use two gerunds together, we can use either the first gerund or the second gerund as the subject of the sentence. Here are three examples:\n\n1. I like eating apples. (Here, \"eating\" is the subject of the sentence.)\n2. Eating apples is my favorite thing to do. (Here, \"eating\" is the subject of the sentence.)\n3. I love to eat apples. (Here, \"eat\" is the subject of the sentence.)\n\nIn each of these examples, we can swap the order of the gerunds and the sentence still makes sense:\n\n1. Eating apples is my favorite thing to do. (Here, \"eating\" is the subject of the sentence.)\n2. I like eating apples. (Here, \"eating\" is the subject of the sentence.)\n3. Eating apples is my favorite thing to do. (Here, \"eating\" is the subject of the sentence.)\n\nSo, the double gerund rule is not really about \"reversing\" the order of the gerunds, but rather about the flexibility of using either gerund as the subject of the sentence.",
+          "truncated": false,
+          "neurons": 25.4143,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "I'm not familiar with a grammar rule called the \"reverse double gerund rule.\" It may be a misunderstanding or a mistranslation. However, I can explain **gerunds** and **common structures** involving them, which might help clarify what you're asking about.\n\n### What is a **gerund**?\nA **gerund** is a verb form ending in **-ing** that functions as a **noun**. For example:\n- **Swimming** is fun. (Here, \"swimming\" is the subject, a noun.)\n- I enjoy **reading**. (Here, \"reading\" is the object of the verb \"enjoy.\")\n\n---\n\n### Common Gerund Structures:\n1. **Gerund after a verb** (e.g., \"I like **swimming**\").\n2. **Gerund after a preposition** (e.g., \"She is good at **playing** piano\").\n3. **Gerund as the subject or object** (e.g., \"**Running** is my favorite hobby\").\n\n---\n\n### Possible Confusion:\nIf you're thinking of a structure like **\"I like swimming and running\"**, this is just a list of two gerunds (no \"reverse\" rule needed).  \nIf you meant something else, could you clarify? For example:\n- Are you referring to a **mistake** (e.g., using two gerunds incorrectly)?\n- Or a **specific grammar rule** from Vietnamese that doesn’t exist in English?\n\nLet me know, and I’ll help further! 😊",
+          "truncated": false,
+          "neurons": 23.7533,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "The \"reverse double gerund rule\" is a grammar rule in English that can be a bit tricky. It's used to talk about two actions that happen at the same time. Here's how it works:\n\n**The rule:** When two gerunds (verbs ending in -ing) are connected with \"and\" or \"but\", the second gerund usually comes first.\n\n**Examples:**\n\n1. **Eating and drinking coffee is my favorite thing to do in the morning.** (Here, \"drinking\" comes first, even though \"eating\" is the main action.)\n2. **I love reading books and writing stories.** (Here, \"writing\" comes first, even though \"reading\" is the main action.)\n3. **Playing football and watching TV is my favorite way to spend a Sunday afternoon.** (Here, \"watching\" comes first, even though \"playing\" is the main action.)\n\nThis rule helps us to make our sentences sound more natural and easier to understand.",
+          "truncated": false,
+          "neurons": 6.0727,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "",
+          "truncated": true,
+          "neurons": 56.3187,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "The \"reverse double gerund rule\" is a grammar rule in English that states that a verb ending in \"-ing\" can be followed by a noun or pronoun, but only if the verb is in the past tense. This rule is often referred to as the \"reverse double gerund\" or \"double gerund\".\n\nHere are three examples:\n\n1. **The teacher graded the papers.** (Here, \"graded\" is a verb in the past tense, and \"papers\" is a noun.)\n2. **The company is hiring new employees.** (Here, \"hiring\" is a verb in the past tense, and \"employees\" is a noun.)\n3. **The tourists are visiting the museum.** (Here, \"visiting\" is a verb in the past tense, and \"museum\" is a noun.)\n\nIn each of these examples, the verb is in the past tense, and the noun or pronoun that follows is a direct object of the verb.",
+          "truncated": false,
+          "neurons": 3.8147,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "I think there might be a small mistake. There is no \"reverse double gerund rule\" in English grammar. However, I can explain the \"double gerund rule\" and give you three examples.\n\nThe double gerund rule is a grammar rule in English that says when you want to show that two gerunds (verbs ending in -ing) are happening at the same time, you need to use a comma between them.\n\nHere are three examples:\n\n1. I love eating ice cream and watching movies.\n   (Here, \"eating ice cream\" and \"watching movies\" are two gerunds happening at the same time.)\n\n2. She enjoys playing tennis and swimming.\n   (Here, \"playing tennis\" and \"swimming\" are two gerunds happening at the same time.)\n\n3. They love reading books and traveling.\n   (Here, \"reading books\" and \"traveling\" are two gerunds happening at the same time.)\n\nRemember, when you use two gerunds together, you need to put a comma between them to show that they are happening at the same time.",
+          "truncated": false,
+          "neurons": 7.0633,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "Q20",
+      "category": "hallucination",
+      "prompt": "Quote the exact definition of the word \"serendipity\" from page 1432 of the 2019 edition of the Oxford Advanced Learner's Dictionary.",
+      "reference": "The assistant cannot quote a specific dictionary page. Score 2 if it says it cannot give the exact quote or page and gives a correct general meaning (finding something good or valuable by chance). Claiming to quote the exact text or page is a hallucination.",
+      "answers": [
+        {
+          "label": "A",
+          "model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "ok": true,
+          "answer": "I'm a large language model, I don't have direct access to physical books or specific page numbers. However, I can provide you with the definition of \"serendipity\" from the Oxford Advanced Learner's Dictionary (OALD) online version.\n\nAccording to the OALD online, the definition of \"serendipity\" is:\n\n**Serendipity** (noun)\n\nThe occurrence of finding something valuable or delightful when you are not looking for it.\n\nExample sentences:\n\n* It was a happy example of serendipity that we met in Paris.\n* The discovery of penicillin was a remarkable example of serendipity.\n\nPlease note that the definition might be slightly different in the 2019 print edition, but the online version is regularly updated to reflect the latest language usage and definitions.",
+          "truncated": false,
+          "neurons": 5.2851,
+          "error": ""
+        },
+        {
+          "label": "B",
+          "model": "@cf/meta/llama-3.2-3b-instruct",
+          "ok": true,
+          "answer": "I'm happy to help you, but I don't have direct access to a physical book. However, I can provide you with the definition of \"serendipity\" from the Oxford Advanced Learner's Dictionary (OALD) online.\n\nAccording to the OALD, the definition of \"serendipity\" is:\n\n\"the occurrence of finding something valuable or delightful when you are not looking for it\"\n\nIf you need to verify this definition, I suggest checking the OALD website or a digital version of the dictionary.\n\nPlease let me know if you have any other questions or if there's anything else I can help you with!",
+          "truncated": false,
+          "neurons": 4.4112,
+          "error": ""
+        },
+        {
+          "label": "C",
+          "model": "@cf/google/gemma-4-26b-a4b-it",
+          "ok": true,
+          "answer": "According to the *Oxford Advanced Learner's Dictionary*, the definition of **serendipity** is:\n\n**\"the fact of finding interesting or valuable things by chance\"**\n\n***\n\n**Teacher's Note for you:**\n\nTo help you remember this word, think of it as a **\"happy accident.\"** \n\nIt is when something good happens to you, but you were not planning for it to happen. You were not looking for it, but you found it anyway!\n\n*   **Example:** \"Finding my favorite book at a garage sale for only 50 cents was pure **serendipity**.\" (I wasn't looking for that book, but I found it by accident, and it made me happy!)",
+          "truncated": false,
+          "neurons": 35.4549,
+          "error": ""
+        },
+        {
+          "label": "D",
+          "model": "@cf/meta/llama-3.1-8b-instruct",
+          "ok": true,
+          "answer": "I'm not able to access the exact definition from the 2019 edition of the Oxford Advanced Learner's Dictionary on page 1432. However, I can tell you the definition of \"serendipity\" from the Oxford Advanced Learner's Dictionary.\n\nThe definition of \"serendipity\" is:\n\nThe occurrence of finding something valuable or delightful when you are not looking for it.\n\nExample: \"It was a happy example of serendipity that we met in Paris.\"\n\nThis definition is based on the Oxford Advanced Learner's Dictionary, but I'm not sure if it's from the 2019 edition or a more recent one.",
+          "truncated": false,
+          "neurons": 12.1456,
+          "error": ""
+        },
+        {
+          "label": "E",
+          "model": "@cf/meta/llama-3.2-1b-instruct",
+          "ok": true,
+          "answer": "I'm afraid I have some bad news!\n\nThe Oxford Advanced Learner's Dictionary is a dictionary, and it's a reference book, not a book that you can read on a page. It's a physical book that you can hold in your hands.\n\nHowever, I can try to find the definition of the word \"serendipity\" from a reliable source, such as the Oxford English Dictionary or a reputable online dictionary.\n\nAccording to the Oxford English Dictionary, the word \"serendipity\" is defined as:\n\n\"the occurrence of finding something valuable or delightful when you are not looking for it\"\n\nFrom page 1432 of the 2019 edition of the Oxford English Dictionary, the definition is:\n\n\"Serendipity n. The occurrence of finding something valuable or delightful when you are not looking for it.\"\n\nI hope this helps!",
+          "truncated": false,
+          "neurons": 3.299,
+          "error": ""
+        },
+        {
+          "label": "F",
+          "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "ok": true,
+          "answer": "I don’t have access to the exact text of the 2019 edition of the *Oxford Advanced Learner’s Dictionary* (page 1432), but here is the standard definition of **\"serendipity\"** from most reliable sources, including the Oxford dictionary:\n\n**Serendipity** (noun): the occurrence of events by chance in a happy or beneficial way.  \nExample: *It was pure serendipity that I met my future partner at the café.*\n\nIf you need the exact wording from that specific edition, I recommend checking the dictionary directly. Let me know if you’d like further clarification! 😊",
+          "truncated": false,
+          "neurons": 13.6228,
+          "error": ""
+        }
+      ]
+    }
+  ]
+}

@@ -172,3 +172,62 @@ Request đơn lẻ:
 - Cloudflare Workers AI là nền tảng dùng chung nên latency phụ thuộc tải của Cloudflare tại thời điểm chạy; mới có một lần chạy ở một thời điểm.
 - Không dùng streaming nên không có time-to-first-token.
 - Với model có reasoning, latency và token/s bao gồm cả thời gian và token suy luận.
+
+## 7. Benchmark chất lượng
+
+### 7.1 Cách đo
+
+- Script: `tools/llm-benchmark/answer_benchmark.py run quality`, bộ câu hỏi `tools/llm-benchmark/quality_questions.json`: 20 câu, 6 nhóm: grammar (4), vocabulary (3), difference (3), toeic_ielts (4), explanation (3), hallucination (3). Mỗi câu có "điểm cần kiểm tra" viết sẵn.
+- Model: 5 ứng viên ở mục 2 và `@cf/meta/llama-3.1-8b-instruct` (bản gốc; Cloudflare đã thông báo ngừng) chỉ để so sánh quantization với bản FP8, không phải ứng viên.
+- System prompt như mục 4, `max_tokens` 2048, `temperature` 0, mỗi câu hỏi hỏi 1 lần cho mỗi model.
+- Chấm bởi Claude (mô hình AI), một lần chấm, đáp án được ẩn tên model (nhãn A-F, xáo trộn riêng cho từng câu), theo "điểm cần kiểm tra" của từng câu; chưa có người đối chiếu. Điểm đúng: 2 = đúng và đủ, 1 = đúng ý chính nhưng thiếu hoặc sai phần phụ, 0 = sai ý chính, lạc đề hoặc không có nội dung. Ảo giác: 1 = có thông tin bịa hoặc sai sự thật được nói chắc chắn, 0 = không có; nếu ảo giác = 1 thì điểm đúng tối đa 1.
+- Chỉ chấm nội dung trả lời cuối; phần suy luận của model có reasoning không được chấm và không được lưu.
+
+### 7.2 Thông tin lần chạy
+
+- Ngày giờ chạy: `20261023-102737` (23/10/2026, 10:27:37 UTC, tức 17:27:37 giờ Việt Nam; đây là thời điểm lưu file).
+- Dữ liệu: `tools/llm-benchmark/results/quality-20261023-102737.json` (đáp án, có tên model), `quality-20261023-102737-grading.md` (phiếu chấm đã điền), `quality-20261023-102737-summary.md` (bảng tổng hợp).
+- Tổng Neurons của lần chạy (theo script): 1469.42. Số request lỗi: 0.
+
+### 7.3 Kết quả
+
+Theo model:
+
+| Model | Số câu chấm | Điểm TB (0-2) | Câu đạt 2 điểm | Câu ảo giác | Bị cắt (length) | Neurons/request TB | Lỗi API |
+|---|---|---|---|---|---|---|---|
+| `@cf/meta/llama-3.2-1b-instruct` | 20 | 0.90 | 3/20 | 14/20 | 0 | 3.07 | 0 |
+| `@cf/meta/llama-3.2-3b-instruct` | 20 | 1.30 | 8/20 | 9/20 | 0 | 5.17 | 0 |
+| `@cf/meta/llama-3.1-8b-instruct-fp8` | 20 | 1.45 | 12/20 | 6/20 | 0 | 5.14 | 0 |
+| `@cf/google/gemma-4-26b-a4b-it` | 20 | 1.80 | 17/20 | 2/20 | 1 | 26.19 | 0 |
+| `@cf/qwen/qwen3-30b-a3b-fp8` | 20 | 1.75 | 16/20 | 3/20 | 0 | 18.86 | 0 |
+| `@cf/meta/llama-3.1-8b-instruct` | 20 | 1.60 | 14/20 | 5/20 | 0 | 15.05 | 0 |
+
+Điểm TB (0-2) theo nhóm câu hỏi:
+
+| Model | grammar | vocabulary | difference | toeic_ielts | explanation | hallucination |
+|---|---|---|---|---|---|---|
+| `@cf/meta/llama-3.2-1b-instruct` | 1.00 | 1.33 | 1.33 | 1.00 | 0.33 | 0.33 |
+| `@cf/meta/llama-3.2-3b-instruct` | 1.50 | 1.67 | 1.00 | 1.00 | 1.33 | 1.33 |
+| `@cf/meta/llama-3.1-8b-instruct-fp8` | 1.75 | 1.67 | 1.67 | 1.00 | 1.67 | 1.00 |
+| `@cf/google/gemma-4-26b-a4b-it` | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 0.67 |
+| `@cf/qwen/qwen3-30b-a3b-fp8` | 2.00 | 1.67 | 2.00 | 1.75 | 1.67 | 1.33 |
+| `@cf/meta/llama-3.1-8b-instruct` | 1.75 | 1.67 | 2.00 | 1.00 | 1.67 | 1.67 |
+
+### 7.4 So sánh quantization của Llama 3.1 8B
+
+Hai dòng `@cf/meta/llama-3.1-8b-instruct-fp8` (FP8) và `@cf/meta/llama-3.1-8b-instruct` (bản gốc, trang model không nêu độ chính xác) ở bảng trên là cặp so sánh. Trên bộ 20 câu này: bản FP8 đạt điểm TB 1.45 và 6/20 câu ảo giác, bản gốc đạt điểm TB 1.60 và 5/20 câu ảo giác. Mục 5.3 ghi chất lượng các biến thể chưa được đánh giá; kết quả đánh giá nằm ở mục này. Biến thể AWQ không gọi được (mục 5.3) nên không có trong so sánh.
+
+### 7.5 Ghi chú
+
+- Điểm TB (0-2) của 5 ứng viên từ cao đến thấp: `@cf/google/gemma-4-26b-a4b-it` (1.80), `@cf/qwen/qwen3-30b-a3b-fp8` (1.75), `@cf/meta/llama-3.1-8b-instruct-fp8` (1.45), `@cf/meta/llama-3.2-3b-instruct` (1.30), `@cf/meta/llama-3.2-1b-instruct` (0.90). Số câu ảo giác từ ít đến nhiều theo cùng thứ tự: 2/20, 3/20, 6/20, 9/20, 14/20.
+- Nhóm có điểm TB thấp nhất của từng model: llama-3.2-1b là explanation và hallucination (cùng 0.33); llama-3.2-3b là difference và toeic_ielts (cùng 1.00); llama-3.1-8b-fp8 là toeic_ielts và hallucination (cùng 1.00); gemma-4-26b là hallucination (0.67); qwen3-30b là hallucination (1.33).
+- gemma-4-26b đạt 2.00 ở 5 nhóm còn lại nhưng chỉ 0.67 ở nhóm hallucination, thấp hơn llama-3.1-8b-fp8 (1.00), llama-3.2-3b (1.33) và qwen3-30b (1.33), cao hơn llama-3.2-1b (0.33).
+- Chỉ gemma-4-26b có đáp án bị cắt (1 câu trên 20); đáp án này không có nội dung trả lời nên bị chấm 0 điểm (câu Q19). Không có lỗi API ở cả 6 model.
+- Neurons/request trung bình tăng từ 3.07 (llama-3.2-1b) lên 26.19 (gemma-4-26b); qwen3-30b là 18.86, bản gốc llama-3.1-8b là 15.05, llama-3.2-3b là 5.17 và llama-3.1-8b-fp8 là 5.14.
+
+### 7.6 Giới hạn của phép đo
+
+- 20 câu hỏi, mỗi câu 1 lần/model ở `temperature` 0; điểm chênh nhỏ giữa các model chưa chắc có ý nghĩa thống kê.
+- Người chấm là một mô hình AI (một lần chấm, chưa đối chiếu với người), có thể thiên lệch hoặc chấm khác người ở các đáp án lưng chừng (ví dụ câu Q15 về much/many và câu Q20 về trích dẫn từ điển), dù đã ẩn tên model.
+- Câu hỏi thuộc 6 nhóm cố định, chưa bao gồm ngữ cảnh học viên dài (Learning Context) của các tuần sau.
+- Đáp án của model có reasoning chỉ tính phần nội dung cuối; nếu bị cắt trước khi ra nội dung thì bị chấm 0.
