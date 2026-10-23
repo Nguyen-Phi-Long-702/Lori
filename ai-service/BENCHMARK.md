@@ -54,3 +54,42 @@ docker run --rm -e CLOUDFLARE_ACCOUNT_ID -e CLOUDFLARE_API_TOKEN -v "${PWD}\tool
 - Mỗi lần chạy: 7 model × 5 prompt × 3 lần = tối đa 105 request; `max_tokens` 1024, `temperature` 0. Tối đa khoảng 4.100 Neurons (khi mọi request dùng hết 1024 token ra), trong hạn mức 10.000 Neurons/ngày (reset 00:00 UTC).
 - Neurons mỗi request = (token vào × đơn giá vào + token ra × đơn giá ra) / 1.000.000. Token lấy từ trường `usage` mà Cloudflare trả về; đơn giá lấy từ trang pricing của Cloudflare (kiểm tra 23/10/2026). Neurons là số tính từ token và đơn giá, không phải số đọc trực tiếp từ Cloudflare.
 - Kết quả mỗi lần chạy lưu ở `tools/llm-benchmark/results/resource-<ngày>-<giờ UTC>.csv`.
+
+## 5. Kết quả benchmark Neurons
+
+### 5.1 Thông tin lần chạy
+
+- Ngày giờ chạy: `20261023-021831`, tức 23/10/2026 02:18:31 UTC (lấy từ tên file CSV; các request được gọi từ 02:08:08 đến 02:18:31 UTC).
+- Cách đo: 5 prompt × 3 lần mỗi model, `max_tokens` 1024, `temperature` 0; Neurons = token (từ `usage` của Cloudflare) × đơn giá Neuron của Cloudflare.
+- Dữ liệu thô: `tools/llm-benchmark/results/resource-20261023-021831.csv`.
+- Tổng Neurons của lần chạy (theo script): `1446.47`.
+
+### 5.2 Neurons theo model
+
+Tổng hợp theo model (bộ 5 prompt này):
+
+| Model | Số request | Token vào TB | Token ra TB | Neurons/request TB | Neurons/request lớn nhất | Bị cắt (length) | Số request/ngày (10.000 Neurons ÷ TB) |
+|---|---|---|---|---|---|---|---|
+| `@cf/meta/llama-3.2-1b-instruct` | 15 | 120 | 243 | 4.73 | 13.18 | 0 | 2114 |
+| `@cf/meta/llama-3.2-3b-instruct` | 15 | 139 | 255 | 8.41 | 20.78 | 0 | 1189 |
+| `@cf/meta/llama-3.1-8b-instruct-fp8` | 15 | 120 | 279 | 8.94 | 19.85 | 0 | 1118 |
+| `@cf/google/gemma-4-26b-a4b-it` | 15 | 124 | 885 | 25.27 | 30.65 | 6 | 396 |
+| `@cf/qwen/qwen3-30b-a3b-fp8` | 15 | 119 | 757 | 23.63 | 32.56 | 5 | 423 |
+
+Ghi chú:
+
+- Số request/ngày là con số ước tính theo đúng bộ 5 prompt này, không phải dự báo tải thật của người dùng.
+- `llama-3.2-1b-instruct` tốn ít Neurons nhất (4.73/request); `llama-3.2-3b-instruct` (8.41) và `llama-3.1-8b-instruct-fp8` (8.94) ở mức gần nhau; `gemma-4-26b-a4b-it` (25.27) và `qwen3-30b-a3b-fp8` (23.63) tốn nhiều nhất, khoảng gấp 3 lần hai model Llama 3.2 3B và 3.1 8B FP8.
+- Hai model Gemma 4 và Qwen3 có số token ra trung bình (885 và 757) cao hơn nhiều so với 3 model Llama (243 đến 279). `gemma-4-26b-a4b-it` có 6/15 request bị cắt do chạm 1024 token (cả 3 lần của prompt `context` và cả 3 lần của prompt `analysis`); `qwen3-30b-a3b-fp8` có 5/15 request bị cắt (3 lần `context`, 2 lần `analysis`). Vì bị cắt ở 1024 token nên Neurons của hai model này ở các prompt đó là mức tối thiểu, câu trả lời nếu để chạy hết sẽ tốn nhiều hơn.
+- Ba model Llama không có request nào bị cắt (số token ra lớn nhất: 684 với `llama-3.2-1b-instruct`, 636 với `llama-3.2-3b-instruct`, 610 với `llama-3.1-8b-instruct-fp8`). `llama-3.2-1b-instruct` và `llama-3.1-8b-instruct-fp8` không trả `finish_reason` nên cột này được tính theo số token ra.
+- Chưa đánh giá chất lượng câu trả lời; việc đó thuộc benchmark Ngày 5. Chưa chốt model nào.
+
+### 5.3 So sánh quantization của Llama 3.1 8B
+
+| Biến thể | Quantization | Token ra TB | Neurons/request TB | Ghi chú |
+|---|---|---|---|---|
+| `@cf/meta/llama-3.1-8b-instruct-fp8` | FP8 | 279 | 8.94 | 15 request, không bị cắt |
+| `@cf/meta/llama-3.1-8b-instruct-awq` | AWQ (int4) | không có số liệu | không có số liệu | không gọi được: HTTP 410, mã lỗi 5028, thông điệp "Model has been deprecated: @cf/meta/llama-3.1-8b-instruct-awq was deprecated on 2026-05-30" |
+| `@cf/meta/llama-3.1-8b-instruct` | bản gốc (trang model không nêu độ chính xác) | 291 | 25.45 | 15 request, không bị cắt; Neurons/request lớn nhất 64.19 (prompt `context`); token vào TB 139, nhiều hơn bản FP8 (120); vẫn gọi được ngày 23/10/2026 dù Cloudflare đã thông báo ngừng hoạt động từ 30/05/2026 |
+
+Chỉ so sánh mức tiêu thụ Neurons; chất lượng của từng biến thể chưa được đánh giá (Ngày 5). Với cùng một bộ prompt, số token ra trung bình của hai biến thể gọi được gần nhau (279 và 291) nhưng Neurons/request của bản gốc cao hơn bản FP8 khoảng 2.8 lần (25.45 so với 8.94).
