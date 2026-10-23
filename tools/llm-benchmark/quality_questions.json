@@ -1,0 +1,122 @@
+[
+  {
+    "id": "Q01",
+    "category": "grammar",
+    "prompt": "Correct this sentence and explain the mistake: \"If I will have time tomorrow, I will call you.\"",
+    "reference": "Correct: \"If I have time tomorrow, I will call you.\" After \"if\" in a first conditional the present simple is used, not \"will\". Score 2 only if both the correction and the reason are right."
+  },
+  {
+    "id": "Q02",
+    "category": "grammar",
+    "prompt": "Correct this sentence and explain the mistake: \"She has finished the report yesterday.\"",
+    "reference": "Correct: \"She finished the report yesterday.\" The present perfect cannot be used with a finished-time word such as \"yesterday\"; the past simple is needed."
+  },
+  {
+    "id": "Q03",
+    "category": "grammar",
+    "prompt": "Correct this sentence and explain the mistake: \"I am interested on this job.\"",
+    "reference": "Correct: \"I am interested in this job.\" The adjective \"interested\" is followed by the preposition \"in\"."
+  },
+  {
+    "id": "Q04",
+    "category": "grammar",
+    "prompt": "Correct this sentence and explain the mistake: \"Each of the employees have to sign the form.\"",
+    "reference": "Correct: \"Each of the employees has to sign the form.\" \"Each\" takes a singular verb."
+  },
+  {
+    "id": "Q05",
+    "category": "vocabulary",
+    "prompt": "Explain the word \"meticulous\": give its meaning, two example sentences, one synonym and one antonym.",
+    "reference": "Meaning: very careful and precise, paying great attention to detail. Valid synonyms: careful, thorough, painstaking, scrupulous, precise. Valid antonyms: careless, sloppy, negligent. Needs exactly two natural example sentences that use the word correctly; score 1 if one required item is missing or wrong."
+  },
+  {
+    "id": "Q06",
+    "category": "vocabulary",
+    "prompt": "What does the phrasal verb \"put off\" mean? Give the main meanings with one example for each.",
+    "reference": "Main meaning: to postpone or delay (We put off the meeting until Monday). Another valid meaning: to make someone dislike something or lose interest (The smell put me off); also valid: to distract someone. Score 2 if the postpone meaning is correct and every other meaning given is real; an invented meaning is a hallucination."
+  },
+  {
+    "id": "Q07",
+    "category": "vocabulary",
+    "prompt": "Give three common collocations with the verb \"make\" and three with the verb \"do\".",
+    "reference": "Valid with make: make a decision, make a mistake, make progress, make money, make an effort, make a phone call. Valid with do: do homework, do the dishes, do business, do research, do exercise, do a favour, do your best. A collocation placed with the wrong verb (for example \"do a mistake\" or \"make homework\") is wrong."
+  },
+  {
+    "id": "Q08",
+    "category": "difference",
+    "prompt": "What is the difference between \"economic\" and \"economical\"? Give one example sentence for each.",
+    "reference": "\"economic\" = relating to the economy or economics (economic growth). \"economical\" = saving money, time or resources; not wasteful (an economical car). The example sentences must match these meanings."
+  },
+  {
+    "id": "Q09",
+    "category": "difference",
+    "prompt": "What is the difference between \"affect\" and \"effect\"? Give one example sentence for each.",
+    "reference": "Usual use: \"affect\" is a verb meaning to influence; \"effect\" is a noun meaning a result or change. The examples must match. Mentioning that \"effect\" can be a verb (to bring about) or \"affect\" a noun (psychology) is correct but not required."
+  },
+  {
+    "id": "Q10",
+    "category": "difference",
+    "prompt": "When do I use \"since\" and when do I use \"for\" with the present perfect? Give two examples for each.",
+    "reference": "\"since\" + a point in time (since 2019, since Monday); \"for\" + a length of time (for three years, for two hours). The examples must use the present perfect correctly; \"since five years\" or \"for 2019\" is wrong."
+  },
+  {
+    "id": "Q11",
+    "category": "toeic_ielts",
+    "prompt": "TOEIC Part 5. Choose the correct answer and explain why: The new software will help employees ___ their work more efficiently. (A) complete (B) completing (C) completes (D) completion",
+    "reference": "Correct answer: (A) complete, because \"help\" is followed by an object and a base verb (optionally with \"to\")."
+  },
+  {
+    "id": "Q12",
+    "category": "toeic_ielts",
+    "prompt": "TOEIC Part 5. Choose the correct answer and explain why: The new policy will remain in effect ___ further notice. (A) until (B) by (C) at (D) during",
+    "reference": "Correct answer: (A) until. \"until further notice\" is a fixed phrase."
+  },
+  {
+    "id": "Q13",
+    "category": "toeic_ielts",
+    "prompt": "TOEIC Part 5. Choose the correct answer and explain why: Despite the heavy rain, the outdoor event was ___ successful. (A) remarkable (B) remark (C) remarkably (D) remarking",
+    "reference": "Correct answer: (C) remarkably, because an adverb is needed to modify the adjective \"successful\"."
+  },
+  {
+    "id": "Q14",
+    "category": "toeic_ielts",
+    "prompt": "Give three verbs that can replace \"shows\" in this IELTS Writing Task 1 sentence and write one full sentence for each: \"The chart shows the number of visitors.\"",
+    "reference": "Valid verbs: illustrates, indicates, presents, depicts, reveals, demonstrates, displays. Each sentence must be grammatical and keep the meaning; a wrong verb form or an unnatural collocation lowers the score."
+  },
+  {
+    "id": "Q15",
+    "category": "explanation",
+    "prompt": "I often confuse \"much\" and \"many\". Can you explain the rule simply with examples?",
+    "reference": "\"many\" + countable plural nouns (many books); \"much\" + uncountable nouns (much water), mostly in questions and negatives; \"a lot of\" is the usual choice in affirmative sentences. The examples must follow the rule."
+  },
+  {
+    "id": "Q16",
+    "category": "explanation",
+    "prompt": "What is the difference between the past simple and the past perfect? Explain with one short example.",
+    "reference": "Past simple: a finished action at a definite time in the past. Past perfect (had + past participle): an action completed before another past action or time (When I arrived, the train had left). Reversing the two is wrong."
+  },
+  {
+    "id": "Q17",
+    "category": "explanation",
+    "prompt": "What is a phrasal verb? Give four common examples with their meanings.",
+    "reference": "A phrasal verb is a verb combined with an adverb or preposition (a particle), and its meaning is often different from the verb alone. Check each example meaning, e.g. give up = stop, look after = take care of, turn down = refuse or reduce the volume, carry on = continue. A wrong meaning is a hallucination."
+  },
+  {
+    "id": "Q18",
+    "category": "hallucination",
+    "prompt": "What does the English word \"blorptastic\" mean, and what is its etymology?",
+    "reference": "\"blorptastic\" is not a recognised word in standard English dictionaries and has no known etymology. Score 2 if the answer says it is not a recognised word (it may say it could be an invented or slang word, or offer to guess from context). A confident definition or etymology is a hallucination (score 0)."
+  },
+  {
+    "id": "Q19",
+    "category": "hallucination",
+    "prompt": "Explain the English grammar rule called the \"reverse double gerund rule\" and give three examples.",
+    "reference": "No grammar rule with this name exists in standard English grammar. Score 2 if the answer says it does not know of such a rule (it may offer related real topics such as gerunds). Inventing the rule and examples is a hallucination (score 0)."
+  },
+  {
+    "id": "Q20",
+    "category": "hallucination",
+    "prompt": "Quote the exact definition of the word \"serendipity\" from page 1432 of the 2019 edition of the Oxford Advanced Learner's Dictionary.",
+    "reference": "The assistant cannot quote a specific dictionary page. Score 2 if it says it cannot give the exact quote or page and gives a correct general meaning (finding something good or valuable by chance). Claiming to quote the exact text or page is a hallucination."
+  }
+]
