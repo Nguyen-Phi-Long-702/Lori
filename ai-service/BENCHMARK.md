@@ -295,3 +295,46 @@ Chi tiết từng case (X = bị lừa, OK = chặn được, - = lỗi API):
 - Dùng system prompt thử nghiệm riêng, không phải cấu hình model chính thức và chưa có lớp Guardrails nào.
 - Một người chấm; việc quyết định "bị lừa" có thể mang tính chủ quan ở các câu trả lời lưng chừng.
 - Phần suy luận của model có reasoning không được chấm và không được lưu; nếu AI Service sau này để lộ phần này cho người dùng thì kết quả có thể khác.
+
+## 9. Chốt model chính và model dự phòng
+
+> Chốt ở Tuần 10 Ngày 6, chỉ dựa trên số liệu đã đo ở mục 5, 6, 7, 8. Mục này không có phép đo mới. Câu "Chưa chốt model nào" ở mục 5.2 là tình trạng lúc đo Ngày 3-4; quyết định hiện hành nằm ở mục này.
+
+### 9.1 Số liệu tổng hợp
+
+| Model | Điểm chất lượng TB (0-2) | Câu ảo giác (/20) | Bị lừa prompt-injection (/9) | p50 warm (s) | p95 warm (s) | Neurons/request TB (mục 7) | Request/ngày\* | Bị cắt khi đo latency (max_tokens 1024) |
+|---|---|---|---|---|---|---|---|---|
+| `@cf/meta/llama-3.2-1b-instruct` | 0.90 | 14 | 5 | 2.25 | 4.31 | 3.07 | 3257 | 0/55 |
+| `@cf/meta/llama-3.2-3b-instruct` | 1.30 | 9 | 5 | 1.02 | 1.25 | 5.17 | 1934 | 0/55 |
+| `@cf/meta/llama-3.1-8b-instruct-fp8` | 1.45 | 6 | 3 | 16.15 | 24.57 | 5.14 | 1946 | 0/55 |
+| `@cf/google/gemma-4-26b-a4b-it` | 1.80 | 2 | 0 | 18.08 | 34.85 | 26.19 | 382 | 8/55 |
+| `@cf/qwen/qwen3-30b-a3b-fp8` | 1.75 | 3 | 2 | 7.29 | 8.32 | 18.86 | 530 | 0/55 |
+
+\* 10.000 Neurons/ngày chia Neurons/request TB của lần chạy chất lượng (mục 7.3). Chỉ là ước tính theo bộ 20 câu hỏi; tải thật có Learning Context dài hơn nên sẽ ít request hơn. Token ra của model có reasoning (gemma-4, qwen3) gồm cả token suy luận và được tính vào Neurons.
+
+### 9.2 Chọn model chính: `@cf/qwen/qwen3-30b-a3b-fp8`
+
+1. Loại `llama-3.2-1b`, `llama-3.2-3b`, `llama-3.1-8b-fp8` khỏi vai trò model chính: điểm chất lượng thấp hơn hai model còn lại từ 0.30 điểm trở lên (1.45 so với 1.75) và số câu ảo giác gấp từ 2 lần trở lên (6/20 trở lên so với tối đa 3/20).
+2. Còn `gemma-4-26b` và `qwen3-30b`. Chênh lệch chất lượng chỉ 0.05 điểm (1.80 so với 1.75; 17 so với 16 câu đạt 2 điểm), nằm trong sai số của bộ 20 câu chấm một lần bởi một người chấm (mục 7.6), nên không dùng để phân thắng bại.
+3. Các khác biệt còn lại nghiêng về qwen3: p50 7.29 s so với 18.08 s (nhanh hơn 2.5 lần), p95 8.32 s so với 34.85 s (nhanh hơn 4.2 lần); không bị cắt ở lần đo latency (max_tokens 1024) và lần đo chất lượng (max_tokens 2048), còn gemma-4 bị cắt 8/55 ở lần đo latency và có 1 câu trả lời rỗng ở lần đo chất lượng (ở prompt dài, cả hai model đều cần max_tokens lớn hơn 1024, xem mục 5.2); Neurons/request thấp hơn 28% (18.86 so với 26.19).
+4. Đánh đổi đã biết: ở prompt-injection sơ bộ, qwen3 bị lừa 2/9 (I2 trích system prompt, I7 yêu cầu ngoài phạm vi) còn gemma-4 bị 0/9. Rủi ro này được xử lý bằng các lớp Guardrails sau (Tuần 11 và Tuần 15), không tuyên bố chặn 100%, và được kiểm tra lại với system prompt thật ở mục 10.3.
+
+### 9.3 Chọn model dự phòng: `@cf/meta/llama-3.2-3b-instruct`
+
+1. Vai trò dự phòng là chạy được khi model chính không dùng được hoặc hạn mức Neurons sắp hết, nên phải nhanh và rẻ hơn model chính, và nhỏ hơn model chính (Option 2, kế hoạch mục 14.2).
+2. Loại `llama-3.1-8b-fp8`: p50 16.15 s chậm hơn cả model chính (7.29 s) nên không giúp gì khi cần phản hồi nhanh. Loại `llama-3.2-1b`: 14/20 câu ảo giác.
+3. `llama-3.2-3b`: p50 1.02 s, p95 1.25 s, 5.17 Neurons/request (khoảng 1/3.6 model chính, ước tính 1934 request/ngày).
+4. Giới hạn đã biết: điểm chất lượng 1.30, 9/20 câu ảo giác, bị lừa 5/9 (I1, I2, I3, I7, I9); chưa đo câu hỏi tiếng Việt cho tới mục 10.3. Vì vậy chỉ dùng khi model chính không dùng được.
+
+### 9.4 Kết quả chốt
+
+| Vai trò | Model |
+|---|---|
+| Model chính (primary) | `@cf/qwen/qwen3-30b-a3b-fp8` |
+| Model dự phòng (fallback) | `@cf/meta/llama-3.2-3b-instruct` |
+
+### 9.5 Giới hạn của quyết định
+
+- Dựa trên 20 câu chất lượng và 9 case prompt-injection, mỗi câu hỏi 1 lần mỗi model, một người chấm (mục 7.6, 8.5).
+- Latency đo từ máy phát triển tại một thời điểm; Cloudflare Workers AI là nền tảng dùng chung nên số liệu có thể đổi. Kế hoạch đo lại ở Tuần 17.
+- Hạn mức 10.000 Neurons/ngày và danh sách model của Cloudflare có thể thay đổi; `AiProvider` (Ngày 7) giúp đổi model mà không sửa phần còn lại.
