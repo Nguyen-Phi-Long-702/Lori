@@ -335,6 +335,15 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - `AiOrchestrator` (`ai-service/orchestrator/`): nhận `task_type`, chạy workflow tương ứng. Chưa có workflow nào; workflow chat thêm ở Tuần 11.
 - Lỗi từ provider là `ProviderError`; thông điệp có thể chứa nội dung lỗi của Cloudflare nên không trả nguyên văn cho client.
 
+### Context Builder và Input Sanitizer (Tuần 11)
+
+- `ai-service/guardrails/ai_input_sanitizer.py`: `sanitize_input(text)` làm sạch câu hỏi của học viên trước khi đưa vào prompt (Guardrails lớp 3). Thứ tự: cắt thô 4.000 ký tự → giải mã HTML entity → chuẩn hóa NFKC → bỏ ký tự bất thường (điều khiển, vô hình/zero-width, đảo chiều chữ, private use, ngắt dòng Unicode) → bỏ khối code (ba dấu backtick), thẻ HTML (kể cả nội dung `<script>`/`<style>`) → bỏ `<`, `>` và dấu backtick còn sót → gom khoảng trắng → cắt còn tối đa `MAX_INPUT_LENGTH` = 1.000 ký tự. Kết quả rỗng → `InvalidInputError`.
+- Quá dài thì **cắt**, không từ chối (kế hoạch mục 4.2).
+- `ai-service/context/context_builder.py`: `build_prompt(message, learning_context)` ghép Learning Context (JSON camelCase do Backend gửi, mục 18) và câu đã làm sạch thành prompt: khối `<learner_context>` (chỉ có khi ít nhất một phần có dữ liệu) rồi khối `<learner_message>`. Không đưa `submittedAt` của kỳ thi vào prompt.
+- Thứ tự bắt buộc: `sanitize_input` trước, `build_prompt` sau. Sanitizer xóa sạch mọi ký tự `<` và `>` nên học viên không giả được thẻ ranh giới của prompt.
+- Hai hàm chưa được nối vào endpoint hay workflow nào (làm ở Ngày 5-6).
+- Giới hạn đã biết: chưa chặn pattern SQL/path traversal và chưa có Topic classifier (Tuần 15); khối code học viên dán vào bị bỏ hoàn toàn; chỉ `<` + chữ cái, `/`, `!` được coi là thẻ HTML.
+
 ### Xác thực Server-to-Server
 
 - Backend ký mỗi request gửi sang AI Service bằng HMAC-SHA256, khóa là `AI_SERVICE_SHARED_SECRET`. Chuỗi được ký: `timestamp \n METHOD \n path \n sha256-hex(body)`. Chữ ký (hex) nằm ở header `X-Lori-Signature`, thời điểm (giây epoch) ở `X-Lori-Timestamp`.
