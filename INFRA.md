@@ -126,6 +126,7 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - `V2__exam_tables.sql`: `exam_papers`, `exam_sections`, `exam_questions`, `exam_results`.
 - `V3__exam_section_image.sql`: thêm cột `exam_sections.image_url` (ảnh của section đề thi, cho phép NULL).
 - `V4__exp_streak.sql`: thêm `users.total_exp` (tổng EXP) và bảng `user_study_days` (mỗi dòng = 1 ngày user đã học, tính theo giờ Việt Nam).
+- `V5__ai_learning_tables.sql`: thêm 5 bảng cho AI Learning Context và Evaluation: `user_learning_profile`, `user_weakness_record`, `ai_feedback_metadata`, `ai_generated_exercise`, `ai_evaluation_result`. Kế hoạch ghi tên file là V3, nhưng V3 đã dùng cho ảnh section đề thi nên đổi thành V5. Backend chưa có entity cho các bảng này (làm ở Tuần 13).
 - **Không sửa migration đã chạy** (Flyway kiểm tra checksum); muốn đổi schema thì tạo migration mới.
 
 
@@ -369,3 +370,27 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 ### Giới hạn đã biết (không sửa)
 
 - Vercel Hobby: mỗi tháng 1.000.000 lần gọi hàm, 4 CPU-giờ hoạt động, 360 GB-giờ bộ nhớ; chỉ dùng cho mục đích phi thương mại. Vượt hạn mức thì tính năng bị tạm dừng, thường phải chờ 30 ngày.
+
+## 18. Learning Context (Tuần 11)
+
+- Learning Context là dữ liệu học tập súc tích mà Backend gửi cho AI Service; AI Service không đọc database. `LearningContextService.build(userId, taskType)` tổng hợp từ `user_progress` và `exam_results`, chỉ lấy các phần mà `AiContextPolicy` cho phép tác vụ đó (phần không được phép thì không truy vấn DB). Kết quả không chứa id, email hay token của user.
+- Phần context theo tác vụ:
+
+| `AiTaskType` | Điểm yếu ngữ pháp | Điểm yếu từ vựng | Hoạt động gần đây | Kỳ thi gần đây |
+|---|:-:|:-:|:-:|:-:|
+| `CHAT`, `RECOMMEND` | ✅ | ✅ | ✅ | |
+| `GRAMMAR` | ✅ | | | |
+| `VOCABULARY` | | ✅ | | |
+| `GENERATE_EXERCISE`, `ANALYZE_QUIZ`, `CONVERSATION` | ✅ | ✅ | | |
+| `ANALYZE_EXAM` | ✅ | ✅ | | ✅ |
+| `IDENTIFY_IMAGE` | | | | |
+
+- Quy tắc: "yếu" = quiz có tỉ lệ đúng dưới 60%; tối đa 5 mục yếu mỗi loại, 10 mục hoạt động gần đây, 3 lần thi gần nhất (hằng số ở đầu `LearningContextService`).
+- Tên bài ngữ pháp / chủ đề từ vựng nằm ở `backend/src/main/resources/ai/learning-names.json`, sinh từ `dictionary.db` bằng `tools/ai-context/export_names.py` (PowerShell, ở thư mục gốc repo): `docker run --rm -v "${PWD}:/work" -w /work python:3.12-slim python tools/ai-context/export_names.py`. Chạy lại và commit file JSON mỗi khi thêm hoặc đổi bài ngữ pháp / chủ đề trong `dictionary.db`. Id không có trong file được ghi là `Grammar lesson <id>` / `Vocabulary topic <id>`.
+- Chưa có endpoint nào gọi `LearningContextService` (làm ở Tuần 11 Ngày 5-6); 5 bảng của V5 chưa được ghi dữ liệu.
+
+### Giới hạn đã biết (không sửa)
+
+- `user_progress` chỉ lưu tổng đúng/sai của lần làm gần nhất cho mỗi bài/chủ đề, không lưu từng câu hay từng từ, nên context không có thông tin kiểu "từ X sai 5 lần".
+- Context chưa có level ước tính và mục tiêu học (làm ở Tuần 13).
+- Tên bài/chủ đề lấy từ file tĩnh, không tự cập nhật khi `dictionary.db` đổi.
