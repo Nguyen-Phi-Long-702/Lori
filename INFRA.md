@@ -318,11 +318,21 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 | Vercel (project AI Service) | `AI_SERVICE_SHARED_SECRET` | Khóa dùng chung để ký/kiểm tra HMAC, ≥ 32 ký tự |
 | Render (Backend) | `AI_SERVICE_SHARED_SECRET` | Cùng giá trị với biến trên Vercel |
 | Render (Backend) | `AI_SERVICE_BASE_URL` | URL gốc của AI Service, không có `/` ở cuối (không đặt thì mặc định `http://localhost:8000`) |
+| Vercel (project AI Service) | `CLOUDFLARE_ACCOUNT_ID` | Account ID Cloudflare, dùng để gọi Workers AI |
+| Vercel (project AI Service) | `CLOUDFLARE_API_TOKEN` | API token Workers AI (mục "LLM: Cloudflare Workers AI"); không commit |
+| Vercel (project AI Service) | `AI_PROVIDER` | Tùy chọn: `self_hosted` (mặc định), `mock` hoặc `external`; không đặt thì dùng `self_hosted`; giá trị khác làm AI Service lỗi khi khởi động |
 
 | Method | Đường dẫn | Xác thực | Mô tả |
 |---|---|---|---|
 | GET | `/` | Không | Trả `{"message":"Hello from Lori AI Service"}`; UptimeRobot theo dõi đường dẫn này (mục 7) |
 | POST | `/ai/ping` | Chữ ký HMAC | Trả `{"status":"ok"}`; Backend gọi qua `AiServiceClient.ping()` |
+| GET | `/ai/health` | Chữ ký HMAC | Trả `{"status":"ok","provider":"self_hosted"}`; `status` là `degraded` khi provider thiếu cấu hình; chỉ kiểm tra cấu hình, không gọi Cloudflare |
+
+### Provider và Orchestrator
+
+- `AiProvider` (`ai-service/providers/`): `SelfHostedLlmProvider` gọi model chính trong `config/model_config.py` qua Cloudflare Workers AI; `MockProvider` dùng cho test/CI; `ExternalApiProvider` là chỗ trống, không dùng cho MVP. Biến `AI_PROVIDER` chọn provider khi AI Service khởi động.
+- `AiOrchestrator` (`ai-service/orchestrator/`): nhận `task_type`, chạy workflow tương ứng. Chưa có workflow nào; workflow chat thêm ở Tuần 11.
+- Lỗi từ provider là `ProviderError`; thông điệp có thể chứa nội dung lỗi của Cloudflare nên không trả nguyên văn cho client.
 
 ### Xác thực Server-to-Server
 
