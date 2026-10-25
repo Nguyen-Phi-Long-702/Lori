@@ -330,11 +330,13 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 | POST | `/ai/ping` | Chữ ký HMAC | Trả `{"status":"ok"}`; Backend gọi qua `AiServiceClient.ping()` |
 | GET | `/ai/health` | Chữ ký HMAC | Trả `{"status":"ok","provider":"self_hosted"}`; `status` là `degraded` khi provider thiếu cấu hình; chỉ kiểm tra cấu hình, không gọi Cloudflare |
 | POST | `/ai/chat` | Chữ ký HMAC | Body `{"message":"...","learningContext":{...}}` (`learningContext` có thể thiếu hoặc `null`); trả `{"type":"chat","answer":"...","truncated":false}`; `400` khi câu hỏi rỗng sau khi làm sạch, `422` khi thiếu `message`, `502` khi provider lỗi (thông điệp chung, không kèm lỗi của Cloudflare) |
+| POST | `/ai/grammar` | Chữ ký HMAC | Body `{"text":"...","lessons":{"1":"Present Simple",...},"learningContext":{...}}` (`learningContext` có thể thiếu hoặc `null`); trả `{"type":"grammar_analysis","correct":false,"correctedSentence":"...","errors":[{"type":"...","explanation":"..."}],"lessonId":1}`; `400` khi câu rỗng sau khi làm sạch, `422` khi thiếu `text` hoặc `lessons`, `502` khi provider lỗi hoặc trả JSON không dùng được |
 
 ### Provider và Orchestrator
 
 - `AiProvider` (`ai-service/providers/`): `SelfHostedLlmProvider` gọi model chính trong `config/model_config.py` qua Cloudflare Workers AI; `MockProvider` dùng cho test/CI; `ExternalApiProvider` là chỗ trống, không dùng cho MVP. Biến `AI_PROVIDER` chọn provider khi AI Service khởi động.
 - `AiOrchestrator` (`ai-service/orchestrator/`): nhận `task_type`, chạy workflow tương ứng. Workflow hiện có: `chat` (`orchestrator/chat_workflow.py`): `sanitize_input` → `build_prompt` → `provider.generate` → `{"type","answer","truncated"}`; câu trả lời rỗng của model bị coi là lỗi provider. Workflow được nối trong `main.py`; endpoint `/ai/chat` ở `routers/chat.py`.
+- Workflow `grammar` (`orchestrator/grammar_workflow.py`, `TaskType.GRAMMAR`): `sanitize_input` → `build_grammar_prompt` (chỉ dẫn + `<lesson_list>` + Learning Context + câu) → `provider.generate` → lấy JSON từ câu trả lời → kiểm tra → `{"type":"grammar_analysis","correct","correctedSentence","errors","lessonId"}`. Thiếu trường, sai kiểu hoặc câu sai mà không có lỗi nào bị coi là lỗi provider; `lessonId` không có trong `lessons` bị đổi thành `null`. Endpoint `/ai/grammar` ở `routers/grammar.py`.
 - Lỗi từ provider là `ProviderError`; thông điệp có thể chứa nội dung lỗi của Cloudflare nên không trả nguyên văn cho client.
 
 ### Context Builder và Input Sanitizer (Tuần 11)
@@ -461,3 +463,20 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 
 - Không xem được prompt thật gửi cho model (Vercel và Cloudflare không ghi nội dung prompt ra log), nên Learning Context chỉ được kiểm tra gián tiếp qua câu trả lời của LLM. Kiểm tra chính xác từng trường theo `AiContextPolicy` bằng unit test ở Tuần 16.
 - Kịch bản 3, 4, 5 dựa trên hành vi của LLM: dù `temperature` = 0, câu trả lời vẫn có thể đổi nếu Cloudflare cập nhật model. Test tự động chỉ kiểm tra từ khóa; cần người đọc câu trả lời để kết luận.
+
+## 21. Phân tích ngữ pháp AI (Tuần 12 – Ngày 1-2)
+
+- Endpoint: `POST /api/ai/analyze-text` (`AiGatewayController`), yêu cầu đăng nhập và Premium (`@RequirePremium`). Request: `{"type":"grammar","text":"..."}`; `type` hiện chỉ nhận `grammar`; `text` không rỗng, tối đa 4.000 ký tự.
+- Response `200`: `{"type":"grammar_analysis","correct":false,"correctedSentence":"She doesn't like coffee.","errors":[{"type":"Subject-verb agreement","explanation":"..."}],"lessonId":1}`. Câu đúng: `correct = true`, `errors = []`, `lessonId = null`. `lessonId` là id bài trong `grammar_lessons` của `dictionary.db` (Android mở bài bằng `GrammarDao.getLessonById`).
+- Luồng: JWT → `@RequirePremium` → Bean Validation → `AiRateLimiter.checkAnalyzeText` → `LearningContextService.build(userId, GRAMMAR)` (chỉ điểm yếu ngữ pháp, mục 18) → `AiServiceClient.analyzeGrammar` (ký HMAC, mục 17) → AI Service `POST /ai/grammar` → Cloudflare Workers AI. Backend gửi sang AI Service câu cần phân tích, danh sách 30 bài ngữ pháp (`learning-names.json`) và Learning Context, không gửi `userId`.
+- Liên kết bài ngữ pháp: model chỉ được chọn `lessonId` trong danh sách Backend gửi; AI Service đổi id không có trong danh sách thành `null`.
+- Rate limit: 20 request/phút/user, bucket riêng `ai_rate_limit:analyze-text:<userId>` (không dùng chung với chat). Giới hạn 60 request/phút/IP của `RateLimitFilter` vẫn áp dụng song song.
+- Mã lỗi: `400` (`type` khác `grammar`, `text` trống, vượt 4.000 ký tự, hoặc rỗng sau khi làm sạch), `401`, `403` (Free hoặc sai API key), `429`, `503 AI service unavailable` (AI Service/Cloudflare lỗi, model trả JSON không dùng được, hết hạn mức, quá 30 giây).
+- Không thêm biến môi trường hay thư viện mới so với mục 17.
+
+### Giới hạn đã biết (không sửa)
+
+- Chưa có ví dụ câu và bài tập liên quan (Module 5.7, Tuần 13); chưa ghi `ai_feedback_metadata`.
+- Giải thích bằng tiếng Anh đơn giản (theo `SYSTEM_PROMPT`); chưa có Topic classifier, kiểm tra output và log đã che thông tin cá nhân (Tuần 15).
+- Mỗi request chỉ kiểm tra tối đa 1.000 ký tự đầu của câu sau khi làm sạch; model có thể sửa khác nhau giữa các lần gọi nếu Cloudflare đổi model.
+- Model có thể chọn `lessonId` chưa thật sát lỗi; kiểm tra thủ công ở Tuần 12 Ngày 7.
