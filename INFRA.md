@@ -184,11 +184,12 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 ### Postman Collection v2
 
 - File: `postman/Lori-API-v2.postman_collection.json` (Collection v2.1). Bản v1 (`postman/Lori-Auth.postman_collection.json`) giữ lại để tham khảo.
-- Gồm 2 thư mục:
+- Gồm 3 thư mục:
   - `1. Auth flow`: register → login → truy cập API cần đăng nhập → refresh (xoay vòng) → logout, kèm các trường hợp 401.
   - `2. Premium flow`: register → login → user Free gọi `GET /api/exams` bị `403 PREMIUM_REQUIRED` → `POST /api/payment/mock-purchase` → gọi lại `GET /api/exams` thành công bằng cùng access token.
+  - `3. AI Tutor flow` (Tuần 11 – Ngày 7): register → login → user Free gọi `POST /api/ai/chat` bị `403 PREMIUM_REQUIRED` → `mock-purchase` → hỏi tiếng Anh cơ bản → nạp tiến trình học bằng `POST /api/progress/sync` → hỏi AI về điểm yếu và hoạt động gần đây (kiểm tra Learning Context) → nộp 1 bài thi trắng → hỏi AI về kết quả thi (kiểm tra `recentExams` không được gửi cho tác vụ chat). Kết quả kiểm thử ở mục 20.
 - Cần một Environment có 3 biến: `baseUrl` (URL Render, không có `/` ở cuối), `apiKey`, `appSignature`. **Không commit file Environment** (chứa khóa). Header `X-API-Key` và `X-App-Signature` được Pre-request script của collection thêm vào mọi request.
-- Chạy: Postman → chuột phải thư mục (hoặc collection) → Run. Mỗi lần chạy đăng ký một email mới `postman.<thời gian>@example.com` nên để lại user thử trong Neon. Một lần chạy cả collection dùng 14 request.
+- Chạy: Postman → chuột phải thư mục (hoặc collection) → Run. Mỗi lần chạy đăng ký một email mới `postman.<thời gian>@example.com` nên để lại user thử trong Neon. Một lần chạy cả collection dùng 26 request (thư mục 3 gọi LLM thật 4 lần, ước tính khoảng 100 Neurons Cloudflare mỗi lần chạy).
 - Backend giới hạn 60 request/phút/IP: không chạy liên tục nhiều lần trong 1 phút.
 
 ### Load test (k6)
@@ -420,3 +421,43 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - Hạn mức Cloudflare 10.000 Neurons/ngày dùng chung cho mọi user: model chính tốn khoảng 19-24 Neurons/câu hỏi (`ai-service/BENCHMARK.md` mục 5, 7), tức khoảng 400-500 câu/ngày; hết hạn mức thì chat trả 503 đến 00:00 UTC (07:00 giờ Việt Nam). Không tự chuyển sang model dự phòng.
 - Chưa có Topic classifier, kiểm tra output và log AI đã che thông tin cá nhân (Tuần 15); `AiOutputValidator` chưa có nên câu trả lời của model được trả nguyên văn.
 - Timeout: AI Service chờ Cloudflare tối đa 25 giây, Backend chờ AI Service tối đa 30 giây.
+
+## 20. Kiểm thử AI Tutor (Tuần 11 – Ngày 7)
+
+### Công cụ
+
+- Postman Collection v2, thư mục `3. AI Tutor flow` (mục 13): 12 request chạy tuần tự, đi qua đường thật Postman → Render (Backend) → Vercel (AI Service) → Cloudflare Workers AI, không dùng mock. Cần Environment `baseUrl`, `apiKey`, `appSignature` như mục 13.
+- Không có code kiểm thử mới ở Backend và AI Service. Unit test `LearningContextService` và `AiContextPolicy` làm ở Tuần 16 theo kế hoạch.
+
+### Dữ liệu kiểm thử
+
+- Mỗi lần chạy tạo 1 user mới (Free), mua Premium bằng `mock-purchase`, rồi nạp 3 mục học bằng `POST /api/progress/sync` với ngày học cách đây 30 ngày (nằm ngoài khoảng 7 ngày của `ExpService` nên không cộng EXP):
+
+| `itemType` | `itemId` | Tên | Đúng / Sai |
+|---|---|---|---|
+| `grammar_quiz_lesson` | 26 | Subjunctive Mood | 2 / 8 |
+| `vocab_quiz_topic` | 13 | Giáng sinh | 3 / 7 |
+| `grammar_lesson` | 27 | Inversion | 0 / 0 |
+
+- Rồi nộp 1 bài thi trắng (đề đầu tiên trong `GET /api/exams`, không có đáp án nào) để user có 1 kết quả thi.
+
+### Kịch bản
+
+| # | Kịch bản | Request | Kết quả kỳ vọng | Kết quả ngày 25/10/2026 |
+|---|---|---|---|---|
+| 1 | Premium gate | T3: user Free `POST /api/ai/chat` | `403`, `message` = `PREMIUM_REQUIRED` | Đạt |
+| 2 | Hỏi tiếng Anh cơ bản | T5: sự khác nhau giữa *a* và *an* | `200`, `type` = `chat`, `truncated` = `false`, câu trả lời đúng ý (nguyên âm) | Đạt |
+| 3 | Learning Context: điểm yếu ngữ pháp và từ vựng | T7: hỏi chủ đề yếu nhất | AI nêu `Subjunctive Mood` và `Giáng sinh` | Đạt |
+| 4 | Learning Context: hoạt động gần đây | T8: hỏi các bài ngữ pháp đã học | AI nêu `Inversion` | Đạt |
+| 5 | Policy: tác vụ chat không nhận kỳ thi gần đây | T12: hỏi điểm bài thi vừa nộp | AI không biết kết quả thi (không nêu điểm hay tên đề) | Đạt |
+
+### Dấu vết để lại sau mỗi lần chạy
+
+- 1 user thử, 1 subscription `MOCK`, 3 dòng `user_progress`, 1 kết quả thi trong Neon (không tự xóa).
+- Bài thi trắng cộng khoảng 70 EXP (50 EXP nộp bài + 20 EXP ngày học mới) nên user "Postman Tester" xuất hiện trên bảng xếp hạng.
+- Khoảng 100 Neurons Cloudflare mỗi lần chạy (hạn mức 10.000 Neurons/ngày).
+
+### Giới hạn đã biết (không sửa)
+
+- Không xem được prompt thật gửi cho model (Vercel và Cloudflare không ghi nội dung prompt ra log), nên Learning Context chỉ được kiểm tra gián tiếp qua câu trả lời của LLM. Kiểm tra chính xác từng trường theo `AiContextPolicy` bằng unit test ở Tuần 16.
+- Kịch bản 3, 4, 5 dựa trên hành vi của LLM: dù `temperature` = 0, câu trả lời vẫn có thể đổi nếu Cloudflare cập nhật model. Test tự động chỉ kiểm tra từ khóa; cần người đọc câu trả lời để kết luận.
