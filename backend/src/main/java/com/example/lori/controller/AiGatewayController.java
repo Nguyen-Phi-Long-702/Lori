@@ -1,7 +1,9 @@
 package com.example.lori.controller;
 
+import com.example.lori.dto.AiAnalyzeTextRequest;
 import com.example.lori.dto.AiChatRequest;
 import com.example.lori.dto.AiChatResponse;
+import com.example.lori.dto.AiGrammarResponse;
 import com.example.lori.security.RequirePremium;
 import com.example.lori.service.AiGatewayService;
 import jakarta.validation.Valid;
@@ -29,5 +31,11 @@ public class AiGatewayController {
     @PostMapping("/chat")
     public AiChatResponse chat(@AuthenticationPrincipal UUID userId, @Valid @RequestBody AiChatRequest request) {
         return aiGatewayService.chat(userId, request);
+    }
+
+    @PostMapping("/analyze-text")
+    public AiGrammarResponse analyzeText(
+            @AuthenticationPrincipal UUID userId, @Valid @RequestBody AiAnalyzeTextRequest request) {
+        return aiGatewayService.analyzeGrammar(userId, request);
     }
 }

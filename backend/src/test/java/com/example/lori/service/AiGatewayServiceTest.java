@@ -1,5 +1,7 @@
 package com.example.lori.service;
 
+import com.example.lori.dto.AiAnalyzeTextRequest;
+import com.example.lori.dto.AiGrammarResponse;
 import com.example.lori.dto.AiChatRequest;
 import com.example.lori.dto.AiChatResponse;
 import com.example.lori.dto.LearningContext;
@@ -8,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.UUID;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -42,6 +46,29 @@ class AiGatewayServiceTest {
         doThrow(new ApiException(HttpStatus.TOO_MANY_REQUESTS, "Too many requests")).when(rateLimiter).checkChat(userId);
 
         assertThatThrownBy(() -> service.chat(userId, new AiChatRequest("Hello"))).isInstanceOf(ApiException.class);
+        verifyNoInteractions(learningContextService, aiServiceClient);
+    }
+
+    @Test
+    void analyzeGrammarSendsTextLessonsAndGrammarContextToAiService() {
+        LearningContext context = new LearningContext(List.of(), null, null, null);
+        Map<Integer, String> lessons = Map.of(1, "Present Simple");
+        AiGrammarResponse analysis = new AiGrammarResponse("grammar_analysis", true, "I like tea.", List.of(), null);
+        when(learningContextService.build(userId, AiTaskType.GRAMMAR)).thenReturn(context);
+        when(learningContextService.grammarLessonNames()).thenReturn(lessons);
+        when(aiServiceClient.analyzeGrammar("I like tea.", lessons, context)).thenReturn(analysis);
+
+        assertThat(service.analyzeGrammar(userId, new AiAnalyzeTextRequest("grammar", "I like tea."))).isEqualTo(analysis);
+        verify(rateLimiter).checkAnalyzeText(userId);
+    }
+
+    @Test
+    void rateLimitedAnalyzeTextNeverReachesContextOrAiService() {
+        doThrow(new ApiException(HttpStatus.TOO_MANY_REQUESTS, "Too many requests"))
+                .when(rateLimiter).checkAnalyzeText(userId);
+
+        assertThatThrownBy(() -> service.analyzeGrammar(userId, new AiAnalyzeTextRequest("grammar", "I like tea.")))
+                .isInstanceOf(ApiException.class);
         verifyNoInteractions(learningContextService, aiServiceClient);
     }
 }
