@@ -1,4 +1,5 @@
 from context.context_builder import CONTEXT_INTRO, build_prompt
+from context.context_builder import CONTEXT_INTRO, GRAMMAR_TASK, build_grammar_prompt, build_prompt
 
 WEAK = {"name": "Present Perfect", "correctCount": 5, "incorrectCount": 6, "accuracyPercent": 45}
 EXAM = {
@@ -60,3 +61,20 @@ def test_recent_exam_line():
 
 def test_context_never_contains_the_submitted_date():
     assert "2026-10-20" not in build_prompt("Hi", {"recentExams": [EXAM]})
+
+
+LESSONS = {1: "Present Simple", 7: "Articles (a/an/the)"}
+
+
+def test_grammar_prompt_has_task_lesson_list_and_message_in_order():
+    prompt = build_grammar_prompt("She don't like coffee.", LESSONS)
+    assert prompt == (
+        f"{GRAMMAR_TASK}\n\n"
+        "<lesson_list>\n1: Present Simple\n7: Articles (a/an/the)\n</lesson_list>\n\n"
+        "<learner_message>\nShe don't like coffee.\n</learner_message>"
+    )
+
+
+def test_grammar_prompt_puts_learning_context_between_lesson_list_and_message():
+    prompt = build_grammar_prompt("She don't like coffee.", LESSONS, {"weakGrammar": [WEAK]})
+    assert prompt.index("</lesson_list>") < prompt.index("<learner_context>") < prompt.rindex("<learner_message>")
