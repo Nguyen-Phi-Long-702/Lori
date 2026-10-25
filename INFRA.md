@@ -328,11 +328,12 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 | GET | `/` | Không | Trả `{"message":"Hello from Lori AI Service"}`; UptimeRobot theo dõi đường dẫn này (mục 7) |
 | POST | `/ai/ping` | Chữ ký HMAC | Trả `{"status":"ok"}`; Backend gọi qua `AiServiceClient.ping()` |
 | GET | `/ai/health` | Chữ ký HMAC | Trả `{"status":"ok","provider":"self_hosted"}`; `status` là `degraded` khi provider thiếu cấu hình; chỉ kiểm tra cấu hình, không gọi Cloudflare |
+| POST | `/ai/chat` | Chữ ký HMAC | Body `{"message":"...","learningContext":{...}}` (`learningContext` có thể thiếu hoặc `null`); trả `{"type":"chat","answer":"...","truncated":false}`; `400` khi câu hỏi rỗng sau khi làm sạch, `422` khi thiếu `message`, `502` khi provider lỗi (thông điệp chung, không kèm lỗi của Cloudflare) |
 
 ### Provider và Orchestrator
 
 - `AiProvider` (`ai-service/providers/`): `SelfHostedLlmProvider` gọi model chính trong `config/model_config.py` qua Cloudflare Workers AI; `MockProvider` dùng cho test/CI; `ExternalApiProvider` là chỗ trống, không dùng cho MVP. Biến `AI_PROVIDER` chọn provider khi AI Service khởi động.
-- `AiOrchestrator` (`ai-service/orchestrator/`): nhận `task_type`, chạy workflow tương ứng. Chưa có workflow nào; workflow chat thêm ở Tuần 11.
+- `AiOrchestrator` (`ai-service/orchestrator/`): nhận `task_type`, chạy workflow tương ứng. Workflow hiện có: `chat` (`orchestrator/chat_workflow.py`): `sanitize_input` → `build_prompt` → `provider.generate` → `{"type","answer","truncated"}`; câu trả lời rỗng của model bị coi là lỗi provider. Workflow được nối trong `main.py`; endpoint `/ai/chat` ở `routers/chat.py`.
 - Lỗi từ provider là `ProviderError`; thông điệp có thể chứa nội dung lỗi của Cloudflare nên không trả nguyên văn cho client.
 
 ### Context Builder và Input Sanitizer (Tuần 11)
@@ -341,7 +342,7 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - Quá dài thì **cắt**, không từ chối (kế hoạch mục 4.2).
 - `ai-service/context/context_builder.py`: `build_prompt(message, learning_context)` ghép Learning Context (JSON camelCase do Backend gửi, mục 18) và câu đã làm sạch thành prompt: khối `<learner_context>` (chỉ có khi ít nhất một phần có dữ liệu) rồi khối `<learner_message>`. Không đưa `submittedAt` của kỳ thi vào prompt.
 - Thứ tự bắt buộc: `sanitize_input` trước, `build_prompt` sau. Sanitizer xóa sạch mọi ký tự `<` và `>` nên học viên không giả được thẻ ranh giới của prompt.
-- Hai hàm chưa được nối vào endpoint hay workflow nào (làm ở Ngày 5-6).
+- Hai hàm được `chat_workflow` gọi đúng thứ tự trên.
 - Giới hạn đã biết: chưa chặn pattern SQL/path traversal và chưa có Topic classifier (Tuần 15); khối code học viên dán vào bị bỏ hoàn toàn; chỉ `<` + chữ cái, `/`, `!` được coi là thẻ HTML.
 
 ### Xác thực Server-to-Server
@@ -396,10 +397,26 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 
 - Quy tắc: "yếu" = quiz có tỉ lệ đúng dưới 60%; tối đa 5 mục yếu mỗi loại, 10 mục hoạt động gần đây, 3 lần thi gần nhất (hằng số ở đầu `LearningContextService`).
 - Tên bài ngữ pháp / chủ đề từ vựng nằm ở `backend/src/main/resources/ai/learning-names.json`, sinh từ `dictionary.db` bằng `tools/ai-context/export_names.py` (PowerShell, ở thư mục gốc repo): `docker run --rm -v "${PWD}:/work" -w /work python:3.12-slim python tools/ai-context/export_names.py`. Chạy lại và commit file JSON mỗi khi thêm hoặc đổi bài ngữ pháp / chủ đề trong `dictionary.db`. Id không có trong file được ghi là `Grammar lesson <id>` / `Vocabulary topic <id>`.
-- Chưa có endpoint nào gọi `LearningContextService` (làm ở Tuần 11 Ngày 5-6); 5 bảng của V5 chưa được ghi dữ liệu.
+- `AiGatewayService.chat` gọi `LearningContextService.build(userId, CHAT)` (mục 19); 5 bảng của V5 chưa được ghi dữ liệu.
 
 ### Giới hạn đã biết (không sửa)
 
 - `user_progress` chỉ lưu tổng đúng/sai của lần làm gần nhất cho mỗi bài/chủ đề, không lưu từng câu hay từng từ, nên context không có thông tin kiểu "từ X sai 5 lần".
 - Context chưa có level ước tính và mục tiêu học (làm ở Tuần 13).
 - Tên bài/chủ đề lấy từ file tĩnh, không tự cập nhật khi `dictionary.db` đổi.
+
+## 19. AI Tutor chat (Tuần 11)
+
+- Endpoint: `POST /api/ai/chat` (`AiGatewayController`), yêu cầu đăng nhập và Premium (`@RequirePremium`, user Free nhận `403 PREMIUM_REQUIRED`).
+- Request: `{"message": "..."}`; `message` không rỗng, tối đa 4.000 ký tự. Response `200`: `{"type":"chat","answer":"...","truncated":false}`; `truncated = true` khi câu trả lời bị cắt do hết `max_output_tokens`.
+- Luồng: JWT → `@RequirePremium` → Bean Validation → `AiRateLimiter` → `LearningContextService.build(userId, CHAT)` → `AiServiceClient.chat` (ký HMAC, mục 17) → AI Service `POST /ai/chat` → Cloudflare Workers AI. Backend chỉ gửi sang AI Service câu hỏi và Learning Context, không gửi `userId`.
+- Rate limit: 20 request/phút/user (Bucket4j trên Upstash, key `ai_rate_limit:chat:<userId>`); vượt thì `429 Too many requests`. Giới hạn 60 request/phút/IP của `RateLimitFilter` vẫn áp dụng song song.
+- Mã lỗi: `400` (`message` trống, vượt 4.000 ký tự, hoặc rỗng sau khi làm sạch), `401` (chưa đăng nhập), `403` (Free hoặc sai API key), `429` (quá lượt), `503 AI service unavailable` (AI Service hoặc Cloudflare lỗi, hết hạn mức, thiếu secret, quá 30 giây).
+- Không thêm biến môi trường mới so với mục 17.
+
+### Giới hạn đã biết (không sửa)
+
+- Mỗi request độc lập: AI không nhớ các câu hỏi trước đó trong cùng cuộc hội thoại.
+- Hạn mức Cloudflare 10.000 Neurons/ngày dùng chung cho mọi user: model chính tốn khoảng 19-24 Neurons/câu hỏi (`ai-service/BENCHMARK.md` mục 5, 7), tức khoảng 400-500 câu/ngày; hết hạn mức thì chat trả 503 đến 00:00 UTC (07:00 giờ Việt Nam). Không tự chuyển sang model dự phòng.
+- Chưa có Topic classifier, kiểm tra output và log AI đã che thông tin cá nhân (Tuần 15); `AiOutputValidator` chưa có nên câu trả lời của model được trả nguyên văn.
+- Timeout: AI Service chờ Cloudflare tối đa 25 giây, Backend chờ AI Service tối đa 30 giây.
