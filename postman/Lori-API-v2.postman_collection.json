@@ -581,6 +581,591 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. AI Tutor flow",
+      "item": [
+        {
+          "name": "T1 Register (user moi)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Moi lan chay tao 1 email moi de khong bi trung (409)\r\npm.environment.set(\"testEmail\", \"postman.\" + Date.now() + \"@example.com\");\r\npm.environment.set(\"testPassword\", \"Postman@12345\");"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Register tra 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Co accessToken va refreshToken\", function () {\r\n    pm.expect(body.accessToken).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(body.refreshToken).to.be.a(\"string\").and.not.empty;\r\n});\r\npm.environment.set(\"accessToken\", body.accessToken);\r\npm.environment.set(\"refreshToken\", body.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"displayName\": \"Postman Tester\",\r\n  \"email\": \"{{testEmail}}\",\r\n  \"password\": \"{{testPassword}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T2 Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"accessToken la JWT (3 phan)\", function () {\r\n    pm.expect(body.accessToken.split(\".\")).to.have.lengthOf(3);\r\n});\r\npm.test(\"Co refreshToken\", function () {\r\n    pm.expect(body.refreshToken).to.be.a(\"string\").and.not.empty;\r\n});\r\npm.environment.set(\"accessToken\", body.accessToken);\r\npm.environment.set(\"refreshToken\", body.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{testEmail}}\",\r\n  \"password\": \"{{testPassword}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T3 POST ai/chat (Free, bi chan 403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Free bi chan -> 403\", function () {\r\n    pm.response.to.have.status(403);\r\n});\r\npm.test(\"Body bao PREMIUM_REQUIRED\", function () {\r\n    const body = pm.response.json();\r\n    pm.expect(body.status).to.eql(403);\r\n    pm.expect(body.message).to.eql(\"PREMIUM_REQUIRED\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"message\": \"What is the past tense of go?\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/chat",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "chat"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T4 POST mock-purchase (MONTHLY, 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Mock purchase tra 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Goi MONTHLY, thanh toan MOCK, trang thai ACTIVE\", function () {\r\n    pm.expect(body.planType).to.eql(\"MONTHLY\");\r\n    pm.expect(body.paymentMethod).to.eql(\"MOCK\");\r\n    pm.expect(body.status).to.eql(\"ACTIVE\");\r\n});\r\npm.test(\"Goi thang co ngay het han\", function () {\r\n    pm.expect(body.expiresAt).to.be.a(\"string\").and.not.empty;\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"planType\": \"MONTHLY\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payment/mock-purchase",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payment",
+                "mock-purchase"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T5 POST ai/chat (hoi tieng Anh co ban, 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Premium chat tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"type = chat, khong bi cat (truncated = false)\", function () {\r\n    pm.expect(body.type).to.eql(\"chat\");\r\n    pm.expect(body.truncated).to.eql(false);\r\n});\r\npm.test(\"Co cau tra loi khong rong\", function () {\r\n    pm.expect(body.answer).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(body.answer.length).to.be.above(20);\r\n});\r\npm.test(\"Cau tra loi nhac toi nguyen am (vowel)\", function () {\r\n    pm.expect(body.answer).to.match(/vowel/i);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"message\": \"What is the difference between 'a' and 'an'? Answer in two short sentences.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/chat",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "chat"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T6 POST progress/sync (nap du lieu hoc tap)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Ngay hoc cu hon 7 ngay: du lieu van duoc luu nhung Backend khong cong EXP/streak (ExpService.MAX_BACKDATE_DAYS)\r\npm.environment.set(\"oldStudiedAt\", new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sync tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Nhan 3 muc, ghi 3 muc\", function () {\r\n    pm.expect(body.received).to.eql(3);\r\n    pm.expect(body.applied).to.eql(3);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"items\": [\r\n    {\r\n      \"itemType\": \"grammar_quiz_lesson\",\r\n      \"itemId\": 26,\r\n      \"status\": \"completed\",\r\n      \"correctCount\": 2,\r\n      \"incorrectCount\": 8,\r\n      \"lastStudiedAt\": \"{{oldStudiedAt}}\"\r\n    },\r\n    {\r\n      \"itemType\": \"vocab_quiz_topic\",\r\n      \"itemId\": 13,\r\n      \"status\": \"completed\",\r\n      \"correctCount\": 3,\r\n      \"incorrectCount\": 7,\r\n      \"lastStudiedAt\": \"{{oldStudiedAt}}\"\r\n    },\r\n    {\r\n      \"itemType\": \"grammar_lesson\",\r\n      \"itemId\": 27,\r\n      \"status\": \"completed\",\r\n      \"correctCount\": 0,\r\n      \"incorrectCount\": 0,\r\n      \"lastStudiedAt\": \"{{oldStudiedAt}}\"\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/progress/sync",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "progress",
+                "sync"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T7 POST ai/chat (context: diem yeu ngu phap + tu vung)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Chat tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"AI biet diem yeu ngu phap (Subjunctive Mood)\", function () {\r\n    pm.expect(body.answer).to.match(/subjunctive/i);\r\n});\r\npm.test(\"AI biet diem yeu tu vung (Giang sinh / Christmas)\", function () {\r\n    pm.expect(body.answer).to.match(/(giáng sinh|christmas)/i);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"message\": \"Based on my study records, which grammar topic and which vocabulary topic am I weakest at? Answer in two short sentences.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/chat",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "chat"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T8 POST ai/chat (context: hoat dong gan day)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Chat tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"AI biet bai da hoc gan day (Inversion)\", function () {\r\n    pm.expect(pm.response.json().answer).to.match(/inversion/i);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"message\": \"Which grammar lessons have I already studied? Please name them.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/chat",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "chat"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T9 GET exams (Premium, lay de dau tien)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Premium goi GET /api/exams tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Co it nhat 1 de thi\", function () {\r\n    pm.expect(body).to.be.an(\"array\").that.is.not.empty;\r\n});\r\n// Lay de dau tien trong danh sach de nop bai trang o T10-T11\r\npm.environment.set(\"examId\", body[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/exams",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "exams"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T10 POST exams start",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Start tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Co sessionToken\", function () {\r\n    pm.expect(body.sessionToken).to.be.a(\"string\").and.not.empty;\r\n});\r\npm.environment.set(\"examSessionToken\", body.sessionToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/exams/{{examId}}/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "exams",
+                "{{examId}}",
+                "start"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T11 POST exams submit (nop bai trang)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Nop bai tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Co ket qua cham diem, 0 cau dung\", function () {\r\n    pm.expect(body.id).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(body.totalQuestions).to.be.above(0);\r\n    pm.expect(body.correctCount).to.eql(0);\r\n});\r\n// Luu de T12 doi chieu: cau tra loi cua AI khong duoc nhac toi de thi nay\r\npm.environment.set(\"examTitle\", body.title);\r\npm.environment.set(\"examTotalScore\", String(body.totalScore));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"sessionToken\": \"{{examSessionToken}}\",\r\n  \"answers\": []\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/exams/{{examId}}/submit",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "exams",
+                "{{examId}}",
+                "submit"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T12 POST ai/chat (CHAT khong nhan ky thi gan day)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Chat tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"Cau tra loi khong nhac ten de thi vua nop\", function () {\r\n    const answer = pm.response.json().answer.toLowerCase();\r\n    pm.expect(answer).to.not.include(pm.environment.get(\"examTitle\").toLowerCase());\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"message\": \"Please tell me my score and my listening and reading results from my last TOEIC or IELTS exam, then suggest what to study.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/chat",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "chat"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     }
