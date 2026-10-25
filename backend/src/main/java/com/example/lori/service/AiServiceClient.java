@@ -1,6 +1,7 @@
 package com.example.lori.service;
 
 import com.example.lori.dto.AiChatResponse;
+import com.example.lori.dto.AiGrammarResponse;
 import com.example.lori.dto.LearningContext;
 import com.example.lori.exception.ApiException;
 import com.example.lori.security.AiServiceSigner;
@@ -18,11 +19,12 @@ import org.springframework.web.client.RestClientException;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Map;
 
 /**
  * Goi AI Service (FastAPI) kem chu ky Server-to-Server, khong dung JWT cua user
  * Chua cau hinh secret hoac AI Service loi/khong toi duoc -> 503; Backend van khoi dong binh thuong.
- * Rieng AI Service tra 400 (cau hoi rong sau khi lam sach) -> 400.
+ * Rieng AI Service tra 400 (cau hoi/cau can phan tich rong sau khi lam sach) -> 400.
  */
 @Slf4j
 @Service
@@ -30,6 +32,7 @@ public class AiServiceClient {
 
     private static final String PING_PATH = "/ai/ping";
     private static final String CHAT_PATH = "/ai/chat";
+    private static final String GRAMMAR_PATH = "/ai/grammar";
     private static final int MIN_SECRET_LENGTH = 32;
 
     private final RestClient restClient;
@@ -57,6 +60,10 @@ public class AiServiceClient {
 
     public AiChatResponse chat(String message, LearningContext learningContext) {
         return post(CHAT_PATH, toJson(new ChatPayload(message, learningContext)), AiChatResponse.class);
+    }
+
+    public AiGrammarResponse analyzeGrammar(String text, Map<Integer, String> lessons, LearningContext learningContext) {
+        return post(GRAMMAR_PATH, toJson(new GrammarPayload(text, lessons, learningContext)), AiGrammarResponse.class);
     }
 
     private <T> T post(String path, byte[] body, Class<T> responseType) {
@@ -105,6 +112,10 @@ public class AiServiceClient {
 
     /** Body gui /ai/chat: ten truong khop ChatRequest ben AI Service (learningContext viet camelCase). */
     public record ChatPayload(String message, LearningContext learningContext) {
+    }
+
+    /** Body gui /ai/grammar: lessons la {id: ten} cac bai ngu phap cua Lori, AI chi duoc lien ket toi id trong do. */
+    public record GrammarPayload(String text, Map<Integer, String> lessons, LearningContext learningContext) {
     }
 
     /** Phan hoi cua AI Service: {"status": "ok"}. */

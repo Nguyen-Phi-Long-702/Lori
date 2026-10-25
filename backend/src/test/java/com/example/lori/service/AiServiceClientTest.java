@@ -1,6 +1,7 @@
 package com.example.lori.service;
 
 import com.example.lori.dto.AiChatResponse;
+import com.example.lori.dto.AiGrammarResponse;
 import com.example.lori.dto.LearningContext;
 import com.example.lori.dto.LearningContext.WeakItem;
 import com.example.lori.exception.ApiException;
@@ -18,6 +19,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -95,6 +97,26 @@ class AiServiceClientTest {
         assertThat(sent.get("learningContext").get("weakGrammar").get(0).get("name").asText())
                 .isEqualTo("Present Perfect");
         assertThat(sent.get("learningContext").has("recentExams")).isFalse();
+    }
+
+    @Test
+    void analyzeGrammarSendsSignedTextAndLessonsAndParsesAnalysis() throws IOException {
+        startServer("/ai/grammar", 200, "{\"type\":\"grammar_analysis\",\"correct\":false,"
+                + "\"correctedSentence\":\"She doesn't like coffee.\","
+                + "\"errors\":[{\"type\":\"Subject-verb agreement\",\"explanation\":\"Use doesn't.\"}],\"lessonId\":1}");
+        AiServiceClient client = new AiServiceClient(baseUrl(), SECRET, OBJECT_MAPPER);
+
+        AiGrammarResponse response = client.analyzeGrammar(
+                "She don't like coffee.", Map.of(1, "Present Simple"), new LearningContext(null, null, null, null));
+
+        assertThat(response).isEqualTo(new AiGrammarResponse("grammar_analysis", false, "She doesn't like coffee.",
+                List.of(new AiGrammarResponse.GrammarError("Subject-verb agreement", "Use doesn't.")), 1));
+        String timestamp = receivedHeaders.get().getFirst(AiServiceSigner.TIMESTAMP_HEADER);
+        String expectedSignature = AiServiceSigner.sign(SECRET, timestamp, "POST", "/ai/grammar", receivedBody.get());
+        assertThat(receivedHeaders.get().getFirst(AiServiceSigner.SIGNATURE_HEADER)).isEqualTo(expectedSignature);
+        JsonNode sent = OBJECT_MAPPER.readTree(receivedBody.get());
+        assertThat(sent.get("text").asText()).isEqualTo("She don't like coffee.");
+        assertThat(sent.get("lessons").get("1").asText()).isEqualTo("Present Simple");
     }
 
     @Test
