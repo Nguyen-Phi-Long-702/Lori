@@ -431,4 +431,16 @@
     <string name="ai_chat_input_hint">Nhập câu hỏi về tiếng Anh...</string>
     <string name="ai_chat_truncated_note">Câu trả lời đã được rút gọn vì quá dài</string>
     <string name="cd_ai_chat_send">Gửi</string>
+
+    <!-- Màn Phân tích câu (AI Tutor) -->
+    <string name="nav_label_sentence_check">Phân tích câu</string>
+    <string name="ai_sentence_input_label">Nhập một câu tiếng Anh để AI kiểm tra</string>
+    <string name="ai_sentence_input_hint">Ví dụ: She don\'t like coffee in the morning.</string>
+    <string name="ai_sentence_check_button">Kiểm tra ngay</string>
+    <string name="ai_sentence_error_empty">Vui lòng nhập câu cần kiểm tra</string>
+    <string name="ai_sentence_correct_banner">✓ Câu của bạn đúng ngữ pháp</string>
+    <string name="ai_sentence_original_label">CÂU GỐC</string>
+    <string name="ai_sentence_corrected_label">CÂU ĐÚNG</string>
+    <string name="ai_sentence_explanation_title">GIẢI THÍCH</string>
+    <string name="ai_sentence_related_label">BÀI HỌC LIÊN QUAN</string>
 </resources>

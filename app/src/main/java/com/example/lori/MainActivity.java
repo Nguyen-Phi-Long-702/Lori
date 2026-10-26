@@ -90,7 +90,9 @@ public class MainActivity extends AppCompatActivity {
         if (destinationId == R.id.translateFragment) {
             return R.id.dictionaryFragment;
         }
-        if (destinationId == R.id.aiTutorHomeFragment || destinationId == R.id.aiChatFragment) {
+        if (destinationId == R.id.aiTutorHomeFragment
+                || destinationId == R.id.aiChatFragment
+                || destinationId == R.id.sentenceCheckFragment) {
             return R.id.homeFragment;
         }
         return -1;
