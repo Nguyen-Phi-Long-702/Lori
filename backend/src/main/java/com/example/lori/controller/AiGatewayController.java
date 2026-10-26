@@ -1,9 +1,9 @@
 package com.example.lori.controller;
 
 import com.example.lori.dto.AiAnalyzeTextRequest;
+import com.example.lori.dto.AiAnalyzeTextResponse;
 import com.example.lori.dto.AiChatRequest;
 import com.example.lori.dto.AiChatResponse;
-import com.example.lori.dto.AiGrammarResponse;
 import com.example.lori.security.RequirePremium;
 import com.example.lori.service.AiGatewayService;
 import jakarta.validation.Valid;
@@ -34,8 +34,8 @@ public class AiGatewayController {
     }
 
     @PostMapping("/analyze-text")
-    public AiGrammarResponse analyzeText(
+    public AiAnalyzeTextResponse analyzeText(
             @AuthenticationPrincipal UUID userId, @Valid @RequestBody AiAnalyzeTextRequest request) {
-        return aiGatewayService.analyzeGrammar(userId, request);
+        return aiGatewayService.analyzeText(userId, request);
     }
 }

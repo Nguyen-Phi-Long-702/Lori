@@ -8,7 +8,8 @@ import java.util.List;
  * Cung la dang JSON ma AI Service tra ve cho Backend.
  */
 public record AiGrammarResponse(
-        String type, boolean correct, String correctedSentence, List<GrammarError> errors, Integer lessonId) {
+                String type, boolean correct, String correctedSentence, List<GrammarError> errors, Integer lessonId)
+        implements AiAnalyzeTextResponse {
 
     /** Mot loi: type la ten loi ngan gon (vd "Subject-verb agreement"), explanation la quy tac. */
     public record GrammarError(String type, String explanation) {

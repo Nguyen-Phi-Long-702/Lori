@@ -4,6 +4,7 @@ import com.example.lori.dto.AiAnalyzeTextRequest;
 import com.example.lori.dto.AiGrammarResponse;
 import com.example.lori.dto.AiChatRequest;
 import com.example.lori.dto.AiChatResponse;
+import com.example.lori.dto.AiVocabularyResponse;
 import com.example.lori.dto.LearningContext;
 import com.example.lori.exception.ApiException;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,9 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -63,11 +66,40 @@ class AiGatewayServiceTest {
     }
 
     @Test
+    void analyzeVocabularySendsTextAndVocabularyContextToAiService() {
+        LearningContext context = new LearningContext(null, List.of(), null, null);
+        AiVocabularyResponse analysis = new AiVocabularyResponse("vocabulary_analysis", List.of(), null);
+        when(learningContextService.build(userId, AiTaskType.VOCABULARY)).thenReturn(context);
+        when(aiServiceClient.analyzeVocabulary("affect, effect", context)).thenReturn(analysis);
+
+        assertThat(service.analyzeVocabulary(userId, new AiAnalyzeTextRequest("vocabulary", "affect, effect")))
+                .isEqualTo(analysis);
+        verify(rateLimiter).checkAnalyzeText(userId);
+        verify(learningContextService, never()).grammarLessonNames();
+    }
+
+    @Test
+    void analyzeTextPicksTheWorkflowByType() {
+        LearningContext context = new LearningContext(null, null, null, null);
+        AiVocabularyResponse vocabulary = new AiVocabularyResponse("vocabulary_analysis", List.of(), null);
+        AiGrammarResponse grammar = new AiGrammarResponse("grammar_analysis", true, "I like tea.", List.of(), null);
+        when(learningContextService.build(any(), any())).thenReturn(context);
+        when(learningContextService.grammarLessonNames()).thenReturn(Map.of());
+        when(aiServiceClient.analyzeVocabulary("affect", context)).thenReturn(vocabulary);
+        when(aiServiceClient.analyzeGrammar("I like tea.", Map.of(), context)).thenReturn(grammar);
+
+        assertThat(service.analyzeText(userId, new AiAnalyzeTextRequest("vocabulary", "affect"))).isEqualTo(vocabulary);
+        assertThat(service.analyzeText(userId, new AiAnalyzeTextRequest("grammar", "I like tea."))).isEqualTo(grammar);
+    }
+
+    @Test
     void rateLimitedAnalyzeTextNeverReachesContextOrAiService() {
         doThrow(new ApiException(HttpStatus.TOO_MANY_REQUESTS, "Too many requests"))
                 .when(rateLimiter).checkAnalyzeText(userId);
 
         assertThatThrownBy(() -> service.analyzeGrammar(userId, new AiAnalyzeTextRequest("grammar", "I like tea.")))
+                .isInstanceOf(ApiException.class);
+        assertThatThrownBy(() -> service.analyzeVocabulary(userId, new AiAnalyzeTextRequest("vocabulary", "affect")))
                 .isInstanceOf(ApiException.class);
         verifyNoInteractions(learningContextService, aiServiceClient);
     }

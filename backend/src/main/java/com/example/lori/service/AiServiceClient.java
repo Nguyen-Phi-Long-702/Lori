@@ -2,6 +2,7 @@ package com.example.lori.service;
 
 import com.example.lori.dto.AiChatResponse;
 import com.example.lori.dto.AiGrammarResponse;
+import com.example.lori.dto.AiVocabularyResponse;
 import com.example.lori.dto.LearningContext;
 import com.example.lori.exception.ApiException;
 import com.example.lori.security.AiServiceSigner;
@@ -24,7 +25,7 @@ import java.util.Map;
 /**
  * Goi AI Service (FastAPI) kem chu ky Server-to-Server, khong dung JWT cua user
  * Chua cau hinh secret hoac AI Service loi/khong toi duoc -> 503; Backend van khoi dong binh thuong.
- * Rieng AI Service tra 400 (cau hoi/cau can phan tich rong sau khi lam sach) -> 400.
+ * Rieng AI Service tra 400 (cau hoi/cau/tu can phan tich khong hop le sau khi lam sach) -> 400.
  */
 @Slf4j
 @Service
@@ -33,6 +34,7 @@ public class AiServiceClient {
     private static final String PING_PATH = "/ai/ping";
     private static final String CHAT_PATH = "/ai/chat";
     private static final String GRAMMAR_PATH = "/ai/grammar";
+    private static final String VOCABULARY_PATH = "/ai/vocabulary";
     private static final int MIN_SECRET_LENGTH = 32;
 
     private final RestClient restClient;
@@ -66,6 +68,10 @@ public class AiServiceClient {
         return post(GRAMMAR_PATH, toJson(new GrammarPayload(text, lessons, learningContext)), AiGrammarResponse.class);
     }
 
+    public AiVocabularyResponse analyzeVocabulary(String text, LearningContext learningContext) {
+        return post(VOCABULARY_PATH, toJson(new VocabularyPayload(text, learningContext)), AiVocabularyResponse.class);
+    }
+
     private <T> T post(String path, byte[] body, Class<T> responseType) {
         if (sharedSecret.length() < MIN_SECRET_LENGTH) {
             log.error("AI_SERVICE_SHARED_SECRET chua duoc cau hinh hoac ngan hon {} ky tu", MIN_SECRET_LENGTH);
@@ -90,8 +96,8 @@ public class AiServiceClient {
             }
             return response;
         } catch (HttpClientErrorException.BadRequest e) {
-            // AI Service chi tra 400 khi cau hoi rong sau khi lam sach (InvalidInputError)
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Message is empty after cleaning");
+            // AI Service chi tra 400 khi input khong hop le (InvalidInputError)
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid input");
         } catch (RestClientException e) {
             log.error("Goi AI Service that bai: {}", e.getMessage());
             throw unavailable();
@@ -116,6 +122,10 @@ public class AiServiceClient {
 
     /** Body gui /ai/grammar: lessons la {id: ten} cac bai ngu phap cua Lori, AI chi duoc lien ket toi id trong do. */
     public record GrammarPayload(String text, Map<Integer, String> lessons, LearningContext learningContext) {
+    }
+
+    /** Body gui /ai/vocabulary: text la 1 hoac 2 tu/cum tu user nhap. */
+    public record VocabularyPayload(String text, LearningContext learningContext) {
     }
 
     /** Phan hoi cua AI Service: {"status": "ok"}. */

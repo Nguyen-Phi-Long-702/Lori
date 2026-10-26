@@ -2,6 +2,7 @@ package com.example.lori.service;
 
 import com.example.lori.dto.AiChatResponse;
 import com.example.lori.dto.AiGrammarResponse;
+import com.example.lori.dto.AiVocabularyResponse;
 import com.example.lori.dto.LearningContext;
 import com.example.lori.dto.LearningContext.WeakItem;
 import com.example.lori.exception.ApiException;
@@ -117,6 +118,27 @@ class AiServiceClientTest {
         JsonNode sent = OBJECT_MAPPER.readTree(receivedBody.get());
         assertThat(sent.get("text").asText()).isEqualTo("She don't like coffee.");
         assertThat(sent.get("lessons").get("1").asText()).isEqualTo("Present Simple");
+    }
+
+    @Test
+    void analyzeVocabularySendsSignedTextAndParsesAnalysis() throws IOException {
+        startServer("/ai/vocabulary", 200, "{\"type\":\"vocabulary_analysis\",\"words\":[{\"word\":\"affect\","
+                + "\"inDictionary\":true,\"ipa\":\"/efekt/\",\"definitions\":[{\"pos\":\"V\","
+                + "\"meaning\":\"Lam anh huong den.\",\"example\":null}],\"explanation\":\"To change something.\","
+                + "\"synonyms\":[\"influence\"],\"antonyms\":[],\"collocations\":[\"affect health\"]}],"
+                + "\"difference\":null}");
+        AiServiceClient client = new AiServiceClient(baseUrl(), SECRET, OBJECT_MAPPER);
+
+        AiVocabularyResponse response = client.analyzeVocabulary("affect", new LearningContext(null, null, null, null));
+
+        assertThat(response).isEqualTo(new AiVocabularyResponse("vocabulary_analysis", List.of(
+                new AiVocabularyResponse.VocabularyWord("affect", true, "/efekt/",
+                        List.of(new AiVocabularyResponse.Definition("V", "Lam anh huong den.", null)),
+                        "To change something.", List.of("influence"), List.of(), List.of("affect health"))), null));
+        String timestamp = receivedHeaders.get().getFirst(AiServiceSigner.TIMESTAMP_HEADER);
+        String expectedSignature = AiServiceSigner.sign(SECRET, timestamp, "POST", "/ai/vocabulary", receivedBody.get());
+        assertThat(receivedHeaders.get().getFirst(AiServiceSigner.SIGNATURE_HEADER)).isEqualTo(expectedSignature);
+        assertThat(OBJECT_MAPPER.readTree(receivedBody.get()).get("text").asText()).isEqualTo("affect");
     }
 
     @Test
