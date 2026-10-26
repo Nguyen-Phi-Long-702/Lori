@@ -393,4 +393,11 @@
     <string name="profile_explore_section_title">Khám phá</string>
     <string name="profile_leaderboard_title">Bảng xếp hạng</string>
     <string name="profile_leaderboard_desc">Xem thứ hạng của bạn</string>
+
+
+    <!-- AI Tutor: thông báo lỗi dùng chung cho Hỏi đáp và Phân tích câu -->
+    <string name="ai_offline_hint">Cần kết nối Internet để dùng AI Tutor</string>
+    <string name="ai_error_invalid_input">Nội dung chưa hợp lệ. Hãy nhập lại bằng câu tiếng Anh ngắn gọn hơn</string>
+    <string name="ai_error_too_many_requests">Bạn gửi quá nhanh (tối đa 20 lượt mỗi phút). Vui lòng đợi một lát rồi thử lại</string>
+    <string name="ai_error_unavailable">AI Tutor tạm thời chưa khả dụng. Vui lòng thử lại sau</string>
 </resources>
