@@ -331,6 +331,7 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 | GET | `/ai/health` | Chữ ký HMAC | Trả `{"status":"ok","provider":"self_hosted"}`; `status` là `degraded` khi provider thiếu cấu hình; chỉ kiểm tra cấu hình, không gọi Cloudflare |
 | POST | `/ai/chat` | Chữ ký HMAC | Body `{"message":"...","learningContext":{...}}` (`learningContext` có thể thiếu hoặc `null`); trả `{"type":"chat","answer":"...","truncated":false}`; `400` khi câu hỏi rỗng sau khi làm sạch, `422` khi thiếu `message`, `502` khi provider lỗi (thông điệp chung, không kèm lỗi của Cloudflare) |
 | POST | `/ai/grammar` | Chữ ký HMAC | Body `{"text":"...","lessons":{"1":"Present Simple",...},"learningContext":{...}}` (`learningContext` có thể thiếu hoặc `null`); trả `{"type":"grammar_analysis","correct":false,"correctedSentence":"...","errors":[{"type":"...","explanation":"..."}],"lessonId":1}`; `400` khi câu rỗng sau khi làm sạch, `422` khi thiếu `text` hoặc `lessons`, `502` khi provider lỗi hoặc trả JSON không dùng được |
+| POST | `/ai/vocabulary` | Chữ ký HMAC | Body `{"text":"affect, effect","learningContext":{...}}` (`learningContext` có thể thiếu hoặc `null`); trả `{"type":"vocabulary_analysis","words":[...],"difference":"..."}` (chi tiết ở mục 22); `400` khi input không hợp lệ (rỗng sau khi làm sạch, quá 2 từ/cụm từ, mỗi từ/cụm từ quá 40 ký tự), `422` khi thiếu `text`, `502` khi provider lỗi hoặc trả JSON không dùng được |
 
 ### Provider và Orchestrator
 
@@ -466,12 +467,12 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 
 ## 21. Phân tích ngữ pháp AI (Tuần 12 – Ngày 1-2)
 
-- Endpoint: `POST /api/ai/analyze-text` (`AiGatewayController`), yêu cầu đăng nhập và Premium (`@RequirePremium`). Request: `{"type":"grammar","text":"..."}`; `type` hiện chỉ nhận `grammar`; `text` không rỗng, tối đa 4.000 ký tự.
+- Endpoint: `POST /api/ai/analyze-text` (`AiGatewayController`), yêu cầu đăng nhập và Premium (`@RequirePremium`). Request: `{"type":"grammar","text":"..."}`; `type` nhận `grammar` (mục này) hoặc `vocabulary` (mục 22); `text` không rỗng
 - Response `200`: `{"type":"grammar_analysis","correct":false,"correctedSentence":"She doesn't like coffee.","errors":[{"type":"Subject-verb agreement","explanation":"..."}],"lessonId":1}`. Câu đúng: `correct = true`, `errors = []`, `lessonId = null`. `lessonId` là id bài trong `grammar_lessons` của `dictionary.db` (Android mở bài bằng `GrammarDao.getLessonById`).
 - Luồng: JWT → `@RequirePremium` → Bean Validation → `AiRateLimiter.checkAnalyzeText` → `LearningContextService.build(userId, GRAMMAR)` (chỉ điểm yếu ngữ pháp, mục 18) → `AiServiceClient.analyzeGrammar` (ký HMAC, mục 17) → AI Service `POST /ai/grammar` → Cloudflare Workers AI. Backend gửi sang AI Service câu cần phân tích, danh sách 30 bài ngữ pháp (`learning-names.json`) và Learning Context, không gửi `userId`.
 - Liên kết bài ngữ pháp: model chỉ được chọn `lessonId` trong danh sách Backend gửi; AI Service đổi id không có trong danh sách thành `null`.
 - Rate limit: 20 request/phút/user, bucket riêng `ai_rate_limit:analyze-text:<userId>` (không dùng chung với chat). Giới hạn 60 request/phút/IP của `RateLimitFilter` vẫn áp dụng song song.
-- Mã lỗi: `400` (`type` khác `grammar`, `text` trống, vượt 4.000 ký tự, hoặc rỗng sau khi làm sạch), `401`, `403` (Free hoặc sai API key), `429`, `503 AI service unavailable` (AI Service/Cloudflare lỗi, model trả JSON không dùng được, hết hạn mức, quá 30 giây).
+- Mã lỗi: `400` (`type` khác `grammar`/`vocabulary`, `text` trống, vượt 4.000 ký tự, hoặc rỗng sau khi làm sạch), `401`, `403` (Free hoặc sai API key), `429`, `503 AI service unavailable` (AI Service/Cloudflare lỗi, model trả JSON không dùng được, hết hạn mức, quá 30 giây).
 - Không thêm biến môi trường hay thư viện mới so với mục 17.
 
 ### Giới hạn đã biết (không sửa)
@@ -480,3 +481,25 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - Giải thích bằng tiếng Anh đơn giản (theo `SYSTEM_PROMPT`); chưa có Topic classifier, kiểm tra output và log đã che thông tin cá nhân (Tuần 15).
 - Mỗi request chỉ kiểm tra tối đa 1.000 ký tự đầu của câu sau khi làm sạch; model có thể sửa khác nhau giữa các lần gọi nếu Cloudflare đổi model.
 - Model có thể chọn `lessonId` chưa thật sát lỗi; kiểm tra thủ công ở Tuần 12 Ngày 7.
+
+## 22. Vocabulary Tutor (Tuần 12 – Ngày 3-4)
+
+- Endpoint: `POST /api/ai/analyze-text` với `type = vocabulary` (cùng endpoint với mục 21, yêu cầu đăng nhập và Premium). Request: `{"type":"vocabulary","text":"affect, effect"}`. `text` là 1 hoặc 2 từ/cụm từ, ngăn cách bằng dấu phẩy, dấu `/` hoặc `vs`; sau khi làm sạch được đổi sang chữ thường, hai từ trùng nhau tính là một; mỗi từ/cụm từ tối đa 40 ký tự.
+- Response `200`: `{"type":"vocabulary_analysis","words":[{"word":"affect","inDictionary":true,"ipa":"/ˈæ.ˌfɛkt/","definitions":[{"pos":"V","meaning":"Làm ảnh hưởng đến, ...","example":"..."}],"explanation":"...","synonyms":[],"antonyms":[],"collocations":["affect health"]}],"difference":null}`. `words` theo đúng thứ tự user nhập; `difference` là phần phân biệt hai từ, `null` khi chỉ hỏi 1 từ.
+- Nguồn chuẩn là từ điển Lori: AI Service đọc `ai-service/data/dictionary.db` (bản sao của `app/src/main/assets/databases/dictionary.db`, mở ở chế độ chỉ đọc, bằng `sqlite3` có sẵn của Python) bằng `ai-service/context/dictionary_lookup.py`. Đây là dữ liệu từ điển công khai, không phải dữ liệu của user nên không trái nguyên tắc "AI Service không đọc database" ở mục 18.
+- Cách ghép kết quả (`ai-service/orchestrator/vocabulary_workflow.py`): từ có trong từ điển (`inDictionary = true`) thì `ipa` (phát âm đầu tiên), `definitions` (tối đa 5 nghĩa đầu, kèm mã từ loại `pos` và ví dụ nếu có) lấy từ từ điển; `synonyms`/`antonyms` ưu tiên của từ điển (tối đa 8), từ điển không có thì lấy của model (tối đa 5); `explanation`, `collocations` (tối đa 5) và `difference` luôn do model sinh. Từ không có trong từ điển thì `inDictionary = false`, `ipa = null`, `definitions = []` và nghĩa chỉ có ở `explanation` của model. Prompt đưa nghĩa từ điển cho model làm chuẩn và dặn không được nói trái.
+- Luồng: JWT → `@RequirePremium` → Bean Validation → `AiRateLimiter.checkAnalyzeText` (chung bucket 20 request/phút/user với grammar) → `LearningContextService.build(userId, VOCABULARY)` (chỉ điểm yếu từ vựng, mục 18) → `AiServiceClient.analyzeVocabulary` (ký HMAC, mục 17) → AI Service `POST /ai/vocabulary` → `sanitize_input` → tách từ → tra từ điển → Cloudflare Workers AI → ghép kết quả. Backend chỉ gửi `text` và Learning Context, không gửi `userId`.
+- Mã lỗi: như mục 21. Khác biệt: Backend trả `400` với thông điệp `Invalid input` cho mọi lỗi `400` từ AI Service (trước đây là `Message is empty after cleaning`, vì giờ còn lỗi sai số từ/độ dài từ).
+- Không thêm biến môi trường hay thư viện mới so với mục 17. Dung lượng `dictionary.db` (khoảng 37 MB) nằm trong giới hạn gói triển khai 500 MB của Vercel Hobby (mục 17); theo tài liệu Vercel, mặc định gói hàm Python gồm mọi file của project.
+- Cập nhật từ điển: khi `app/src/main/assets/databases/dictionary.db` thay đổi, chép đè lên `ai-service/data/dictionary.db` (PowerShell, ở thư mục gốc repo): `Copy-Item app\src\main\assets\databases\dictionary.db ai-service\data\dictionary.db -Force`, rồi commit.
+- Chạy test (PowerShell, ở thư mục gốc repo): AI Service `docker run --rm -v "${PWD}\ai-service:/app" -w /app python:3.12-slim sh -c "pip install -q -r requirements.txt -r requirements-dev.txt && python -m pytest -q"`; Backend `docker run --rm -v "${PWD}\backend:/app" -v lori-m2:/root/.m2 -w /app maven:3.9-eclipse-temurin-17 mvn -B test '-Dtest=AiServiceClientTest,AiGatewayServiceTest'`. `AuthControllerIntegrationTest` dùng Testcontainers nên không chạy được trong lệnh này.
+
+### Giới hạn đã biết (không sửa)
+
+- Chỉ tra đúng dạng chữ ghi trong từ điển: dạng chia (`went`, `affected`) hoặc cụm không có mục riêng (ví dụ `look up`) cho `inDictionary = false`; chưa quy về dạng gốc.
+- `pos` là mã của từ điển (`N`, `V`, `A`, ...), chưa đổi thành tên đầy đủ; chỉ lấy 5 nghĩa đầu của mỗi từ.
+- Từ điển chỉ có đồng nghĩa/trái nghĩa cho 1.573 trong 118.356 từ; với các từ còn lại danh sách do model sinh, chưa được kiểm chứng.
+- `explanation`, `collocations` và `difference` do LLM sinh, chưa có kiểm tra output (Tuần 15); nghĩa tiếng Việt chỉ có khi từ nằm trong từ điển.
+- Nếu LLM trả JSON bị cắt do hết `max_output_tokens` hoặc sai cấu trúc thì AI Service trả `502` và Backend trả `503 AI service unavailable`; chưa đo tần suất (Tuần 12 Ngày 7).
+- Chưa có ví dụ câu theo level và mini exercise (Module 5.7, Tuần 13); chưa ghi `ai_feedback_metadata`; chưa có màn hình Android riêng cho Vocabulary Tutor (UI mẫu v7 không có).
+- `ai-service/data/dictionary.db` là bản sao, không tự cập nhật theo bản trên Android; repo tăng thêm khoảng 37 MB.
