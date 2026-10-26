@@ -400,4 +400,26 @@
     <string name="ai_error_invalid_input">Nội dung chưa hợp lệ. Hãy nhập lại bằng câu tiếng Anh ngắn gọn hơn</string>
     <string name="ai_error_too_many_requests">Bạn gửi quá nhanh (tối đa 20 lượt mỗi phút). Vui lòng đợi một lát rồi thử lại</string>
     <string name="ai_error_unavailable">AI Tutor tạm thời chưa khả dụng. Vui lòng thử lại sau</string>
+
+    <!-- Thẻ AI English Tutor ở Home -->
+    <string name="home_ai_tutor_title">AI English Tutor</string>
+    <string name="home_ai_tutor_desc">Hỏi đáp · Phân tích câu · Ôn tập theo điểm yếu</string>
+    <string name="ai_tutor_feature_name">AI English Tutor</string>
+
+    <!-- Màn AI Tutor Home -->
+    <string name="nav_label_ai_tutor_home">AI English Tutor</string>
+    <string name="ai_tutor_hero_eyebrow">AI ENGLISH TUTOR</string>
+    <string name="ai_tutor_hero_title">Trợ lý học tập cá nhân hóa</string>
+    <string name="ai_tutor_hero_desc">Không chỉ là chatbot — AI hiểu điểm yếu của bạn, tạo bài tập riêng và đồng hành cùng bạn học tiếng Anh.</string>
+    <string name="ai_tutor_card_chat_title">Hỏi đáp tự do</string>
+    <string name="ai_tutor_card_chat_desc">Hỏi bất cứ điều gì về ngữ pháp, từ vựng, cách dùng</string>
+    <string name="ai_tutor_card_sentence_title">Phân tích câu</string>
+    <string name="ai_tutor_card_sentence_desc">Nhập câu — AI tìm lỗi và giải thích chi tiết</string>
+    <string name="ai_tutor_card_practice_title">Luyện tập cá nhân hóa</string>
+    <string name="ai_tutor_card_practice_desc">Ôn đúng điểm yếu của bạn, cập nhật mỗi ngày</string>
+    <string name="ai_tutor_card_conversation_title">Hội thoại</string>
+    <string name="ai_tutor_card_conversation_desc">Luyện phản xạ qua tình huống thực tế</string>
+    <string name="ai_tutor_card_image_title">Nhận diện ảnh</string>
+    <string name="ai_tutor_card_image_desc">Chụp vật xung quanh — học từ vựng theo ngữ cảnh thật</string>
+    <string name="ai_tutor_coming_soon">Sắp ra mắt</string>
 </resources>

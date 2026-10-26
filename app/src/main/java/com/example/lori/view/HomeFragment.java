@@ -59,6 +59,7 @@ public class HomeFragment extends Fragment {
         tvExpGain = view.findViewById(R.id.tvExpGain);
         LinearProgressIndicator progressStudy = view.findViewById(R.id.progressStudy);
         MaterialButton btnStartLearning = view.findViewById(R.id.btnStartLearning);
+        View cardAiTutor = view.findViewById(R.id.cardAiTutor);
 
         //Quan sát số lượng chủ đề và cập nhật giao diện khi dữ liệu thay đổi
         viewModel.getTopicCount().observe(getViewLifecycleOwner(),
@@ -87,6 +88,16 @@ public class HomeFragment extends Fragment {
         //Chuyển đến danh sách chủ đề để bắt đầu học
         btnStartLearning.setOnClickListener(v ->
                 Navigation.findNavController(v).navigate(R.id.topicListFragment));
+
+        //Premium: mở AI Tutor Home; Free: mở dialog nâng cấp (giống cách QuizFragment gác tính năng Premium)
+        cardAiTutor.setOnClickListener(v -> {
+            if (viewModel.isPremium()) {
+                Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_aiTutorHomeFragment);
+            } else {
+                PremiumPromptDialog.newInstance(getString(R.string.ai_tutor_feature_name))
+                        .show(getChildFragmentManager(), "premium_prompt");
+            }
+        });
     }
 
     //Mỗi lần Home hiện lên (kể cả quay lại sau khi học) đều làm mới EXP và streak

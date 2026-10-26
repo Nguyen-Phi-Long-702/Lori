@@ -89,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
         if (destinationId == R.id.translateFragment) {
             return R.id.dictionaryFragment;
         }
+        if (destinationId == R.id.aiTutorHomeFragment) {
+            return R.id.homeFragment;
+        }
         return -1;
     }
 }

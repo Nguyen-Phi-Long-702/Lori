@@ -21,6 +21,7 @@ import com.example.lori.data.sync.SyncManager;
 import com.example.lori.repository.ApiResult;
 import com.example.lori.repository.UserRepository;
 import com.example.lori.utils.ExpManager;
+import com.example.lori.utils.PremiumManager;
 
 import java.util.List;
 
@@ -85,6 +86,11 @@ public class HomeViewModel extends AndroidViewModel {
 
     public void consumeExpGain() {
         expGain.setValue(null);
+    }
+
+    //Cờ Premium đã lưu trên máy (SyncWorker làm mới định kỳ); quyền thật do Backend kiểm tra bằng 403 PREMIUM_REQUIRED
+    public boolean isPremium() {
+        return PremiumManager.isPremium(getApplication());
     }
 
     private void syncThenReload() {
