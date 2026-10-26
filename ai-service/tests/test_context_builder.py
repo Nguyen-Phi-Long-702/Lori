@@ -1,5 +1,12 @@
 from context.context_builder import CONTEXT_INTRO, build_prompt
-from context.context_builder import CONTEXT_INTRO, GRAMMAR_TASK, build_grammar_prompt, build_prompt
+from context.context_builder import (
+    CONTEXT_INTRO,
+    GRAMMAR_TASK,
+    VOCABULARY_TASK,
+    build_grammar_prompt,
+    build_prompt,
+    build_vocabulary_prompt,
+)
 
 WEAK = {"name": "Present Perfect", "correctCount": 5, "incorrectCount": 6, "accuracyPercent": 45}
 EXAM = {
@@ -78,3 +85,25 @@ def test_grammar_prompt_has_task_lesson_list_and_message_in_order():
 def test_grammar_prompt_puts_learning_context_between_lesson_list_and_message():
     prompt = build_grammar_prompt("She don't like coffee.", LESSONS, {"weakGrammar": [WEAK]})
     assert prompt.index("</lesson_list>") < prompt.index("<learner_context>") < prompt.rindex("<learner_message>")
+
+
+ENTRY = {"definitions": [{"pos": "V", "meaning": "Làm ảnh hưởng đến.", "example": None}]}
+
+
+def test_vocabulary_prompt_has_task_dictionary_entries_and_message_in_order():
+    prompt = build_vocabulary_prompt("affect, effect", {"affect": ENTRY, "effect": None})
+    assert prompt == (
+        f"{VOCABULARY_TASK}\n\n"
+        "<dictionary_entries>\naffect:\n- [V] Làm ảnh hưởng đến.\neffect: not in the dictionary\n</dictionary_entries>\n\n"
+        "<learner_message>\naffect, effect\n</learner_message>"
+    )
+
+
+def test_vocabulary_prompt_removes_angle_brackets_from_dictionary_text():
+    entry = {"definitions": [{"pos": "N", "meaning": "[[Mỹ><lóng]] kẻ cướp.", "example": None}]}
+    assert "[[Mỹlóng]] kẻ cướp." in build_vocabulary_prompt("gun", {"gun": entry})
+
+
+def test_vocabulary_prompt_puts_learning_context_between_entries_and_message():
+    prompt = build_vocabulary_prompt("affect", {"affect": ENTRY}, {"weakVocabulary": [WEAK]})
+    assert prompt.index("</dictionary_entries>") < prompt.index("<learner_context>") < prompt.rindex("<learner_message>")

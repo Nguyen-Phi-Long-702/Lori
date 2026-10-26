@@ -7,6 +7,7 @@ from providers.base import AiProvider
 class TaskType(str, Enum):
     CHAT = "chat"
     GRAMMAR = "grammar"
+    VOCABULARY = "vocabulary"
 
 
 class UnsupportedTaskError(Exception):
