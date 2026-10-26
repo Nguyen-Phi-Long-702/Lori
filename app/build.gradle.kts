@@ -125,4 +125,7 @@ dependencies {
     implementation("androidx.credentials:credentials:1.6.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.6.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+    // Hiển thị Markdown trong câu trả lời của AI Tutor
+    implementation("io.noties.markwon:core:4.6.2")
 }

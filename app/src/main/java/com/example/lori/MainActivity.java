@@ -59,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
                     || destId == R.id.wordDetailFragment
                     || destId == R.id.grammarDetailFragment
                     || destId == R.id.settingsFragment
-                    || destId == R.id.quizFragment;
+                    || destId == R.id.quizFragment
+                    || destId == R.id.aiChatFragment;
             bottomNav.setVisibility(hideBottomNav ? View.GONE : View.VISIBLE);
 
             //Tô sáng đúng tab cha cho các màn hình con không khớp trực tiếp với menu item nào
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         if (destinationId == R.id.translateFragment) {
             return R.id.dictionaryFragment;
         }
-        if (destinationId == R.id.aiTutorHomeFragment) {
+        if (destinationId == R.id.aiTutorHomeFragment || destinationId == R.id.aiChatFragment) {
             return R.id.homeFragment;
         }
         return -1;

@@ -422,4 +422,13 @@
     <string name="ai_tutor_card_image_title">Nhận diện ảnh</string>
     <string name="ai_tutor_card_image_desc">Chụp vật xung quanh — học từ vựng theo ngữ cảnh thật</string>
     <string name="ai_tutor_coming_soon">Sắp ra mắt</string>
+
+    <!-- Màn Hỏi đáp với AI Tutor -->
+    <string name="nav_label_ai_chat">Trợ lý AI</string>
+    <string name="ai_chat_title">Trợ lý AI</string>
+    <string name="ai_chat_subtitle">Chỉ hỗ trợ tiếng Anh</string>
+    <string name="ai_chat_welcome">Xin chào! Mình là trợ lý học tiếng Anh của Lori. Hỏi mình bất cứ điều gì về từ vựng, ngữ pháp hoặc cách phát âm nhé! 👋</string>
+    <string name="ai_chat_input_hint">Nhập câu hỏi về tiếng Anh...</string>
+    <string name="ai_chat_truncated_note">Câu trả lời đã được rút gọn vì quá dài</string>
+    <string name="cd_ai_chat_send">Gửi</string>
 </resources>

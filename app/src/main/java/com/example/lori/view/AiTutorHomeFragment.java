@@ -28,5 +28,8 @@ public class AiTutorHomeFragment extends Fragment {
 
         view.findViewById(R.id.btnBackAiTutorHome)
                 .setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
+
+        view.findViewById(R.id.cardAiChat).setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.action_aiTutorHomeFragment_to_aiChatFragment));
     }
 }
