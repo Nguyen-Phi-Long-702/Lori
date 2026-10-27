@@ -25,8 +25,8 @@ android {
         applicationId = "com.example.lori"
         minSdk = 24
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.2-beta"
+        versionCode = 4
+        versionName = "1.3-alpha"
 
         //URL Backend trên Render (có dấu / ở cuối — Retrofit bắt buộc)
         buildConfigField("String", "BASE_URL", "\"https://lori-25ej.onrender.com/\"")
