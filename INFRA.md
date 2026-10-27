@@ -480,7 +480,7 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - Chưa có ví dụ câu và bài tập liên quan (Module 5.7, Tuần 13); chưa ghi `ai_feedback_metadata`.
 - Giải thích bằng tiếng Anh đơn giản (theo `SYSTEM_PROMPT`); chưa có Topic classifier, kiểm tra output và log đã che thông tin cá nhân (Tuần 15).
 - Mỗi request chỉ kiểm tra tối đa 1.000 ký tự đầu của câu sau khi làm sạch; model có thể sửa khác nhau giữa các lần gọi nếu Cloudflare đổi model.
-- Model có thể chọn `lessonId` chưa thật sát lỗi; kiểm tra thủ công ở Tuần 12 Ngày 7.
+- Model có thể chọn `lessonId` chưa thật sát lỗi; đã kiểm tra thủ công ở Tuần 12 Ngày 7 (mục 23).
 
 ## 22. Vocabulary Tutor (Tuần 12 – Ngày 3-4)
 
@@ -496,10 +496,82 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 
 ### Giới hạn đã biết (không sửa)
 
-- Chỉ tra đúng dạng chữ ghi trong từ điển: dạng chia (`went`, `affected`) hoặc cụm không có mục riêng (ví dụ `look up`) cho `inDictionary = false`; chưa quy về dạng gốc.
+- Chỉ tra đúng dạng chữ ghi trong từ điển, chưa quy về dạng gốc: dạng chia không có mục riêng (ví dụ `spoke`, `written`, `cheaper`) hoặc cụm không có mục riêng (ví dụ `look up`) cho `inDictionary = false`; phần lớn dạng chia khác (như `went`, `affected`) có mục riêng nên vẫn là `true`.
 - `pos` là mã của từ điển (`N`, `V`, `A`, ...), chưa đổi thành tên đầy đủ; chỉ lấy 5 nghĩa đầu của mỗi từ.
 - Từ điển chỉ có đồng nghĩa/trái nghĩa cho 1.573 trong 118.356 từ; với các từ còn lại danh sách do model sinh, chưa được kiểm chứng.
 - `explanation`, `collocations` và `difference` do LLM sinh, chưa có kiểm tra output (Tuần 15); nghĩa tiếng Việt chỉ có khi từ nằm trong từ điển.
-- Nếu LLM trả JSON bị cắt do hết `max_output_tokens` hoặc sai cấu trúc thì AI Service trả `502` và Backend trả `503 AI service unavailable`; chưa đo tần suất (Tuần 12 Ngày 7).
+- Nếu LLM trả JSON bị cắt do hết `max_output_tokens` hoặc sai cấu trúc thì AI Service trả `502` và Backend trả `503 AI service unavailable`; tần suất đo ở Tuần 12 Ngày 7 (mục 23).
 - Chưa có ví dụ câu theo level và mini exercise (Module 5.7, Tuần 13); chưa ghi `ai_feedback_metadata`; chưa có màn hình Android riêng cho Vocabulary Tutor (UI mẫu v7 không có).
 - `ai-service/data/dictionary.db` là bản sao, không tự cập nhật theo bản trên Android; repo tăng thêm khoảng 37 MB.
+
+## 23. Kiểm thử Grammar, Vocabulary và UI AI Tutor (Tuần 12 – Ngày 7)
+
+### Công cụ
+
+- `tools/ai-test/grammar_vocabulary_test.py`: chạy bằng Docker (image `python:3.12-slim`, chỉ dùng thư viện chuẩn của Python), đi qua đường thật Script → Render (Backend) → Vercel (AI Service) → Cloudflare Workers AI, không dùng mock. Biến môi trường (chỉ ghi tên): `BASE_URL` (URL Render, không có `/` ở cuối), `API_KEY`, `APP_SIGNATURE`. Lệnh chạy (PowerShell, ở thư mục gốc repo, sau khi đặt 3 biến môi trường):
+  `docker run --rm -e BASE_URL -e API_KEY -e APP_SIGNATURE -v "${PWD}\tools\ai-test:/work" -w /work python:3.12-slim python -u grammar_vocabulary_test.py`
+- Mỗi lần chạy: đăng ký user mới `grammar.<thời gian>@example.com` (Free) → kiểm tra `POST /api/ai/analyze-text` bị `403 PREMIUM_REQUIRED` → `mock-purchase` → 20 request `analyze-text` (10 ngữ pháp, 7 từ vựng, 3 đầu vào sai), cách nhau 3 giây để không chạm giới hạn 20 request/phút/user.
+- Kết quả ghi ở `tools/ai-test/results/grammar-vocabulary-<ngày>-<giờ UTC>.md` (câu trả lời gốc của từng request). Phần tự động chỉ kiểm tra cấu trúc và các điều biết chắc (HTTP, `correct`, câu sửa khớp mẫu, `inDictionary` theo `dictionary.db`, `difference`); chất lượng câu sửa, giải thích và `lessonId` do người đọc file kết quả.
+
+### Dữ liệu mẫu
+
+| ID | Đầu vào | Kiểm tra tự động |
+|---|---|---|
+| G1–G8 | 8 câu sai (chủ-vị, thì quá khứ, mạo từ, hiện tại hoàn thành, câu điều kiện, bị động, so sánh hơn, câu nhiều lỗi) | `correct = false`, câu sửa khớp mẫu, G8 có ≥ 2 lỗi |
+| G9–G10 | 2 câu đúng | `correct = true`, `errors` rỗng, `lessonId = null` |
+| V1 | `improve` | 1 từ, trong từ điển, `difference = null` |
+| V2–V4 | `affect, effect` / `make vs do` / `borrow / lend` | 2 từ, trong từ điển, có `difference` (thử 3 kiểu ngăn cách: dấu phẩy, `vs`, `/`) |
+| V5 | `begin` | đồng nghĩa có `start`, trái nghĩa có `end` lấy từ từ điển |
+| V6–V7 | `look up`, `written` | không có trong từ điển: `inDictionary = false`, `ipa = null`, `definitions` rỗng |
+| X1–X3 | `<b></b>`; `apple, banana, orange`; 41 chữ `a` | `400 Invalid input` |
+
+Kỳ vọng `inDictionary` lấy từ chính `dictionary.db` hiện tại bằng `lookup_word` của AI Service.
+
+### Kết quả kiểm thử ngày 27/10/2026
+
+| Hạng mục | Kết quả |
+|---|---|
+| Premium gate `analyze-text` (user Free) | Đạt (`403 PREMIUM_REQUIRED`) |
+| Kiểm tra tự động | 19/20 đạt (không đạt: V2 `affect, effect` trả HTTP 503 `AI service unavailable`, kỳ vọng 200) |
+| Request trả `503` (model trả JSON không dùng được hoặc lỗi dịch vụ) | 1/20 (V2) |
+| Đọc thủ công câu sửa và giải thích G1–G8 | Cả 8 câu sửa đúng ngữ pháp; G9, G10 đúng `correct = true`. 7/8 câu sửa tự nhiên; G4 sửa thành `has gone` là đúng dạng phân từ nhưng nghĩa là "đã đi và chưa về", với `twice` thì `has been` tự nhiên hơn. Nhãn loại lỗi của G2 và G8 (lỗi 1) ghi `Subject-verb agreement` trong khi lỗi thật là chia thì (quá khứ); giải thích G8 lỗi 1 vòng vo nhưng kết luận đúng. Giải thích G1 nói động từ "có đuôi s" hơi thiếu chính xác (trợ động từ `does` mới là chỗ chia). |
+| `lessonId` G1–G8 so với bài tham khảo | 8/8 đúng bài tham khảo (G1→1, G2→3, G3→7, G4→11, G5→19, G6→17, G7→14, G8→3); không có câu lệch |
+| Đọc thủ công V1–V7 | V2 không có dữ liệu (503) nên chỉ đọc V1, V3–V7. Không có giải thích nào mâu thuẫn với nghĩa tiếng Việt trong từ điển; `difference` của V3, V4 hợp lý, collocation nhìn chung tự nhiên (hơi lạ: `lend time`, `begin today`). Điểm yếu: V3 `do` có đồng nghĩa `hair-do`, `hairdo`, `doh`, `ut` và trái nghĩa `don'ts`, có vẻ lấy từ dữ liệu từ điển theo nghĩa danh từ nên không hợp với động từ `do`; V4 đồng nghĩa `give`, `offer` của `lend` khá lỏng; V5 `explanation` bằng tiếng Việt trong khi các từ khác bằng tiếng Anh. Phát âm: V4 `borrow` ở dạng respelling, V5 `begin` không có phát âm (dữ liệu gốc). V6 (`look up`) và V7 (`written`) đúng `inDictionary = false`, giải thích hợp lý. X1–X3 đều `400 Invalid input` như kỳ vọng. |
+
+### Kết quả kiểm thử UI trên LDPlayer 9 (APK 1.3-alpha, ngày 27/10/2026)
+
+| # | Kịch bản | Kết quả |
+|---|---|---|
+| 1 | Free bấm thẻ AI English Tutor → dialog Premium | Đạt |
+| 2 | Mua Premium mock → vào AI Tutor Home | Đạt |
+| 3 | Bố cục AI Tutor Home, 3 thẻ "Sắp ra mắt" không bấm được | Đạt |
+| 4 | Hỏi đáp: gửi, bong bóng đang trả lời, nhận câu trả lời | Đạt |
+| 5 | Hỏi đáp: hiển thị Markdown | Đạt |
+| 6 | Hỏi đáp: offline khóa nút Gửi | Đạt |
+| 7 | Phân tích câu: ô trống báo lỗi | Đạt |
+| 8 | Phân tích câu: câu sai (câu gốc, câu đúng, giải thích, bài liên quan) | Đạt |
+| 9 | Phân tích câu: câu đúng hiện banner | Đạt |
+| 10 | Phân tích câu: đầu vào không hợp lệ (400) | Đạt |
+| 11 | Phân tích câu: offline khóa nút Kiểm tra | Đạt |
+| 12 | Premium hết hạn giữa chừng ở Hỏi đáp → dialog | Đạt |
+| 13 | Premium hết hạn giữa chừng ở Phân tích câu → dialog | Đạt |
+
+Lỗi phát hiện: không có lỗi ở UI (13/13 kịch bản đạt). Ngoài UI: V2 trả `503` một lần ở lần chạy script (xem bảng trên).
+
+### APK
+
+- `app/build.gradle.kts`: `versionCode = 4`, `versionName = "1.3-alpha"`. APK debug build trên máy Dev, **không commit** (`*.apk` nằm trong `.gitignore`).
+- APK debug ký bằng debug keystore của máy build, khớp `APP_SIGNATURE` trên Render; build trên máy khác thì chữ ký khác và Backend trả 403.
+
+### Dấu vết để lại sau mỗi lần chạy
+
+- Mỗi lần chạy script: 1 user thử và 1 subscription `MOCK` trong Neon (không tự xóa). Test UI để lại 1 user thử `lori.ui.<ngày>@example.com` với `premium_expires_at` đã bị đặt về quá khứ.
+- Các request LLM dùng hạn mức Neurons Cloudflare (10.000 Neurons/ngày); chưa đo số Neurons thực tế của từng lần chạy.
+
+### Giới hạn đã biết (không sửa)
+
+- Test UI chỉ làm trên LDPlayer 9 (dùng mạng của máy tính), **chưa test bằng điện thoại thật và mạng 4G**. App gọi URL công khai của Render nên về nguyên tắc không phụ thuộc mạng của server, nhưng chưa kiểm chứng trên mạng di động.
+- Chưa có màn hình Android cho Vocabulary Tutor; Vocabulary chỉ được kiểm thử qua API.
+- Bộ mẫu chỉ 20 request, không đủ để kết luận tỉ lệ chính xác. Kết quả LLM có thể đổi giữa các lần chạy hoặc khi Cloudflare cập nhật model.
+- Một số từ trong `dictionary.db` có phát âm kiểu respelling (ví dụ `borrow` → `bŏrʹō`) hoặc không có phát âm (ví dụ `begin`); AI Service lấy nguyên văn từ từ điển.
+- Kịch bản Premium hết hạn giữa chừng (12-13) chỉ làm được bằng cách sửa `users.premium_expires_at` trong Neon.
