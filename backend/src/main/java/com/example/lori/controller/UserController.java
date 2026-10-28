@@ -1,9 +1,12 @@
 package com.example.lori.controller;
 
 import com.example.lori.dto.ChangePasswordRequest;
+import com.example.lori.dto.LearningProfileResponse;
+import com.example.lori.dto.LearningTopicResponse;
 import com.example.lori.dto.UpdateProfileRequest;
 import com.example.lori.dto.UserResponse;
 import com.example.lori.dto.UserStatsResponse;
+import com.example.lori.service.LearningEngineService;
 import com.example.lori.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 /** Endpoint /api/users/*: yeu cau dang nhap (SecurityConfig: anyRequest().authenticated()). */
@@ -25,6 +29,7 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final LearningEngineService learningEngineService;
 
     @GetMapping("/me")
     public UserResponse getMe(@AuthenticationPrincipal UUID userId) {
@@ -40,6 +45,16 @@ public class UserController {
     @GetMapping("/me/stats")
     public UserStatsResponse getStats(@AuthenticationPrincipal UUID userId) {
         return userService.getStats(userId);
+    }
+
+    @GetMapping("/me/weaknesses")
+    public List<LearningTopicResponse> getWeaknesses(@AuthenticationPrincipal UUID userId) {
+        return learningEngineService.getWeaknesses(userId);
+    }
+
+    @GetMapping("/me/learning-profile")
+    public LearningProfileResponse getLearningProfile(@AuthenticationPrincipal UUID userId) {
+        return learningEngineService.getLearningProfile(userId);
     }
 
     @PutMapping("/me/password")

@@ -23,10 +23,12 @@ public class ProgressService {
 
     private final UserProgressRepository userProgressRepository;
     private final ExpService expService;
+    private final LearningEngineService learningEngineService;
 
     /**
      * Dong bo tung muc theo quy tac: them moi, hoac ghi de neu lastStudiedAt moi hon ban tren server.
-     * Muc nao duoc ghi thi duoc tinh EXP + streak (ExpService.awardForProgress).
+     * Muc nao duoc ghi thi duoc tinh EXP + streak (ExpService.awardForProgress) va, neu la quiz, duoc cong don
+     * vao Learning Engine (LearningEngineService.recordQuizAttempt).
      * Ca lo nam trong 1 transaction: loi o bat ky muc nao thi khong muc nao duoc ghi.
      */
     @Transactional
@@ -51,6 +53,7 @@ public class ProgressService {
             if (written == 1) {
                 String key = progressKey(item.itemType(), item.itemId());
                 expService.awardForProgress(userId, item, previousStudiedAt.get(key));
+                learningEngineService.recordQuizAttempt(userId, item);
                 // Cap nhat de muc trung lap trong cung lo duoc so voi lan truoc cua chinh no
                 previousStudiedAt.put(key, item.lastStudiedAt());
             }
