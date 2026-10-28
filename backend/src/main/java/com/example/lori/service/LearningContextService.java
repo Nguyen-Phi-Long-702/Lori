@@ -73,6 +73,11 @@ public class LearningContextService {
         return names.grammarLessons();
     }
 
+    /** Id va ten cac chu de tu vung trong dictionary.db, de hien thi ten chu de cho user. */
+    public Map<Integer, String> vocabTopicNames() {
+        return names.vocabTopics();
+    }
+
     @Transactional(readOnly = true)
     public LearningContext build(UUID userId, AiTaskType taskType) {
         Set<AiContextField> allowed = aiContextPolicy.allowedFields(taskType);
