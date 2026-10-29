@@ -4,8 +4,11 @@ import com.example.lori.dto.AiAnalyzeTextRequest;
 import com.example.lori.dto.AiAnalyzeTextResponse;
 import com.example.lori.dto.AiChatRequest;
 import com.example.lori.dto.AiChatResponse;
+import com.example.lori.dto.AiQuizAnalysisRequest;
+import com.example.lori.dto.AiQuizAnalysisResponse;
 import com.example.lori.security.RequirePremium;
 import com.example.lori.service.AiGatewayService;
+import com.example.lori.service.AiQuizAnalysisService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +30,7 @@ import java.util.UUID;
 public class AiGatewayController {
 
     private final AiGatewayService aiGatewayService;
+    private final AiQuizAnalysisService aiQuizAnalysisService;
 
     @PostMapping("/chat")
     public AiChatResponse chat(@AuthenticationPrincipal UUID userId, @Valid @RequestBody AiChatRequest request) {
@@ -37,5 +41,11 @@ public class AiGatewayController {
     public AiAnalyzeTextResponse analyzeText(
             @AuthenticationPrincipal UUID userId, @Valid @RequestBody AiAnalyzeTextRequest request) {
         return aiGatewayService.analyzeText(userId, request);
+    }
+
+    @PostMapping("/analyze-quiz")
+    public AiQuizAnalysisResponse analyzeQuiz(
+            @AuthenticationPrincipal UUID userId, @Valid @RequestBody AiQuizAnalysisRequest request) {
+        return aiQuizAnalysisService.analyze(userId, request);
     }
 }

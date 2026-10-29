@@ -8,11 +8,15 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface UserProgressRepository extends JpaRepository<UserProgress, UUID> {
     /** Toan bo tien trinh cua mot user (moi (user, loai, muc) chi co 1 dong, so luong nho). */
     List<UserProgress> findByUserId(UUID userId);
+
+    /** Ket qua gan nhat cua mot quiz (loai + id chu de / bai ngu phap) cua user. */
+    Optional<UserProgress> findByUserIdAndItemTypeAndItemId(UUID userId, String itemType, int itemId);
 
     /**
      * Them moi, hoac ghi de CHI KHI last_studied_at gui len MOI HON ban tren server (bang nhau/cu hon thi giu ban server).
