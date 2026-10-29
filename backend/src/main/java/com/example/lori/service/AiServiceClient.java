@@ -1,6 +1,8 @@
 package com.example.lori.service;
 
+import com.example.lori.dto.AiAnalysisResponse;
 import com.example.lori.dto.AiChatResponse;
+import com.example.lori.dto.AiExamAnalysisResponse;
 import com.example.lori.dto.AiGrammarResponse;
 import com.example.lori.dto.AiVocabularyResponse;
 import com.example.lori.dto.LearningContext;
@@ -18,8 +20,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +39,8 @@ public class AiServiceClient {
     private static final String CHAT_PATH = "/ai/chat";
     private static final String GRAMMAR_PATH = "/ai/grammar";
     private static final String VOCABULARY_PATH = "/ai/vocabulary";
+    private static final String ANALYZE_QUIZ_PATH = "/ai/analyze-quiz";
+    private static final String ANALYZE_EXAM_PATH = "/ai/analyze-exam";
     private static final int MIN_SECRET_LENGTH = 32;
 
     private final RestClient restClient;
@@ -70,6 +76,14 @@ public class AiServiceClient {
 
     public AiVocabularyResponse analyzeVocabulary(String text, LearningContext learningContext) {
         return post(VOCABULARY_PATH, toJson(new VocabularyPayload(text, learningContext)), AiVocabularyResponse.class);
+    }
+
+    public AiAnalysisResponse analyzeQuiz(QuizPayload payload) {
+        return post(ANALYZE_QUIZ_PATH, toJson(payload), AiAnalysisResponse.class);
+    }
+
+    public AiAnalysisResponse analyzeExam(ExamPayload payload) {
+        return post(ANALYZE_EXAM_PATH, toJson(payload), AiAnalysisResponse.class);
     }
 
     private <T> T post(String path, byte[] body, Class<T> responseType) {
@@ -126,6 +140,38 @@ public class AiServiceClient {
 
     /** Body gui /ai/vocabulary: text la 1 hoac 2 tu/cum tu user nhap. */
     public record VocabularyPayload(String text, LearningContext learningContext) {
+    }
+
+    /**
+     * Body gui /ai/analyze-quiz: ket qua quiz do Backend cham, ten truong khop QuizAnalysisRequest ben AI Service.
+     * history = null neu Backend chua co ket qua cong don cua chu de nay; lessons nhu GrammarPayload.
+     */
+    public record QuizPayload(
+            String quizType, String title, int correctCount, int incorrectCount, int accuracyPercent,
+            QuizHistory history, Map<Integer, String> lessons, LearningContext learningContext) {
+    }
+
+    /** Ket qua cong don cua chu de (user_weakness_record); status do Learning Engine quyet dinh. */
+    public record QuizHistory(int correctCount, int incorrectCount, String status) {
+    }
+
+    /**
+     * Body gui /ai/analyze-exam: diem chinh thuc va thong ke do Backend tinh, ten truong khop ExamAnalysisRequest
+     * ben AI Service. Khong co id cua user, ket qua hay de thi.
+     */
+    public record ExamPayload(
+            String examType, String title, BigDecimal totalScore, BigDecimal listeningScore, BigDecimal readingScore,
+            int listeningCorrect, int listeningTotal, int readingCorrect, int readingTotal, int timeSpentSeconds,
+            List<AiExamAnalysisResponse.PartStat> parts, List<TypeStat> questionTypes,
+            List<WrongQuestion> wrongQuestions, Map<Integer, String> lessons, LearningContext learningContext) {
+    }
+
+    /** Thong ke theo loai cau hoi (MULTIPLE_CHOICE, MATCHING...). */
+    public record TypeStat(String name, int correctCount, int totalCount, int accuracyPercent) {
+    }
+
+    /** Mot cau sai: yourAnswer = null neu user bo trong; dap an dang chu cai kem noi dung lua chon, vd "B: wrote". */
+    public record WrongQuestion(String part, String question, String yourAnswer, String correctAnswer) {
     }
 
     /** Phan hoi cua AI Service: {"status": "ok"}. */

@@ -48,4 +48,36 @@ class AiRateLimiterTest {
         assertThatThrownBy(() -> limiter.checkAnalyzeText(userId)).isInstanceOfSatisfying(ApiException.class,
                 e -> assertThat(e.getStatusCode().value()).isEqualTo(429));
     }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void analyzeQuizHasItsOwnBucketPerUser() {
+        UUID userId = UUID.randomUUID();
+        BucketProxy bucket = mock(BucketProxy.class);
+        when(bucket.tryConsume(1)).thenReturn(true, false);
+        ProxyManager<String> proxyManager = mock(ProxyManager.class);
+        when(proxyManager.getProxy(eq("ai_rate_limit:analyze-quiz:" + userId), any(Supplier.class))).thenReturn(bucket);
+        AiRateLimiter limiter = new AiRateLimiter(proxyManager);
+
+        limiter.checkAnalyzeQuiz(userId);
+
+        assertThatThrownBy(() -> limiter.checkAnalyzeQuiz(userId)).isInstanceOfSatisfying(ApiException.class,
+                e -> assertThat(e.getStatusCode().value()).isEqualTo(429));
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void analyzeExamHasItsOwnBucketPerUser() {
+        UUID userId = UUID.randomUUID();
+        BucketProxy bucket = mock(BucketProxy.class);
+        when(bucket.tryConsume(1)).thenReturn(true, false);
+        ProxyManager<String> proxyManager = mock(ProxyManager.class);
+        when(proxyManager.getProxy(eq("ai_rate_limit:analyze-exam:" + userId), any(Supplier.class))).thenReturn(bucket);
+        AiRateLimiter limiter = new AiRateLimiter(proxyManager);
+
+        limiter.checkAnalyzeExam(userId);
+
+        assertThatThrownBy(() -> limiter.checkAnalyzeExam(userId)).isInstanceOfSatisfying(ApiException.class,
+                e -> assertThat(e.getStatusCode().value()).isEqualTo(429));
+    }
 }

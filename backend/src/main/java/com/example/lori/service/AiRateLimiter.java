@@ -12,7 +12,8 @@ import java.util.UUID;
 
 /**
  * Rate limit rieng cho tac vu AI, theo tung user (khac RateLimitFilter gioi han theo IP):
- * chat va phan tich cau (analyze-text), moi loai toi da 20 request/phut.
+ * chat, phan tich cau (analyze-text), phan tich quiz (analyze-quiz) va phan tich bai thi (analyze-exam),
+ * moi loai toi da 20 request/phut.
  * Dung chung ProxyManager (Upstash) voi RateLimitFilter.
  */
 @Component
@@ -21,6 +22,8 @@ public class AiRateLimiter {
     private static final int REQUESTS_PER_MINUTE = 20;
     private static final String CHAT_KEY_PREFIX = "ai_rate_limit:chat:";
     private static final String ANALYZE_TEXT_KEY_PREFIX = "ai_rate_limit:analyze-text:";
+    private static final String ANALYZE_QUIZ_KEY_PREFIX = "ai_rate_limit:analyze-quiz:";
+    private static final String ANALYZE_EXAM_KEY_PREFIX = "ai_rate_limit:analyze-exam:";
 
     private final ProxyManager<String> proxyManager;
     private final BucketConfiguration configuration = BucketConfiguration.builder()
@@ -40,6 +43,16 @@ public class AiRateLimiter {
     /** Tru 1 luot phan tich cau (analyze-text) cua user; het luot thi nem 429. */
     public void checkAnalyzeText(UUID userId) {
         consume(ANALYZE_TEXT_KEY_PREFIX + userId);
+    }
+
+    /** Tru 1 luot phan tich quiz (analyze-quiz) cua user; het luot thi nem 429. */
+    public void checkAnalyzeQuiz(UUID userId) {
+        consume(ANALYZE_QUIZ_KEY_PREFIX + userId);
+    }
+
+    /** Tru 1 luot phan tich bai thi (analyze-exam) cua user; het luot thi nem 429. */
+    public void checkAnalyzeExam(UUID userId) {
+        consume(ANALYZE_EXAM_KEY_PREFIX + userId);
     }
 
     private void consume(String key) {
