@@ -581,17 +581,6 @@
             }
           },
           "response": []
-        },
-        {
-          "name": "New Request",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": ""
-            }
-          },
-          "response": []
         }
       ]
     },
@@ -1076,7 +1065,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Nop bai tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Co ket qua cham diem, 0 cau dung\", function () {\r\n    pm.expect(body.id).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(body.totalQuestions).to.be.above(0);\r\n    pm.expect(body.correctCount).to.eql(0);\r\n});\r\n// Luu de T12 doi chieu: cau tra loi cua AI khong duoc nhac toi de thi nay\r\npm.environment.set(\"examTitle\", body.title);\r\npm.environment.set(\"examTotalScore\", String(body.totalScore));"
+                  "pm.test(\"Nop bai tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Co ket qua cham diem, 0 cau dung\", function () {\r\n    pm.expect(body.id).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(body.totalQuestions).to.be.above(0);\r\n    pm.expect(body.correctCount).to.eql(0);\r\n});\r\n// Luu de T12 doi chieu: cau tra loi cua AI khong duoc nhac toi de thi nay\r\npm.environment.set(\"examTitle\", body.title);\r\npm.environment.set(\"examTotalScore\", String(body.totalScore));\r\npm.environment.set(\"examResultId\", body.id);"
                 ]
               }
             }
@@ -1162,6 +1151,300 @@
                 "api",
                 "ai",
                 "chat"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T13 POST ai/analyze-quiz (ngu phap, 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Phan tich quiz ngu phap tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"So lieu quiz do Backend tra, khong do AI\", function () {\r\n    pm.expect(body.type).to.eql(\"quiz_analysis\");\r\n    pm.expect(body.title).to.eql(\"Subjunctive Mood\");\r\n    pm.expect(body.correctCount).to.eql(2);\r\n    pm.expect(body.incorrectCount).to.eql(8);\r\n    pm.expect(body.accuracyPercent).to.eql(20);\r\n});\r\npm.test(\"Co summary, patterns va recommendations\", function () {\r\n    pm.expect(body.summary).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(body.patterns).to.be.an(\"array\");\r\n    pm.expect(body.recommendations).to.be.an(\"array\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"quizType\":\"grammar\",\"itemId\":26}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/analyze-quiz",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "analyze-quiz"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T14 POST ai/analyze-quiz (tu vung, 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Phan tich quiz tu vung tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"So lieu quiz do Backend tra, khong do AI\", function () {\r\n    pm.expect(body.type).to.eql(\"quiz_analysis\");\r\n    pm.expect(body.title).to.eql(\"Giáng sinh\");\r\n    pm.expect(body.correctCount).to.eql(3);\r\n    pm.expect(body.incorrectCount).to.eql(7);\r\n    pm.expect(body.accuracyPercent).to.eql(30);\r\n});\r\npm.test(\"Co summary, patterns va recommendations\", function () {\r\n    pm.expect(body.summary).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(body.patterns).to.be.an(\"array\");\r\n    pm.expect(body.recommendations).to.be.an(\"array\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"quizType\":\"vocabulary\",\"itemId\":13}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/analyze-quiz",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "analyze-quiz"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T15 POST ai/analyze-quiz (chua co ket qua, 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Quiz chua dong bo tra 404\", function () {\r\n    pm.response.to.have.status(404);\r\n    pm.expect(pm.response.json().message).to.eql(\"Quiz result not found\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"quizType\":\"grammar\",\"itemId\":1}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/analyze-quiz",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "analyze-quiz"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T16 POST ai/analyze-exam (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Phan tich bai thi tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Dung ket qua vua nop, thong ke tung phan do Backend tinh\", function () {\r\n    pm.expect(body.type).to.eql(\"exam_analysis\");\r\n    pm.expect(body.resultId).to.eql(pm.environment.get(\"examResultId\"));\r\n    pm.expect(body.parts).to.be.an(\"array\").that.is.not.empty;\r\n    body.parts.forEach(function (part) {\r\n        pm.expect(part.correctCount).to.eql(0);\r\n        pm.expect(part.totalCount).to.be.above(0);\r\n    });\r\n});\r\npm.test(\"Co summary, patterns va recommendations\", function () {\r\n    pm.expect(body.summary).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(body.patterns).to.be.an(\"array\");\r\n    pm.expect(body.recommendations).to.be.an(\"array\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"resultId\":\"{{examResultId}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/analyze-exam",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "analyze-exam"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T17 POST ai/analyze-exam (ket qua khong ton tai, 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Ket qua khong ton tai tra 404\", function () {\r\n    pm.response.to.have.status(404);\r\n    pm.expect(pm.response.json().message).to.eql(\"Result not found\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"resultId\":\"00000000-0000-4000-8000-000000000000\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/analyze-exam",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "analyze-exam"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T18 POST ai/analyze-quiz (quizType sai, 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"quizType sai tra 400\", function () {\r\n    pm.response.to.have.status(400);\r\n    pm.expect(pm.response.json().message).to.match(/^quizType:/);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"quizType\":\"listening\",\"itemId\":26}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/analyze-quiz",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "analyze-quiz"
               ]
             }
           },

@@ -187,9 +187,9 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - Gồm 3 thư mục:
   - `1. Auth flow`: register → login → truy cập API cần đăng nhập → refresh (xoay vòng) → logout, kèm các trường hợp 401.
   - `2. Premium flow`: register → login → user Free gọi `GET /api/exams` bị `403 PREMIUM_REQUIRED` → `POST /api/payment/mock-purchase` → gọi lại `GET /api/exams` thành công bằng cùng access token.
-  - `3. AI Tutor flow` (Tuần 11 – Ngày 7): register → login → user Free gọi `POST /api/ai/chat` bị `403 PREMIUM_REQUIRED` → `mock-purchase` → hỏi tiếng Anh cơ bản → nạp tiến trình học bằng `POST /api/progress/sync` → hỏi AI về điểm yếu và hoạt động gần đây (kiểm tra Learning Context) → nộp 1 bài thi trắng → hỏi AI về kết quả thi (kiểm tra `recentExams` không được gửi cho tác vụ chat). Kết quả kiểm thử ở mục 20.
+  - `3. AI Tutor flow` (Tuần 11 – Ngày 7): register → login → user Free gọi `POST /api/ai/chat` bị `403 PREMIUM_REQUIRED` → `mock-purchase` → hỏi tiếng Anh cơ bản → nạp tiến trình học bằng `POST /api/progress/sync` → hỏi AI về điểm yếu và hoạt động gần đây (kiểm tra Learning Context) → nộp 1 bài thi trắng → hỏi AI về kết quả thi (kiểm tra `recentExams` không được gửi cho tác vụ chat). Kết quả kiểm thử ở mục 20. Tuần 13 – Ngày 3-4 thêm T13-T18 kiểm thử `analyze-quiz` và `analyze-exam`, kết quả ở mục 24.
 - Cần một Environment có 3 biến: `baseUrl` (URL Render, không có `/` ở cuối), `apiKey`, `appSignature`. **Không commit file Environment** (chứa khóa). Header `X-API-Key` và `X-App-Signature` được Pre-request script của collection thêm vào mọi request.
-- Chạy: Postman → chuột phải thư mục (hoặc collection) → Run. Mỗi lần chạy đăng ký một email mới `postman.<thời gian>@example.com` nên để lại user thử trong Neon. Một lần chạy cả collection dùng 26 request (thư mục 3 gọi LLM thật 4 lần, ước tính khoảng 100 Neurons Cloudflare mỗi lần chạy).
+- Chạy: Postman → chuột phải thư mục (hoặc collection) → Run. Mỗi lần chạy đăng ký một email mới `postman.<thời gian>@example.com` nên để lại user thử trong Neon. Một lần chạy cả collection dùng 32 request (thư mục 3 gọi LLM thật 7 lần; ước tính khoảng 100 Neurons Cloudflare cho 4 lần đầu, chưa đo Neurons của 3 lần phân tích quiz/bài thi mới).
 - Backend giới hạn 60 request/phút/IP: không chạy liên tục nhiều lần trong 1 phút.
 
 ### Load test (k6)
@@ -575,3 +575,39 @@ Lỗi phát hiện: không có lỗi ở UI (13/13 kịch bản đạt). Ngoài 
 - Bộ mẫu chỉ 20 request, không đủ để kết luận tỉ lệ chính xác. Kết quả LLM có thể đổi giữa các lần chạy hoặc khi Cloudflare cập nhật model.
 - Một số từ trong `dictionary.db` có phát âm kiểu respelling (ví dụ `borrow` → `bŏrʹō`) hoặc không có phát âm (ví dụ `begin`); AI Service lấy nguyên văn từ từ điển.
 - Kịch bản Premium hết hạn giữa chừng (12-13) chỉ làm được bằng cách sửa `users.premium_expires_at` trong Neon.
+
+## 24. Phân tích Quiz và Exam bằng AI (Tuần 13 – Ngày 3-4)
+
+- Hai endpoint (yêu cầu đăng nhập và Premium, `@RequirePremium` ở cấp class của `AiGatewayController`):
+  - `POST /api/ai/analyze-quiz`. Request: `{"quizType":"grammar","itemId":26}`; `quizType` là `vocabulary` (quiz theo chủ đề từ vựng) hoặc `grammar` (quiz theo bài ngữ pháp), `itemId` là id chủ đề / bài ngữ pháp, giống `item_id` của `user_progress`. Response `200`: `{"type":"quiz_analysis","title":"Subjunctive Mood","correctCount":2,"incorrectCount":8,"accuracyPercent":20,"summary":"...","patterns":["..."],"recommendations":[{"title":"...","reason":"...","lessonId":26}]}`.
+  - `POST /api/ai/analyze-exam`. Request: `{"resultId":"<id kết quả thi>"}` (`id` trong response của `POST /api/exams/{id}/submit`). Response `200`: `{"type":"exam_analysis","resultId":"...","parts":[{"name":"Part 5 - Incomplete Sentences","skill":"READING","correctCount":18,"totalCount":30,"accuracyPercent":60}],"summary":"...","patterns":["..."],"recommendations":[{"title":"...","reason":"...","lessonId":null}]}`; `parts` yếu nhất trước.
+- Nguyên tắc: Backend chỉ **đọc** kết quả đã chấm, không chấm lại. Mọi con số (số câu đúng/sai, %, thống kê từng phần) do Backend tính và tự đặt vào response; AI chỉ viết `summary` (2-3 câu), `patterns` (tối đa 3, có thể rỗng) và `recommendations` (tối đa 3, quan trọng nhất trước). `lessonId` là id bài ngữ pháp trong `dictionary.db` hoặc `null`; AI Service bỏ liên kết (đặt `null`) nếu model đưa id không có trong danh sách bài của Lori.
+- Luồng quiz: JWT → `@RequirePremium` → Bean Validation → `AiRateLimiter.checkAnalyzeQuiz` (bucket riêng 20 request/phút/user) → đọc `user_progress` (kết quả lần làm gần nhất; không có hoặc chưa trả lời câu nào thì `404 Quiz result not found`) → đọc `user_weakness_record` (số liệu cộng dồn và trạng thái `learning/reviewing/mastered`, `null` nếu chưa có) → `LearningContextService.build(userId, ANALYZE_QUIZ)` (điểm yếu ngữ pháp và từ vựng, mục 18) → `AiServiceClient.analyzeQuiz` (ký HMAC, mục 17) → AI Service `POST /ai/analyze-quiz` → Cloudflare Workers AI → làm sạch JSON.
+- Luồng exam: tương tự nhưng `AiRateLimiter.checkAnalyzeExam` (bucket riêng) → `ExamService.getResultDetail` (kết quả của user khác hoặc không tồn tại thì `404 Result not found`) và `ExamService.getExam` → gom theo phần (TOEIC gom `Part 3 - Conversation 1..n` thành `Part 3 - Conversation` bằng cách bỏ số thứ tự và khoảng `(Qx-Qy)` ở tiêu đề section; IELTS giữ từng section) và theo loại câu hỏi, sắp xếp yếu nhất trước → `LearningContextService.build(userId, ANALYZE_EXAM)` (thêm `recentExams`, mục 18) → AI Service `POST /ai/analyze-exam`. Gửi kèm tối đa 10 câu sai (có nội dung chữ, cắt 200 ký tự) từ các phần yếu nhất; đáp án dạng chữ cái được ghép nội dung lựa chọn (ví dụ `B: wrote`).
+- Backend không gửi `userId`, `resultId` hay id đề sang AI Service. Không thêm biến môi trường, thư viện hay migration so với mục 17.
+- Mã lỗi: `400` (body sai, ví dụ `quizType` không phải `vocabulary`/`grammar`), `401` (chưa đăng nhập), `403 PREMIUM_REQUIRED` (user Free), `404` (quiz chưa đồng bộ lên server / kết quả thi không phải của user hoặc không tồn tại), `429` (quá 20 request/phút/user cho từng tác vụ), `503 AI service unavailable` (AI Service hoặc Cloudflare lỗi, model trả JSON sai cấu trúc, hết hạn mức 10.000 Neurons/ngày, mục 17, quá 30 giây). Timeout như mục 19: AI Service chờ Cloudflare tối đa 25 giây, Backend chờ AI Service tối đa 30 giây.
+- Chạy test (PowerShell, ở thư mục gốc repo): AI Service như mục 22; Backend `docker run --rm -v "${PWD}\backend:/app" -v lori-m2:/root/.m2 -w /app maven:3.9-eclipse-temurin-17 mvn -B test '-Dtest=AiExamAnalysisServiceTest,AiQuizAnalysisServiceTest,AiRateLimiterTest,AiServiceClientTest,AiGatewayServiceTest'`.
+
+### Kiểm thử trên Render (Postman T13-T18)
+
+| # | Kịch bản | Request | Kết quả kỳ vọng |
+|---|---|---|---|
+| 1 | Quiz ngữ pháp | T13: `grammar`, bài 26 | `200`, `title` = `Subjunctive Mood`, 2 đúng / 8 sai, 20% |
+| 2 | Quiz từ vựng | T14: `vocabulary`, chủ đề 13 | `200`, `title` = `Giáng sinh`, 3 đúng / 7 sai, 30% |
+| 3 | Quiz chưa đồng bộ | T15: `grammar`, bài 1 | `404 Quiz result not found` |
+| 4 | Phân tích bài thi | T16: `resultId` của bài thi trắng ở T11 | `200`, `type` = `exam_analysis`, mọi phần 0 câu đúng |
+| 5 | Kết quả thi không tồn tại | T17: `resultId` ngẫu nhiên | `404 Result not found` |
+| 6 | `quizType` sai | T18: `listening` | `400`, thông điệp bắt đầu bằng `quizType:` |
+
+Kết quả chạy: ghi `Đạt`/`Không đạt` và ngày chạy thực tế sau khi chạy xong.
+
+### Giới hạn đã biết (không sửa)
+
+- Server chỉ có số câu đúng/sai của quiz (app Android chấm rồi đồng bộ), không có từng câu sai; AI chỉ nhận định theo số liệu này, kết quả lần làm gần nhất và số liệu cộng dồn, không nêu được câu cụ thể. Nâng cấp khi app đồng bộ thêm chi tiết từng câu.
+- Phải đồng bộ tiến trình (`POST /api/progress/sync`) trước khi gọi `analyze-quiz`; quiz chưa đồng bộ trả `404`. Quiz làm trước khi có Learning Engine (Tuần 13 – Ngày 1-2) không có số liệu cộng dồn nên chỉ phân tích theo lần làm gần nhất.
+- Phân tích bài thi chỉ gửi tối đa 10 câu sai, mỗi câu tối đa 200 ký tự, chỉ câu có chữ; câu chỉ có audio/hình (TOEIC Part 1-2) chỉ nằm trong thống kê phần. Cách gom TOEIC phụ thuộc tiêu đề section dạng `Part N - ... (Qx-Qy)` do `tools/exam-import/toeic_to_sql.py` sinh; tiêu đề khác dạng đó được giữ nguyên.
+- Mỗi lần gọi là một lần gọi LLM: chưa cache, chưa ghi `ai_feedback_metadata`; số Neurons mỗi lần chưa đo.
+- Postman T16 chạy với đề đầu tiên trong `GET /api/exams` (IELTS) và bài trắng; cách gom phần của TOEIC chỉ được kiểm bằng unit test, chưa chạy trên Render.
+- Mini practice và kế hoạch ôn tập chi tiết (mục 5.9) thuộc Module 5.7/5.8 (Tuần 13 – Ngày 5-6), chưa làm.
+- `summary`, `patterns`, `recommendations` do LLM sinh bằng tiếng Anh đơn giản (theo prompt), chưa có kiểm tra output (Tuần 15); Postman chỉ kiểm tra cấu trúc, không kiểm tra nội dung đúng sai.
+- Chưa có màn hình Android cho phân tích quiz/bài thi.
