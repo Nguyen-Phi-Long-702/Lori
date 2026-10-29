@@ -8,6 +8,8 @@ class TaskType(str, Enum):
     CHAT = "chat"
     GRAMMAR = "grammar"
     VOCABULARY = "vocabulary"
+    ANALYZE_QUIZ = "analyze_quiz"
+    ANALYZE_EXAM = "analyze_exam"
 
 
 class UnsupportedTaskError(Exception):
