@@ -281,4 +281,19 @@
             app:popEnterAnim="@anim/nav_fade_in"
             app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
+    <fragment
+        android:id="@+id/aiExerciseFragment"
+        android:name="com.example.lori.view.AiExerciseFragment"
+        android:label="@string/nav_label_ai_exercise"
+        tools:layout="@layout/fragment_ai_exercise">
+        <argument
+            android:name="category"
+            app:argType="string" />
+        <argument
+            android:name="topicId"
+            app:argType="integer" />
+        <argument
+            android:name="topicName"
+            app:argType="string" />
+    </fragment>
 </navigation>

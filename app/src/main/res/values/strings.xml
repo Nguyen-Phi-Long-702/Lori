@@ -443,4 +443,18 @@
     <string name="ai_sentence_corrected_label">CÂU ĐÚNG</string>
     <string name="ai_sentence_explanation_title">GIẢI THÍCH</string>
     <string name="ai_sentence_related_label">BÀI HỌC LIÊN QUAN</string>
+
+    <!-- Bài tập AI (Tuần 13 Ngày 7) -->
+    <string name="ai_retry_button">Thử lại</string>
+    <string name="nav_label_ai_exercise">Bài tập AI</string>
+    <string name="ai_exercise_loading">AI đang soạn bài tập cho bạn… Việc này có thể mất vài chục giây</string>
+    <string name="ai_exercise_type_choice">TRẮC NGHIỆM</string>
+    <string name="ai_exercise_type_fill">ĐIỀN VÀO CHỖ TRỐNG</string>
+    <string name="ai_exercise_answer_hint">Nhập đáp án của bạn…</string>
+    <string name="ai_exercise_check_button">Kiểm tra đáp án</string>
+    <string name="ai_exercise_feedback_correct_format">Chính xác! %1$s</string>
+    <string name="ai_exercise_feedback_wrong_format">Chưa đúng. Đáp án đúng: %1$s\n%2$s</string>
+    <string name="ai_exercise_result_button">Xem kết quả</string>
+    <string name="ai_exercise_result_subtitle_format">Bài tập AI · %1$s</string>
+    <string name="ai_exercise_more_button">Luyện thêm</string>
 </resources>
