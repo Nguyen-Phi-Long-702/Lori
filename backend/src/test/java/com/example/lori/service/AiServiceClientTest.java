@@ -8,6 +8,7 @@ import com.example.lori.dto.AiGrammarResponse;
 import com.example.lori.dto.AiVocabularyResponse;
 import com.example.lori.dto.LearningContext;
 import com.example.lori.dto.LearningContext.WeakItem;
+import com.example.lori.dto.LearningTopicResponse;
 import com.example.lori.exception.ApiException;
 import com.example.lori.security.AiServiceSigner;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -216,6 +217,27 @@ class AiServiceClientTest {
         assertThat(sent.get("topic").asText()).isEqualTo("Present Perfect");
         assertThat(sent.get("level").asText()).isEqualTo("B1");
         assertThat(sent.get("avoidQuestions").get(0).asText()).isEqualTo("Old question");
+    }
+
+    @Test
+    void recommendSendsSignedWeakTopicsAndParsesAnalysis() throws IOException {
+        startServer("/ai/recommend", 200, "{\"type\":\"recommendation\",\"summary\":\"Focus here.\","
+                + "\"patterns\":[],\"recommendations\":[{\"title\":\"Review\",\"reason\":\"Weak\",\"lessonId\":11}]}");
+        AiServiceClient client = new AiServiceClient(baseUrl(), SECRET, OBJECT_MAPPER);
+
+        AiAnalysisResponse response = client.recommend(new AiServiceClient.RecommendPayload(
+                List.of(new LearningTopicResponse("grammar", "11", "Present Perfect", 3, 7, 30)),
+                Map.of(11, "Present Perfect"), new LearningContext(null, null, null, null)));
+
+        assertThat(response.type()).isEqualTo("recommendation");
+        assertThat(response.recommendations().get(0).lessonId()).isEqualTo(11);
+        String timestamp = receivedHeaders.get().getFirst(AiServiceSigner.TIMESTAMP_HEADER);
+        String expectedSignature = AiServiceSigner.sign(SECRET, timestamp, "POST", "/ai/recommend", receivedBody.get());
+        assertThat(receivedHeaders.get().getFirst(AiServiceSigner.SIGNATURE_HEADER)).isEqualTo(expectedSignature);
+        JsonNode sent = OBJECT_MAPPER.readTree(receivedBody.get());
+        assertThat(sent.get("weakTopics").get(0).get("topicName").asText()).isEqualTo("Present Perfect");
+        assertThat(sent.get("weakTopics").get(0).get("accuracyPercent").asInt()).isEqualTo(30);
+        assertThat(sent.get("lessons").get("11").asText()).isEqualTo("Present Perfect");
     }
 
     @Test

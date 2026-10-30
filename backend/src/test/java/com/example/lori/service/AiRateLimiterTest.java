@@ -96,4 +96,20 @@ class AiRateLimiterTest {
         assertThatThrownBy(() -> limiter.checkGenerateExercise(userId)).isInstanceOfSatisfying(ApiException.class,
                 e -> assertThat(e.getStatusCode().value()).isEqualTo(429));
     }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void recommendHasItsOwnBucketPerUser() {
+        UUID userId = UUID.randomUUID();
+        BucketProxy bucket = mock(BucketProxy.class);
+        when(bucket.tryConsume(1)).thenReturn(true, false);
+        ProxyManager<String> proxyManager = mock(ProxyManager.class);
+        when(proxyManager.getProxy(eq("ai_rate_limit:recommend:" + userId), any(Supplier.class))).thenReturn(bucket);
+        AiRateLimiter limiter = new AiRateLimiter(proxyManager);
+
+        limiter.checkRecommend(userId);
+
+        assertThatThrownBy(() -> limiter.checkRecommend(userId)).isInstanceOfSatisfying(ApiException.class,
+                e -> assertThat(e.getStatusCode().value()).isEqualTo(429));
+    }
 }

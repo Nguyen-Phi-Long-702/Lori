@@ -10,11 +10,13 @@ import com.example.lori.dto.AiExerciseResponse;
 import com.example.lori.dto.AiGenerateExerciseRequest;
 import com.example.lori.dto.AiQuizAnalysisRequest;
 import com.example.lori.dto.AiQuizAnalysisResponse;
+import com.example.lori.dto.AiRecommendResponse;
 import com.example.lori.security.RequirePremium;
 import com.example.lori.service.AiExamAnalysisService;
 import com.example.lori.service.AiExerciseService;
 import com.example.lori.service.AiGatewayService;
 import com.example.lori.service.AiQuizAnalysisService;
+import com.example.lori.service.AiRecommendService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,6 +41,7 @@ public class AiGatewayController {
     private final AiQuizAnalysisService aiQuizAnalysisService;
     private final AiExamAnalysisService aiExamAnalysisService;
     private final AiExerciseService aiExerciseService;
+    private final AiRecommendService aiRecommendService;
 
     @PostMapping("/chat")
     public AiChatResponse chat(@AuthenticationPrincipal UUID userId, @Valid @RequestBody AiChatRequest request) {
@@ -67,5 +70,10 @@ public class AiGatewayController {
     public AiExerciseResponse generateExercise(
             @AuthenticationPrincipal UUID userId, @Valid @RequestBody AiGenerateExerciseRequest request) {
         return aiExerciseService.generate(userId, request);
+    }
+
+    @PostMapping("/recommend")
+    public AiRecommendResponse recommend(@AuthenticationPrincipal UUID userId) {
+        return aiRecommendService.recommend(userId);
     }
 }

@@ -7,6 +7,7 @@ import com.example.lori.dto.AiExerciseResponse;
 import com.example.lori.dto.AiGrammarResponse;
 import com.example.lori.dto.AiVocabularyResponse;
 import com.example.lori.dto.LearningContext;
+import com.example.lori.dto.LearningTopicResponse;
 import com.example.lori.exception.ApiException;
 import com.example.lori.security.AiServiceSigner;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,6 +44,7 @@ public class AiServiceClient {
     private static final String ANALYZE_QUIZ_PATH = "/ai/analyze-quiz";
     private static final String ANALYZE_EXAM_PATH = "/ai/analyze-exam";
     private static final String GENERATE_EXERCISE_PATH = "/ai/generate-exercise";
+    private static final String RECOMMEND_PATH = "/ai/recommend";
     private static final int MIN_SECRET_LENGTH = 32;
 
     private final RestClient restClient;
@@ -90,6 +92,10 @@ public class AiServiceClient {
 
     public AiExerciseResponse generateExercise(ExercisePayload payload) {
         return post(GENERATE_EXERCISE_PATH, toJson(payload), AiExerciseResponse.class);
+    }
+
+    public AiAnalysisResponse recommend(RecommendPayload payload) {
+        return post(RECOMMEND_PATH, toJson(payload), AiAnalysisResponse.class);
     }
 
     private <T> T post(String path, byte[] body, Class<T> responseType) {
@@ -186,6 +192,14 @@ public class AiServiceClient {
     */
     public record ExercisePayload(
         String category, String topic, String level, List<String> avoidQuestions, LearningContext learningContext) {
+    }
+
+    /**
+    * Body gui /ai/recommend, ten truong khop RecommendRequest ben AI Service: weakTopics do Learning Engine chon
+    * (yeu nhat truoc); lessons nhu GrammarPayload.
+    */
+    public record RecommendPayload(
+        List<LearningTopicResponse> weakTopics, Map<Integer, String> lessons, LearningContext learningContext) {
     }
 
     /** Phan hoi cua AI Service: {"status": "ok"}. */
