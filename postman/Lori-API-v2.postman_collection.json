@@ -1449,6 +1449,242 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "T19 POST ai/generate-exercise (ngu phap, 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sinh bai tap ngu phap tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Bo bai tap hop le\", function () {\r\n    pm.expect(body.type).to.eql(\"exercise_set\");\r\n    pm.expect(body.exercises).to.be.an(\"array\").with.length.within(1, 5);\r\n    body.exercises.forEach(function (ex) {\r\n        pm.expect(ex.type).to.be.oneOf([\"multiple_choice\", \"fill_blank\"]);\r\n        pm.expect(ex.question).to.be.a(\"string\").and.not.empty;\r\n        pm.expect(ex.explanation).to.be.a(\"string\").and.not.empty;\r\n        if (ex.type === \"multiple_choice\") {\r\n            pm.expect(ex.options).to.have.length(4);\r\n            pm.expect(ex.answerIndex).to.be.within(0, 3);\r\n        } else {\r\n            pm.expect(ex.question).to.include(\"___\");\r\n            pm.expect(ex.answers).to.be.an(\"array\").that.is.not.empty;\r\n        }\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"category\":\"grammar\",\"topicId\":26}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/generate-exercise",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "generate-exercise"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T20 POST ai/generate-exercise (tu vung, 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sinh bai tap tu vung tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Bo bai tap hop le\", function () {\r\n    pm.expect(body.type).to.eql(\"exercise_set\");\r\n    pm.expect(body.exercises).to.be.an(\"array\").with.length.within(1, 5);\r\n    body.exercises.forEach(function (ex) {\r\n        pm.expect(ex.type).to.be.oneOf([\"multiple_choice\", \"fill_blank\"]);\r\n        pm.expect(ex.question).to.be.a(\"string\").and.not.empty;\r\n        pm.expect(ex.explanation).to.be.a(\"string\").and.not.empty;\r\n        if (ex.type === \"multiple_choice\") {\r\n            pm.expect(ex.options).to.have.length(4);\r\n            pm.expect(ex.answerIndex).to.be.within(0, 3);\r\n        } else {\r\n            pm.expect(ex.question).to.include(\"___\");\r\n            pm.expect(ex.answers).to.be.an(\"array\").that.is.not.empty;\r\n        }\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"category\":\"vocabulary\",\"topicId\":13}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/generate-exercise",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "generate-exercise"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T21 POST ai/generate-exercise (chu de khong ton tai, 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Chu de khong ton tai tra 400\", function () {\r\n    pm.response.to.have.status(400);\r\n    pm.expect(pm.response.json().message).to.eql(\"Unknown topic\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"category\":\"grammar\",\"topicId\":99999}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/generate-exercise",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "generate-exercise"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T22 POST ai/generate-exercise (category sai, 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"category sai tra 400\", function () {\r\n    pm.response.to.have.status(400);\r\n    pm.expect(pm.response.json().message).to.match(/^category:/);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"category\":\"listening\",\"topicId\":26}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/generate-exercise",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "generate-exercise"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "T23 POST ai/recommend (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"De xuat on tap tra 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\nconst body = pm.response.json();\r\npm.test(\"Diem yeu do Learning Engine chon, khong do AI\", function () {\r\n    pm.expect(body.type).to.eql(\"recommendation\");\r\n    pm.expect(body.topics).to.have.length(2);\r\n    pm.expect(body.topics[0].category).to.eql(\"grammar\");\r\n    pm.expect(body.topics[0].topicName).to.eql(\"Subjunctive Mood\");\r\n    pm.expect(body.topics[0].accuracyPercent).to.eql(20);\r\n    pm.expect(body.topics[1].category).to.eql(\"vocabulary\");\r\n    pm.expect(body.topics[1].topicName).to.eql(\"Giáng sinh\");\r\n    pm.expect(body.topics[1].accuracyPercent).to.eql(30);\r\n});\r\npm.test(\"Co summary va recommendations\", function () {\r\n    pm.expect(body.summary).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(body.recommendations).to.be.an(\"array\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/recommend",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ai",
+                "recommend"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     }

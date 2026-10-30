@@ -187,7 +187,7 @@ Neon Free chỉ có khôi phục theo thời điểm trong 6 giờ, **không ph�
 - Gồm 3 thư mục:
   - `1. Auth flow`: register → login → truy cập API cần đăng nhập → refresh (xoay vòng) → logout, kèm các trường hợp 401.
   - `2. Premium flow`: register → login → user Free gọi `GET /api/exams` bị `403 PREMIUM_REQUIRED` → `POST /api/payment/mock-purchase` → gọi lại `GET /api/exams` thành công bằng cùng access token.
-  - `3. AI Tutor flow` (Tuần 11 – Ngày 7): register → login → user Free gọi `POST /api/ai/chat` bị `403 PREMIUM_REQUIRED` → `mock-purchase` → hỏi tiếng Anh cơ bản → nạp tiến trình học bằng `POST /api/progress/sync` → hỏi AI về điểm yếu và hoạt động gần đây (kiểm tra Learning Context) → nộp 1 bài thi trắng → hỏi AI về kết quả thi (kiểm tra `recentExams` không được gửi cho tác vụ chat). Kết quả kiểm thử ở mục 20. Tuần 13 – Ngày 3-4 thêm T13-T18 kiểm thử `analyze-quiz` và `analyze-exam`, kết quả ở mục 24.
+  - `3. AI Tutor flow` (Tuần 11 – Ngày 7): register → login → user Free gọi `POST /api/ai/chat` bị `403 PREMIUM_REQUIRED` → `mock-purchase` → hỏi tiếng Anh cơ bản → nạp tiến trình học bằng `POST /api/progress/sync` → hỏi AI về điểm yếu và hoạt động gần đây (kiểm tra Learning Context) → nộp 1 bài thi trắng → hỏi AI về kết quả thi (kiểm tra `recentExams` không được gửi cho tác vụ chat). Kết quả kiểm thử ở mục 20. Tuần 13 – Ngày 3-4 thêm T13-T18 kiểm thử `analyze-quiz` và `analyze-exam`, kết quả ở mục 24. Tuần 13 – Ngày 5-6 thêm T19-T23 kiểm thử `generate-exercise` và `recommend`, kết quả ở mục 25.
 - Cần một Environment có 3 biến: `baseUrl` (URL Render, không có `/` ở cuối), `apiKey`, `appSignature`. **Không commit file Environment** (chứa khóa). Header `X-API-Key` và `X-App-Signature` được Pre-request script của collection thêm vào mọi request.
 - Chạy: Postman → chuột phải thư mục (hoặc collection) → Run. Mỗi lần chạy đăng ký một email mới `postman.<thời gian>@example.com` nên để lại user thử trong Neon. Một lần chạy cả collection dùng 32 request (thư mục 3 gọi LLM thật 7 lần; ước tính khoảng 100 Neurons Cloudflare cho 4 lần đầu, chưa đo Neurons của 3 lần phân tích quiz/bài thi mới).
 - Backend giới hạn 60 request/phút/IP: không chạy liên tục nhiều lần trong 1 phút.
@@ -608,6 +608,40 @@ Kết quả chạy: ghi `Đạt`/`Không đạt` và ngày chạy thực tế sa
 - Phân tích bài thi chỉ gửi tối đa 10 câu sai, mỗi câu tối đa 200 ký tự, chỉ câu có chữ; câu chỉ có audio/hình (TOEIC Part 1-2) chỉ nằm trong thống kê phần. Cách gom TOEIC phụ thuộc tiêu đề section dạng `Part N - ... (Qx-Qy)` do `tools/exam-import/toeic_to_sql.py` sinh; tiêu đề khác dạng đó được giữ nguyên.
 - Mỗi lần gọi là một lần gọi LLM: chưa cache, chưa ghi `ai_feedback_metadata`; số Neurons mỗi lần chưa đo.
 - Postman T16 chạy với đề đầu tiên trong `GET /api/exams` (IELTS) và bài trắng; cách gom phần của TOEIC chỉ được kiểm bằng unit test, chưa chạy trên Render.
-- Mini practice và kế hoạch ôn tập chi tiết (mục 5.9) thuộc Module 5.7/5.8 (Tuần 13 – Ngày 5-6), chưa làm.
 - `summary`, `patterns`, `recommendations` do LLM sinh bằng tiếng Anh đơn giản (theo prompt), chưa có kiểm tra output (Tuần 15); Postman chỉ kiểm tra cấu trúc, không kiểm tra nội dung đúng sai.
 - Chưa có màn hình Android cho phân tích quiz/bài thi.
+
+## 25. AI Generated Exercises và Personalized Review (Tuần 13 – Ngày 5-6)
+
+- Hai endpoint (yêu cầu đăng nhập và Premium, `@RequirePremium` ở cấp class của `AiGatewayController`):
+  - `POST /api/ai/generate-exercise`. Request: `{"category":"grammar","topicId":26}`; `category` là `grammar` (bài ngữ pháp) hoặc `vocabulary` (chủ đề từ vựng), `topicId` là id bài / chủ đề, giống `itemId` của `analyze-quiz`. Response `200`: `{"type":"exercise_set","exercises":[{"type":"multiple_choice","question":"...","options":["...","...","...","..."],"answerIndex":0,"explanation":"..."},{"type":"fill_blank","question":"She ___ to school.","answers":["goes"],"explanation":"..."}]}`; 1-5 bài mỗi lần.
+  - `POST /api/ai/recommend`. Không có body. Response `200`: `{"type":"recommendation","topics":[{"category":"grammar","topicKey":"26","topicName":"Subjunctive Mood","correctCount":2,"incorrectCount":8,"accuracyPercent":20}],"summary":"...","recommendations":[{"title":"...","reason":"...","lessonId":26}]}`. Chưa có chủ đề yếu: `topics` và `recommendations` rỗng, `summary` = `null`, không gọi AI.
+- Nguyên tắc: chủ đề yếu và mọi con số do Learning Engine (code) chọn và tính (mục 18, Tuần 13 – Ngày 1-2: tối đa 3 chủ đề `reviewing`, tỉ lệ đúng thấp nhất trước); AI chỉ viết `summary` (2-3 câu) và `recommendations` (mỗi chủ đề yếu một đề xuất, đúng thứ tự). `lessonId` là id bài ngữ pháp trong `dictionary.db` hoặc `null` (luôn `null` với chủ đề từ vựng); AI Service đặt `null` nếu model đưa id không có trong danh sách bài của Lori.
+- Luồng generate-exercise: JWT → `@RequirePremium` → Bean Validation → `AiRateLimiter.checkGenerateExercise` (bucket riêng 20 request/phút/user) → `LearningContextService` đổi id thành tên (`learning-names.json`; id không có thì `400 Unknown topic`) → đọc tối đa 10 câu đã sinh gần nhất của user cho chủ đề này (`ai_generated_exercise.source_weakness` = `grammar:<id>` / `vocabulary:<id>`) và trình độ ước tính (`LearningEngineService.getLearningProfile`, dùng làm độ khó) → `LearningContextService.build(userId, GENERATE_EXERCISE)` → `AiServiceClient.generateExercise` (ký HMAC, mục 17) → AI Service `POST /ai/generate-exercise` → Cloudflare Workers AI → AI Service kiểm tra từng bài → Backend lưu mỗi bài một dòng vào `ai_generated_exercise` với `is_validated = false`.
+- Kiểm tra trước khi lưu (AI Service, `exercise_workflow.py`): `multiple_choice` đúng 4 lựa chọn khác nhau, không rỗng, `answerIndex` từ 0 đến 3; `fill_blank` đúng một chỗ trống `___`, 1-3 đáp án; bài sai định dạng hoặc trùng câu đã sinh trước đó bị bỏ, không còn bài hợp lệ nào thì `503`. Câu đã sinh trước đó được gửi kèm vì model chạy `TEMPERATURE=0` (gọi lại sẽ ra y hệt nếu không loại trùng).
+- Luồng recommend: tương tự với `AiRateLimiter.checkRecommend` (bucket riêng) → `LearningEngineService.getWeaknesses` (lấy 3 chủ đề đầu) → `LearningContextService.build(userId, RECOMMEND)` → AI Service `POST /ai/recommend`.
+- Backend không gửi `userId` sang AI Service. Không thêm biến môi trường, thư viện hay migration so với mục 17 (bảng `ai_generated_exercise` có từ V5).
+- Mã lỗi: `400` (body sai, ví dụ `category` không phải `grammar`/`vocabulary`, `topicId` thiếu hoặc không dương, hoặc `Unknown topic`), `401`, `403 PREMIUM_REQUIRED` (user Free), `429` (quá 20 request/phút/user cho từng tác vụ), `503 AI service unavailable` (AI Service hoặc Cloudflare lỗi, model trả JSON sai cấu trúc hoặc không còn bài hợp lệ, hết hạn mức 10.000 Neurons/ngày, mục 17, quá 30 giây).
+- Chạy test (PowerShell, ở thư mục gốc repo): AI Service như mục 22; Backend `docker run --rm -v "${PWD}\backend:/app" -v lori-m2:/root/.m2 -w /app maven:3.9-eclipse-temurin-17 mvn -B test '-Dtest=AiExerciseServiceTest,AiRecommendServiceTest,AiRateLimiterTest,AiServiceClientTest'`.
+
+### Kiểm thử trên Render (Postman T19-T23)
+
+| # | Kịch bản | Request | Kết quả kỳ vọng |
+|---|---|---|---|
+| 1 | Sinh bài tập ngữ pháp | T19: `grammar`, bài 26 | `200`, `type` = `exercise_set`, 1-5 bài đúng định dạng |
+| 2 | Sinh bài tập từ vựng | T20: `vocabulary`, chủ đề 13 | `200`, như trên |
+| 3 | Chủ đề không tồn tại | T21: `grammar`, `99999` | `400 Unknown topic` |
+| 4 | `category` sai | T22: `listening` | `400`, thông điệp bắt đầu bằng `category:` |
+| 5 | Đề xuất ôn tập | T23 | `200`, `topics` = `Subjunctive Mood` (20%), `Giáng sinh` (30%), có `summary` |
+
+Kết quả chạy ngày 30/10/2026: Đạt (T19, T20, T21, T22, T23 đều đạt, 5/5 request).
+
+### Giới hạn đã biết (không sửa)
+
+- Kết quả làm bài tập của user chưa được ghi lại (chưa có endpoint nộp bài tập); `POST /api/ai/generate-exercise` chỉ sinh và lưu bài. Nâng cấp khi app có luồng làm bài tập.
+- Mọi bài tập lưu với `is_validated = false`; việc review và đánh dấu `true` là của Tuần 13 – Ngày 7. API chưa lọc theo `is_validated` (chưa có chỗ dùng).
+- Bài tập sinh lại mỗi lần gọi: không tái sử dụng bài đã lưu, chưa cache; chỉ tránh lặp với tối đa 10 câu gần nhất của cùng user và chủ đề.
+- Độ khó chỉ dựa trên trình độ ước tính thô của Learning Engine (mục 18); user chưa có dữ liệu ngữ pháp được coi là `A1`.
+- Kiểm tra output chỉ về định dạng; chưa kiểm tra đáp án có đúng ngữ pháp / nghĩa hay không (phần kiểm tra output nâng cao là Tuần 15, review nội dung là Tuần 13 – Ngày 7).
+- Mỗi lần gọi là một lần gọi LLM, chưa ghi `ai_feedback_metadata`; số Neurons mỗi lần chưa đo. `recommend` chỉ xét tối đa 3 chủ đề yếu nhất.
+- `summary`, `recommendations` do LLM sinh bằng tiếng Anh đơn giản; Postman chỉ kiểm tra cấu trúc, không kiểm tra nội dung đúng sai.
