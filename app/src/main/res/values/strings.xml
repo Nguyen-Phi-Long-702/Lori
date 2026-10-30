@@ -457,4 +457,13 @@
     <string name="ai_exercise_result_button">Xem kết quả</string>
     <string name="ai_exercise_result_subtitle_format">Bài tập AI · %1$s</string>
     <string name="ai_exercise_more_button">Luyện thêm</string>
+
+    <!-- Ôn tập hôm nay (Tuần 13 Ngày 7) -->
+    <string name="nav_label_ai_review">Ôn tập hôm nay</string>
+    <string name="ai_review_eyebrow">DỰA TRÊN LỊCH SỬ HỌC CỦA BẠN</string>
+    <string name="ai_review_empty">Chưa có điểm yếu nào cần ôn. Hãy làm thêm các bài kiểm tra từ vựng hoặc ngữ pháp để AI hiểu bạn hơn.</string>
+    <string name="ai_review_topics_title">CHỦ ĐỀ CẦN ÔN (BẤM ĐỂ LUYỆN)</string>
+    <string name="ai_recommend_title">ĐỀ XUẤT ÔN TẬP</string>
+    <string name="ai_review_start_button">Bắt đầu ôn tập →</string>
+    <string name="ai_weak_wrong_format">Sai %1$d/%2$d</string>
 </resources>

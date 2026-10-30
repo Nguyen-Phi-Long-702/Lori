@@ -260,6 +260,13 @@
             app:exitAnim="@anim/nav_fade_out"
             app:popEnterAnim="@anim/nav_fade_in"
             app:popExitAnim="@anim/nav_fade_out" />
+        <action
+            android:id="@+id/action_aiTutorHomeFragment_to_aiPersonalizedReviewFragment"
+            app:destination="@id/aiPersonalizedReviewFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
 
     <fragment
@@ -275,6 +282,26 @@
         tools:layout="@layout/fragment_sentence_check">
         <action
             android:id="@+id/action_sentenceCheckFragment_to_grammarDetailFragment"
+            app:destination="@id/grammarDetailFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/aiPersonalizedReviewFragment"
+        android:name="com.example.lori.view.AiPersonalizedReviewFragment"
+        android:label="@string/nav_label_ai_review"
+        tools:layout="@layout/fragment_ai_personalized_review">
+        <action
+            android:id="@+id/action_aiPersonalizedReviewFragment_to_aiExerciseFragment"
+            app:destination="@id/aiExerciseFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
+        <action
+            android:id="@+id/action_aiPersonalizedReviewFragment_to_grammarDetailFragment"
             app:destination="@id/grammarDetailFragment"
             app:enterAnim="@anim/nav_fade_in"
             app:exitAnim="@anim/nav_fade_out"

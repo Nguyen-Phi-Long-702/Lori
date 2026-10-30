@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         if (destinationId == R.id.aiTutorHomeFragment
                 || destinationId == R.id.aiChatFragment
                 || destinationId == R.id.sentenceCheckFragment
+                || destinationId == R.id.aiPersonalizedReviewFragment
                 || destinationId == R.id.aiExerciseFragment) {
             return R.id.homeFragment;
         }

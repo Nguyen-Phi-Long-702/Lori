@@ -12,7 +12,7 @@ import androidx.navigation.Navigation;
 
 import com.example.lori.R;
 
-//Màn trung tâm AI English Tutor: chọn công cụ. Chỉ có Hỏi đáp và Phân tích câu; các công cụ còn lại là thẻ "Sắp ra mắt"
+//Màn trung tâm AI English Tutor: chọn công cụ. Có Hỏi đáp, Phân tích câu và Luyện tập cá nhân hóa; các công cụ còn lại là thẻ "Sắp ra mắt"
 public class AiTutorHomeFragment extends Fragment {
 
     @Nullable
@@ -34,5 +34,8 @@ public class AiTutorHomeFragment extends Fragment {
 
         view.findViewById(R.id.cardAiSentenceCheck).setOnClickListener(v ->
                 Navigation.findNavController(v).navigate(R.id.action_aiTutorHomeFragment_to_sentenceCheckFragment));
+
+        view.findViewById(R.id.cardAiPractice).setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.action_aiTutorHomeFragment_to_aiPersonalizedReviewFragment));
     }
 }
