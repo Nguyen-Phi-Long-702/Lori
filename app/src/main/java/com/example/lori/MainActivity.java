@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 || destinationId == R.id.aiChatFragment
                 || destinationId == R.id.sentenceCheckFragment
                 || destinationId == R.id.aiPersonalizedReviewFragment
+                || destinationId == R.id.learningInsightFragment
                 || destinationId == R.id.aiExerciseFragment) {
             return R.id.homeFragment;
         }

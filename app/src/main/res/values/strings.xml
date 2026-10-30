@@ -474,4 +474,16 @@
     <string name="ai_insight_no_weak">Bạn không sai câu nào lần này, nên chưa có điểm yếu để phân tích. Hãy thử thêm bài khác nhé!</string>
     <string name="ai_insight_start_button">Bắt đầu ôn tập ngay →</string>
     <string name="ai_error_not_found">Chưa tìm thấy kết quả để phân tích. Hãy thử lại sau ít phút</string>
+
+    <!-- Hồ sơ năng lực (Tuần 13 Ngày 7) -->
+    <string name="nav_label_learning_insight">Hồ sơ năng lực</string>
+    <string name="ai_tutor_insight_title">Hồ sơ năng lực của bạn</string>
+    <string name="ai_tutor_insight_desc">Trình độ ước tính · Xem điểm mạnh/yếu</string>
+    <string name="learning_insight_level_caption">TRÌNH ĐỘ ƯỚC TÍNH</string>
+    <string name="learning_insight_strengths_title">ĐIỂM MẠNH</string>
+    <string name="learning_insight_weaknesses_title">ĐIỂM CẦN CẢI THIỆN</string>
+    <string name="learning_insight_no_strengths">Chưa có chủ đề nào đạt mức thành thạo. Hãy làm thêm các bài kiểm tra nhé!</string>
+    <string name="learning_insight_no_weaknesses">Chưa phát hiện điểm yếu nào. Cứ tiếp tục phát huy nhé!</string>
+    <string name="learning_insight_accuracy_format">%1$d%%</string>
+    <string name="learning_insight_review_button">Ôn theo điểm yếu ngay →</string>
 </resources>
