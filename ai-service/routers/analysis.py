@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from guardrails.s2s_auth import verify_backend_request
-from models.analysis import ExamAnalysisRequest, QuizAnalysisRequest
+from models.analysis import ExamAnalysisRequest, QuizAnalysisRequest, RecommendRequest
 from orchestrator.ai_orchestrator import TaskType
 from providers.base import ProviderError
 
@@ -16,6 +16,11 @@ def analyze_quiz(body: QuizAnalysisRequest, request: Request):
 @router.post("/ai/analyze-exam", dependencies=[Depends(verify_backend_request)])
 def analyze_exam(body: ExamAnalysisRequest, request: Request):
     return _handle(request, TaskType.ANALYZE_EXAM, body.model_dump(by_alias=True))
+
+
+@router.post("/ai/recommend", dependencies=[Depends(verify_backend_request)])
+def recommend(body: RecommendRequest, request: Request):
+    return _handle(request, TaskType.RECOMMEND, body.model_dump(by_alias=True))
 
 
 def _handle(request: Request, task_type: TaskType, payload: dict):

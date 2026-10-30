@@ -1,6 +1,6 @@
 from collections.abc import Mapping
 
-from context.context_builder import build_exam_analysis_prompt, build_quiz_analysis_prompt
+from context.context_builder import build_exam_analysis_prompt, build_quiz_analysis_prompt, build_recommend_prompt
 from orchestrator.reply_parsing import is_text, parse_json_object
 from providers.base import AiProvider, ProviderError
 
@@ -11,6 +11,13 @@ MAX_ITEMS = 3
 def quiz_analysis_workflow(provider: AiProvider, payload: dict) -> dict:
     reply = provider.generate(build_quiz_analysis_prompt(payload))
     return _to_response("quiz_analysis", parse_json_object(reply.text), payload["lessons"])
+
+
+def recommend_workflow(provider: AiProvider, payload: dict) -> dict:
+    data = parse_json_object(provider.generate(build_recommend_prompt(payload)).text)
+    # De xuat chi dua tren so lieu dem cua Learning Engine, khong co patterns; _to_response van doi truong nay nen dat rong
+    data["patterns"] = []
+    return _to_response("recommendation", data, payload["lessons"])
 
 
 def exam_analysis_workflow(provider: AiProvider, payload: dict) -> dict:

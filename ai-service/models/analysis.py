@@ -59,3 +59,18 @@ class ExamAnalysisRequest(BaseModel):
     wrongQuestions: list[ExamWrongQuestion]
     lessons: dict[int, str]
     learning_context: dict | None = Field(default=None, alias="learningContext")
+
+
+class WeakTopic(BaseModel):
+    category: Literal["grammar", "vocabulary"]
+    topicName: str
+    correctCount: int
+    incorrectCount: int
+    accuracyPercent: int
+
+
+class RecommendRequest(BaseModel):
+    # Cac chu de yeu do Learning Engine chon, yeu nhat truoc; model khong duoc them chu de khac
+    weakTopics: list[WeakTopic] = Field(min_length=1)
+    lessons: dict[int, str]
+    learning_context: dict | None = Field(default=None, alias="learningContext")

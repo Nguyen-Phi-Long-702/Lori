@@ -10,6 +10,8 @@ class TaskType(str, Enum):
     VOCABULARY = "vocabulary"
     ANALYZE_QUIZ = "analyze_quiz"
     ANALYZE_EXAM = "analyze_exam"
+    GENERATE_EXERCISE = "generate_exercise"
+    RECOMMEND = "recommend"
 
 
 class UnsupportedTaskError(Exception):
