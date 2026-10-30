@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.lifecycle.LiveData;
 
 import com.example.lori.data.remote.api.UserApi;
+import com.example.lori.data.remote.dto.LearningProfileResponse;
 import com.example.lori.data.remote.dto.UserResponse;
 import com.example.lori.data.remote.dto.UserStatsResponse;
 
@@ -26,5 +27,10 @@ public class UserRepository extends BaseRepository {
     //Thống kê học tập kèm tổng EXP, cấp độ, streak (GET /api/users/me/stats)
     public LiveData<ApiResult<UserStatsResponse>> stats() {
         return execute(userApi.getStats());
+    }
+
+    //Trình độ ước tính, điểm mạnh và điểm yếu (GET /api/users/me/learning-profile)
+    public LiveData<ApiResult<LearningProfileResponse>> learningProfile() {
+        return execute(userApi.getLearningProfile());
     }
 }
