@@ -106,6 +106,13 @@
         <argument
             android:name="itemTitle"
             app:argType="string" />
+        <action
+            android:id="@+id/action_quizFragment_to_quizExamAiInsightFragment"
+            app:destination="@id/quizExamAiInsightFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
 
     <fragment
@@ -133,6 +140,13 @@
         <action
             android:id="@+id/action_examResultFragment_to_examReviewFragment"
             app:destination="@id/examReviewFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
+        <action
+            android:id="@+id/action_examResultFragment_to_quizExamAiInsightFragment"
+            app:destination="@id/quizExamAiInsightFragment"
             app:enterAnim="@anim/nav_fade_in"
             app:exitAnim="@anim/nav_fade_out"
             app:popEnterAnim="@anim/nav_fade_in"
@@ -303,6 +317,38 @@
         <action
             android:id="@+id/action_aiPersonalizedReviewFragment_to_grammarDetailFragment"
             app:destination="@id/grammarDetailFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/quizExamAiInsightFragment"
+        android:name="com.example.lori.view.QuizExamAiInsightFragment"
+        android:label="@string/nav_label_ai_insight"
+        tools:layout="@layout/fragment_quiz_exam_ai_insight">
+        <argument
+            android:name="source"
+            app:argType="string" />
+        <argument
+            android:name="itemId"
+            android:defaultValue="0"
+            app:argType="integer" />
+        <argument
+            android:name="resultId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_quizExamAiInsightFragment_to_grammarDetailFragment"
+            app:destination="@id/grammarDetailFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
+        <action
+            android:id="@+id/action_quizExamAiInsightFragment_to_aiPersonalizedReviewFragment"
+            app:destination="@id/aiPersonalizedReviewFragment"
             app:enterAnim="@anim/nav_fade_in"
             app:exitAnim="@anim/nav_fade_out"
             app:popEnterAnim="@anim/nav_fade_in"

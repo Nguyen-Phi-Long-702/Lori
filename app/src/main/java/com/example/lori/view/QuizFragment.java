@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.graphics.Color;
 
 import androidx.annotation.NonNull;
@@ -15,7 +14,10 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.lori.R;
 import com.example.lori.utils.PremiumManager;
@@ -102,7 +104,7 @@ public class QuizFragment extends Fragment {
 
         cardAiInsight.setOnClickListener(v -> {
             if (PremiumManager.isPremium(requireContext())) {
-                Toast.makeText(requireContext(), R.string.quiz_ai_insight_not_ready_toast, Toast.LENGTH_SHORT).show();
+                openAiInsight(itemId);
             } else {
                 PremiumPromptDialog.newInstance(getString(R.string.quiz_ai_insight_feature_name))
                         .show(getChildFragmentManager(), "premium_prompt");
@@ -183,6 +185,19 @@ public class QuizFragment extends Fragment {
             button.setTextColor(defaultOptionTextColor);
             button.setStrokeWidth(defaultOptionStrokeWidth);
         }
+    }
+
+    //Sang màn Phân tích AI của quiz này. Chỉ chuyển khi đang ở màn Quiz: chạm nhanh hai lần sẽ không chuyển lần hai
+    private void openAiInsight(int itemId) {
+        NavController navController = NavHostFragment.findNavController(this);
+        NavDestination current = navController.getCurrentDestination();
+        if (current == null || current.getId() != R.id.quizFragment) {
+            return;
+        }
+        Bundle args = new Bundle();
+        args.putString(QuizExamAiInsightFragment.ARG_SOURCE, quizType);
+        args.putInt(QuizExamAiInsightFragment.ARG_ITEM_ID, itemId);
+        navController.navigate(R.id.action_quizFragment_to_quizExamAiInsightFragment, args);
     }
 
     //Chuyển sang màn hình kết quả sau khi hoàn tất bài kiểm tra

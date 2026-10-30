@@ -18,6 +18,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.lori.R;
 import com.example.lori.data.remote.dto.ExamResultResponse;
 import com.example.lori.viewmodel.ExamResultViewModel;
+import com.example.lori.viewmodel.QuizExamAiInsightViewModel;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
@@ -88,6 +89,7 @@ public class ExamResultFragment extends Fragment {
                 Navigation.findNavController(v).popBackStack(R.id.examListFragment, false));
         view.findViewById(R.id.btnExamResultRetry).setOnClickListener(v -> viewModel.retry());
         view.findViewById(R.id.btnExamResultReview).setOnClickListener(v -> openReview());
+        view.findViewById(R.id.cardExamAiInsight).setOnClickListener(v -> openAiInsight());
 
         viewModel.getLoading().observe(getViewLifecycleOwner(), loading ->
                 progress.setVisibility(Boolean.TRUE.equals(loading) ? View.VISIBLE : View.INVISIBLE));
@@ -116,6 +118,19 @@ public class ExamResultFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString(ARG_RESULT_ID, requireArguments().getString(ARG_RESULT_ID));
         navController.navigate(R.id.action_examResultFragment_to_examReviewFragment, args);
+    }
+
+    //Sang màn Phân tích AI của lần thi này; user Free bị Backend trả 403 nên màn đó tự mở dialog nâng cấp
+    private void openAiInsight() {
+        NavController navController = NavHostFragment.findNavController(this);
+        NavDestination current = navController.getCurrentDestination();
+        if (current == null || current.getId() != R.id.examResultFragment) {
+            return;
+        }
+        Bundle args = new Bundle();
+        args.putString(QuizExamAiInsightFragment.ARG_SOURCE, QuizExamAiInsightViewModel.SOURCE_EXAM);
+        args.putString(QuizExamAiInsightFragment.ARG_RESULT_ID, requireArguments().getString(ARG_RESULT_ID));
+        navController.navigate(R.id.action_examResultFragment_to_quizExamAiInsightFragment, args);
     }
 
     //Gán dữ liệu lên giao diện; result = null (đang tải/lỗi) thì ẩn phần nội dung

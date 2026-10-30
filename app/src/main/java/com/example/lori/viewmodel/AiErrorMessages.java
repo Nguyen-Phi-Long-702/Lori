@@ -28,6 +28,8 @@ final class AiErrorMessages {
     @StringRes
     private static int ofHttp(int httpCode) {
         switch (httpCode) {
+            case 404:
+                return R.string.ai_error_not_found;
             case 400:
                 return R.string.ai_error_invalid_input;
             case 401:

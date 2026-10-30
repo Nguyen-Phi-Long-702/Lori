@@ -126,7 +126,6 @@
     <string name="quiz_ai_insight_title">Xem phân tích AI chi tiết</string>
     <string name="quiz_ai_insight_desc">AI sẽ chỉ ra điểm mạnh, điểm yếu và gợi ý ôn tập riêng cho bạn</string>
     <string name="quiz_ai_insight_feature_name">phân tích AI chi tiết</string>
-    <string name="quiz_ai_insight_not_ready_toast">Tính năng đang được phát triển, sẽ có ở các sprint sau</string>
     <string name="quiz_finish_button">Quay lại</string>
     <string name="quiz_start_button">Làm bài kiểm tra →</string>
     <string name="quiz_explanation_format">Giải thích: %1$s</string>
@@ -466,4 +465,13 @@
     <string name="ai_recommend_title">ĐỀ XUẤT ÔN TẬP</string>
     <string name="ai_review_start_button">Bắt đầu ôn tập →</string>
     <string name="ai_weak_wrong_format">Sai %1$d/%2$d</string>
+
+    <!-- Phân tích AI sau Quiz/Exam (Tuần 13 Ngày 7) -->
+    <string name="nav_label_ai_insight">Phân tích AI</string>
+    <string name="ai_insight_overview_title">TỔNG QUAN</string>
+    <string name="ai_insight_weak_title">ĐIỂM YẾU PHÁT HIỆN ĐƯỢC</string>
+    <string name="ai_insight_patterns_title">KIỂU LỖI HAY GẶP</string>
+    <string name="ai_insight_no_weak">Bạn không sai câu nào lần này, nên chưa có điểm yếu để phân tích. Hãy thử thêm bài khác nhé!</string>
+    <string name="ai_insight_start_button">Bắt đầu ôn tập ngay →</string>
+    <string name="ai_error_not_found">Chưa tìm thấy kết quả để phân tích. Hãy thử lại sau ít phút</string>
 </resources>
