@@ -6,10 +6,13 @@ import com.example.lori.dto.AiChatRequest;
 import com.example.lori.dto.AiChatResponse;
 import com.example.lori.dto.AiExamAnalysisRequest;
 import com.example.lori.dto.AiExamAnalysisResponse;
+import com.example.lori.dto.AiExerciseResponse;
+import com.example.lori.dto.AiGenerateExerciseRequest;
 import com.example.lori.dto.AiQuizAnalysisRequest;
 import com.example.lori.dto.AiQuizAnalysisResponse;
 import com.example.lori.security.RequirePremium;
 import com.example.lori.service.AiExamAnalysisService;
+import com.example.lori.service.AiExerciseService;
 import com.example.lori.service.AiGatewayService;
 import com.example.lori.service.AiQuizAnalysisService;
 import jakarta.validation.Valid;
@@ -35,6 +38,7 @@ public class AiGatewayController {
     private final AiGatewayService aiGatewayService;
     private final AiQuizAnalysisService aiQuizAnalysisService;
     private final AiExamAnalysisService aiExamAnalysisService;
+    private final AiExerciseService aiExerciseService;
 
     @PostMapping("/chat")
     public AiChatResponse chat(@AuthenticationPrincipal UUID userId, @Valid @RequestBody AiChatRequest request) {
@@ -57,5 +61,11 @@ public class AiGatewayController {
     public AiExamAnalysisResponse analyzeExam(
             @AuthenticationPrincipal UUID userId, @Valid @RequestBody AiExamAnalysisRequest request) {
         return aiExamAnalysisService.analyze(userId, request);
+    }
+    
+    @PostMapping("/generate-exercise")
+    public AiExerciseResponse generateExercise(
+            @AuthenticationPrincipal UUID userId, @Valid @RequestBody AiGenerateExerciseRequest request) {
+        return aiExerciseService.generate(userId, request);
     }
 }

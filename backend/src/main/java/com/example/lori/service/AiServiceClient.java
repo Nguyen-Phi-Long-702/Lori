@@ -3,6 +3,7 @@ package com.example.lori.service;
 import com.example.lori.dto.AiAnalysisResponse;
 import com.example.lori.dto.AiChatResponse;
 import com.example.lori.dto.AiExamAnalysisResponse;
+import com.example.lori.dto.AiExerciseResponse;
 import com.example.lori.dto.AiGrammarResponse;
 import com.example.lori.dto.AiVocabularyResponse;
 import com.example.lori.dto.LearningContext;
@@ -41,6 +42,7 @@ public class AiServiceClient {
     private static final String VOCABULARY_PATH = "/ai/vocabulary";
     private static final String ANALYZE_QUIZ_PATH = "/ai/analyze-quiz";
     private static final String ANALYZE_EXAM_PATH = "/ai/analyze-exam";
+    private static final String GENERATE_EXERCISE_PATH = "/ai/generate-exercise";
     private static final int MIN_SECRET_LENGTH = 32;
 
     private final RestClient restClient;
@@ -84,6 +86,10 @@ public class AiServiceClient {
 
     public AiAnalysisResponse analyzeExam(ExamPayload payload) {
         return post(ANALYZE_EXAM_PATH, toJson(payload), AiAnalysisResponse.class);
+    }
+
+    public AiExerciseResponse generateExercise(ExercisePayload payload) {
+        return post(GENERATE_EXERCISE_PATH, toJson(payload), AiExerciseResponse.class);
     }
 
     private <T> T post(String path, byte[] body, Class<T> responseType) {
@@ -172,6 +178,14 @@ public class AiServiceClient {
 
     /** Mot cau sai: yourAnswer = null neu user bo trong; dap an dang chu cai kem noi dung lua chon, vd "B: wrote". */
     public record WrongQuestion(String part, String question, String yourAnswer, String correctAnswer) {
+    }
+
+    /**
+    * Body gui /ai/generate-exercise, ten truong khop ExerciseRequest ben AI Service: topic la ten bai ngu phap / chu de
+    * tu vung, level la A1-C1, avoidQuestions la cac cau da sinh truoc do (toi da 10).
+    */
+    public record ExercisePayload(
+        String category, String topic, String level, List<String> avoidQuestions, LearningContext learningContext) {
     }
 
     /** Phan hoi cua AI Service: {"status": "ok"}. */

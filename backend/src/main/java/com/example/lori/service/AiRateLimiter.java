@@ -11,11 +11,11 @@ import java.time.Duration;
 import java.util.UUID;
 
 /**
- * Rate limit rieng cho tac vu AI, theo tung user (khac RateLimitFilter gioi han theo IP):
- * chat, phan tich cau (analyze-text), phan tich quiz (analyze-quiz) va phan tich bai thi (analyze-exam),
- * moi loai toi da 20 request/phut.
- * Dung chung ProxyManager (Upstash) voi RateLimitFilter.
- */
+* Rate limit rieng cho tac vu AI, theo tung user (khac RateLimitFilter gioi han theo IP):
+* chat, phan tich cau (analyze-text), phan tich quiz (analyze-quiz), phan tich bai thi (analyze-exam)
+* va sinh bai tap (generate-exercise), moi loai toi da 20 request/phut.
+* Dung chung ProxyManager (Upstash) voi RateLimitFilter.
+*/
 @Component
 public class AiRateLimiter {
 
@@ -24,6 +24,7 @@ public class AiRateLimiter {
     private static final String ANALYZE_TEXT_KEY_PREFIX = "ai_rate_limit:analyze-text:";
     private static final String ANALYZE_QUIZ_KEY_PREFIX = "ai_rate_limit:analyze-quiz:";
     private static final String ANALYZE_EXAM_KEY_PREFIX = "ai_rate_limit:analyze-exam:";
+    private static final String GENERATE_EXERCISE_KEY_PREFIX = "ai_rate_limit:generate-exercise:";
 
     private final ProxyManager<String> proxyManager;
     private final BucketConfiguration configuration = BucketConfiguration.builder()
@@ -53,6 +54,11 @@ public class AiRateLimiter {
     /** Tru 1 luot phan tich bai thi (analyze-exam) cua user; het luot thi nem 429. */
     public void checkAnalyzeExam(UUID userId) {
         consume(ANALYZE_EXAM_KEY_PREFIX + userId);
+    }
+
+    /** Tru 1 luot sinh bai tap (generate-exercise) cua user; het luot thi nem 429. */
+    public void checkGenerateExercise(UUID userId) {
+        consume(GENERATE_EXERCISE_KEY_PREFIX + userId);
     }
 
     private void consume(String key) {

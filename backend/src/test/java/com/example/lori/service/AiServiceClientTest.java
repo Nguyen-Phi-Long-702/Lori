@@ -3,6 +3,7 @@ package com.example.lori.service;
 import com.example.lori.dto.AiAnalysisResponse;
 import com.example.lori.dto.AiChatResponse;
 import com.example.lori.dto.AiExamAnalysisResponse;
+import com.example.lori.dto.AiExerciseResponse;
 import com.example.lori.dto.AiGrammarResponse;
 import com.example.lori.dto.AiVocabularyResponse;
 import com.example.lori.dto.LearningContext;
@@ -191,6 +192,30 @@ class AiServiceClientTest {
         assertThat(sent.get("parts").get(0).get("name").asText()).isEqualTo("Part 5");
         assertThat(sent.get("wrongQuestions").get(0).get("yourAnswer").isNull()).isTrue();
         assertThat(sent.has("resultId")).isFalse();
+    }
+
+    @Test
+    void generateExerciseSendsSignedTopicAndParsesBothExerciseTypes() throws IOException {
+        startServer("/ai/generate-exercise", 200, "{\"type\":\"exercise_set\",\"exercises\":["
+                + "{\"type\":\"multiple_choice\",\"question\":\"She ___ here.\",\"options\":[\"is\",\"are\",\"am\",\"be\"],"
+                + "\"answerIndex\":0,\"explanation\":\"Use is.\"},"
+                + "{\"type\":\"fill_blank\",\"question\":\"They ___ home.\",\"answers\":[\"went\"],\"explanation\":\"Past.\"}]}");
+        AiServiceClient client = new AiServiceClient(baseUrl(), SECRET, OBJECT_MAPPER);
+
+        AiExerciseResponse response = client.generateExercise(new AiServiceClient.ExercisePayload(
+                "grammar", "Present Perfect", "B1", List.of("Old question"), new LearningContext(null, null, null, null)));
+
+        assertThat(response.exercises()).hasSize(2);
+        assertThat(response.exercises().get(0).answerIndex()).isZero();
+        assertThat(response.exercises().get(1).answers()).containsExactly("went");
+        String timestamp = receivedHeaders.get().getFirst(AiServiceSigner.TIMESTAMP_HEADER);
+        String expectedSignature = AiServiceSigner.sign(SECRET, timestamp, "POST", "/ai/generate-exercise", receivedBody.get());
+        assertThat(receivedHeaders.get().getFirst(AiServiceSigner.SIGNATURE_HEADER)).isEqualTo(expectedSignature);
+        JsonNode sent = OBJECT_MAPPER.readTree(receivedBody.get());
+        assertThat(sent.get("category").asText()).isEqualTo("grammar");
+        assertThat(sent.get("topic").asText()).isEqualTo("Present Perfect");
+        assertThat(sent.get("level").asText()).isEqualTo("B1");
+        assertThat(sent.get("avoidQuestions").get(0).asText()).isEqualTo("Old question");
     }
 
     @Test
