@@ -645,3 +645,36 @@ Kết quả chạy ngày 30/10/2026: Đạt (T19, T20, T21, T22, T23 đều đ�
 - Kiểm tra output chỉ về định dạng; chưa kiểm tra đáp án có đúng ngữ pháp / nghĩa hay không (phần kiểm tra output nâng cao là Tuần 15, review nội dung là Tuần 13 – Ngày 7).
 - Mỗi lần gọi là một lần gọi LLM, chưa ghi `ai_feedback_metadata`; số Neurons mỗi lần chưa đo. `recommend` chỉ xét tối đa 3 chủ đề yếu nhất.
 - `summary`, `recommendations` do LLM sinh bằng tiếng Anh đơn giản; Postman chỉ kiểm tra cấu trúc, không kiểm tra nội dung đúng sai.
+
+## 26. Image Learning — nhận diện ảnh (Tuần 14 – Ngày 1-2)
+
+- Endpoint: `POST /api/ai/identify-image` (`AiGatewayController`), yêu cầu đăng nhập và Premium (`@RequirePremium`). Request `multipart/form-data`, trường `image` (JPEG/PNG/WEBP, tối đa 3 MB). Response `200`: `{"type":"image_identification","objects":[{"word":"bus","ipa":"/ˈbʌs/","meaning":"Xe buýt.","confidence":0.8362,"box":{"x":0.0381,"y":0.2141,"width":0.9504,"height":0.506},"example":"...","exampleVi":"..."}]}`. `objects` tối đa 5 vật, mỗi từ một vật (độ tin cậy cao nhất), sắp theo độ tin cậy giảm dần; không nhận ra vật nào thì `objects` rỗng và không gọi LLM. `box` chuẩn hóa 0..1 theo ảnh gốc (đã xoay theo EXIF), `(x, y)` là góc trên-trái. `ipa` là `null` nếu từ điển không có; `example`/`exampleVi` là `null` nếu AI không tạo được.
+- Luồng: JWT → `@RequirePremium` → `AiRateLimiter.checkIdentifyImage` (bucket riêng 20 request/phút/user) → `AiServiceClient.identifyImage` gửi **byte ảnh thô** (`Content-Type: application/octet-stream`, ký HMAC trên đúng các byte đó, mục 17) → AI Service `POST /ai/identify-image` → YOLOv8n (ONNX) → tra `dictionary.db` → Cloudflare Workers AI viết câu ví dụ. Backend không gửi `userId` và không gửi Learning Context (`AiContextPolicy`: `IDENTIFY_IMAGE` không nhận phần nào).
+- YOLO chạy **trong AI Service trên Vercel** bằng `onnxruntime` (CPU), file `ai-service/data/yolov8n.onnx` (xuất từ `yolov8n.pt`, 640×640, không train lại). Thư viện mới trong `ai-service/requirements.txt`: `onnxruntime`, `numpy`, `pillow` (chốt phương án nơi chạy YOLO mà `ai-service/BENCHMARK.md` mục 11 để ngỏ). File model làm repo tăng thêm khoảng 12,8 MB. Ngưỡng tin cậy 0,25 và NMS 0,7 (mặc định của `ultralytics predict`). Mã: `providers/yolo_detector.py`, `orchestrator/image_workflow.py`, `routers/image.py`, `config/image_vocabulary.py`.
+- Xuất lại model (PowerShell, thư mục gốc repo): `docker run --rm -v "${PWD}\ai-service\data:/out" -w /tmp python:3.12-slim sh -c "apt-get update -qq && apt-get install -y -qq --no-install-recommends libgl1 libglib2.0-0 && pip install -q torch torchvision --index-url https://download.pytorch.org/whl/cpu && pip install -q ultralytics==8.4.194 onnx==1.23.2 && yolo export model=yolov8n.pt format=onnx imgsz=640 simplify=False && cp yolov8n.onnx /out/"`.
+- Nghĩa tiếng Việt: lấy từ `dictionary.db`, trừ các từ có trong `OBJECT_MEANINGS` (28 từ có nghĩa đầu tiên trong từ điển không phải nghĩa đồ vật, hoặc không có trong từ điển). `hair drier` (cách viết của COCO) được đổi thành `hair dryer`. Test `test_every_yolo_class_has_a_meaning...` kiểm tra cả 80 nhãn đều có nghĩa.
+- Giới hạn kích thước: Backend `spring.servlet.multipart.max-file-size=3MB` (Vercel nhận tối đa 4,5 MB mỗi request, mục 17); ảnh lớn hơn nhận `413`. AI Service kiểm tra lại: ≤ 3 MB, ≤ 40 triệu pixel, đúng JPEG/PNG/WEBP; ảnh không đọc được → `400` → Backend trả `400 Invalid input`.
+- Mã lỗi: `400` (thiếu `image`, file rỗng, không phải ảnh), `401`, `403 PREMIUM_REQUIRED` (user Free), `413` (ảnh > 3 MB), `415` (không phải `multipart/form-data`), `429` (quá 20 request/phút/user), `503 AI service unavailable` (AI Service lỗi, quá 30 giây, thiếu secret). LLM lỗi **không** làm lỗi request: vẫn `200`, `example`/`exampleVi` là `null`.
+- Không thêm biến môi trường hay migration so với mục 17. Chạy test (PowerShell, thư mục gốc repo): AI Service như mục 22; Backend `docker run --rm -v "${PWD}\backend:/app" -v lori-m2:/root/.m2 -w /app maven:3.9-eclipse-temurin-17 mvn -B test '-Dtest=AiImageServiceTest,GlobalExceptionHandlerTest,AiRateLimiterTest,AiServiceClientTest'`.
+
+### Kiểm thử trên Render (Postman, request tạm T24 không lưu vào collection)
+
+| # | Kịch bản | Request | Kết quả kỳ vọng |
+|---|---|---|---|
+| 1 | User Free gửi ảnh | T24 với `bus.jpg` | `403 PREMIUM_REQUIRED` |
+| 2 | Premium gửi `bus.jpg` | T24 sau T4 | `200`, `person` và `bus`, có `ipa`, `meaning`, `box` |
+| 3 | File không phải ảnh | T24 với `fake.jpg` | `400 Invalid input` |
+| 4 | Thiếu trường `image` | T24, key đổi thành `other` | `400` |
+| 5 | Ảnh 3,5 MB | T24 với `big.jpg` | `413` |
+| 6 | Không có JWT | T24, `No Auth` | `401` |
+
+Kết quả chạy ngày 01/11/2026: Đạt (6/6).
+
+### Giới hạn đã biết (không sửa)
+
+- Mỗi từ chỉ có một khung (vật tin cậy cao nhất); ảnh có nhiều vật cùng loại (ví dụ 3 cái ghế) chỉ vẽ được một khung. Tối đa 5 từ mỗi ảnh.
+- YOLOv8n chỉ nhận ra 80 lớp COCO (người, xe, đồ gia dụng, đồ ăn…); vật ngoài danh sách không được nhận ra. Ngưỡng 0,25 là mặc định của Ultralytics, chưa chỉnh theo dữ liệu thật (đo 10+ ảnh ở Ngày 7).
+- IPA lấy nguyên từ `dictionary.db` nên một số từ có phiên âm không đúng dạng IPA (ví dụ `cat` → `kăt`) hoặc `null` (ví dụ `cell phone`).
+- Câu ví dụ và bản dịch do LLM sinh, chưa kiểm tra đúng/sai; mỗi ảnh tốn một lượt gọi Cloudflare (số Neurons chưa đo). LLM lỗi hoặc hết hạn mức 10.000 Neurons/ngày thì ảnh vẫn được nhận diện nhưng không có câu ví dụ.
+- Mọi endpoint của AI Service giờ nạp thêm `onnxruntime`, `numpy`, `pillow` khi khởi động (khoảng 0,3 giây ở máy dev), và lần nhận diện đầu tiên sau khi hàm Vercel khởi động còn phải nạp model (khoảng 1 giây ở máy dev). Chưa đo trên Vercel, kể cả số CPU-giờ hoạt động mỗi ảnh so với hạn mức 4 CPU-giờ/tháng của Hobby.
+- Chưa có chỗ lưu "Từ vựng của tôi" (Android, Ngày 3-4).
