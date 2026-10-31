@@ -8,6 +8,7 @@ import com.example.lori.dto.AiExamAnalysisRequest;
 import com.example.lori.dto.AiExamAnalysisResponse;
 import com.example.lori.dto.AiExerciseResponse;
 import com.example.lori.dto.AiGenerateExerciseRequest;
+import com.example.lori.dto.AiImageResponse;
 import com.example.lori.dto.AiQuizAnalysisRequest;
 import com.example.lori.dto.AiQuizAnalysisResponse;
 import com.example.lori.dto.AiRecommendResponse;
@@ -15,15 +16,19 @@ import com.example.lori.security.RequirePremium;
 import com.example.lori.service.AiExamAnalysisService;
 import com.example.lori.service.AiExerciseService;
 import com.example.lori.service.AiGatewayService;
+import com.example.lori.service.AiImageService;
 import com.example.lori.service.AiQuizAnalysisService;
 import com.example.lori.service.AiRecommendService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -42,6 +47,7 @@ public class AiGatewayController {
     private final AiExamAnalysisService aiExamAnalysisService;
     private final AiExerciseService aiExerciseService;
     private final AiRecommendService aiRecommendService;
+    private final AiImageService aiImageService;
 
     @PostMapping("/chat")
     public AiChatResponse chat(@AuthenticationPrincipal UUID userId, @Valid @RequestBody AiChatRequest request) {
@@ -75,5 +81,11 @@ public class AiGatewayController {
     @PostMapping("/recommend")
     public AiRecommendResponse recommend(@AuthenticationPrincipal UUID userId) {
         return aiRecommendService.recommend(userId);
+    }
+
+    @PostMapping(value = "/identify-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public AiImageResponse identifyImage(
+            @AuthenticationPrincipal UUID userId, @RequestParam("image") MultipartFile image) {
+        return aiImageService.identify(userId, image);
     }
 }

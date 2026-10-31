@@ -5,6 +5,7 @@ import com.example.lori.dto.AiChatResponse;
 import com.example.lori.dto.AiExamAnalysisResponse;
 import com.example.lori.dto.AiExerciseResponse;
 import com.example.lori.dto.AiGrammarResponse;
+import com.example.lori.dto.AiImageResponse;
 import com.example.lori.dto.AiVocabularyResponse;
 import com.example.lori.dto.LearningContext;
 import com.example.lori.dto.LearningContext.WeakItem;
@@ -238,6 +239,36 @@ class AiServiceClientTest {
         assertThat(sent.get("weakTopics").get(0).get("topicName").asText()).isEqualTo("Present Perfect");
         assertThat(sent.get("weakTopics").get(0).get("accuracyPercent").asInt()).isEqualTo(30);
         assertThat(sent.get("lessons").get("11").asText()).isEqualTo("Present Perfect");
+    }
+
+    @Test
+    void identifyImageSendsTheRawBytesSignedAndParsesObjects() throws IOException {
+        startServer("/ai/identify-image", 200, "{\"type\":\"image_identification\",\"objects\":[{\"word\":\"cat\","
+                + "\"ipa\":\"/kaet/\",\"meaning\":\"Con meo.\",\"confidence\":0.95,"
+                + "\"box\":{\"x\":0.1,\"y\":0.2,\"width\":0.3,\"height\":0.4},"
+                + "\"example\":\"The cat sleeps.\",\"exampleVi\":\"Con meo ngu.\"}]}");
+        AiServiceClient client = new AiServiceClient(baseUrl(), SECRET, OBJECT_MAPPER);
+        byte[] image = {(byte) 0xFF, (byte) 0xD8, 1, 2, 3};
+
+        AiImageResponse response = client.identifyImage(image);
+
+        assertThat(response).isEqualTo(new AiImageResponse("image_identification", List.of(
+                new AiImageResponse.ImageObject("cat", "/kaet/", "Con meo.", 0.95,
+                        new AiImageResponse.Box(0.1, 0.2, 0.3, 0.4), "The cat sleeps.", "Con meo ngu."))));
+        assertThat(receivedBody.get()).isEqualTo(image);
+        assertThat(receivedHeaders.get().getFirst("Content-Type")).isEqualTo("application/octet-stream");
+        String timestamp = receivedHeaders.get().getFirst(AiServiceSigner.TIMESTAMP_HEADER);
+        String expectedSignature = AiServiceSigner.sign(SECRET, timestamp, "POST", "/ai/identify-image", image);
+        assertThat(receivedHeaders.get().getFirst(AiServiceSigner.SIGNATURE_HEADER)).isEqualTo(expectedSignature);
+    }
+
+    @Test
+    void identifyImageFailsWith400WhenAiServiceCannotReadTheImage() throws IOException {
+        startServer("/ai/identify-image", 400, "{\"detail\":\"Invalid input\"}");
+        AiServiceClient client = new AiServiceClient(baseUrl(), SECRET, OBJECT_MAPPER);
+
+        assertThatThrownBy(() -> client.identifyImage(new byte[]{1})).isInstanceOfSatisfying(ApiException.class,
+                e -> assertThat(e.getStatusCode().value()).isEqualTo(400));
     }
 
     @Test

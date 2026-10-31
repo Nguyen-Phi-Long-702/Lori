@@ -112,4 +112,20 @@ class AiRateLimiterTest {
         assertThatThrownBy(() -> limiter.checkRecommend(userId)).isInstanceOfSatisfying(ApiException.class,
                 e -> assertThat(e.getStatusCode().value()).isEqualTo(429));
     }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void identifyImageHasItsOwnBucketPerUser() {
+        UUID userId = UUID.randomUUID();
+        BucketProxy bucket = mock(BucketProxy.class);
+        when(bucket.tryConsume(1)).thenReturn(true, false);
+        ProxyManager<String> proxyManager = mock(ProxyManager.class);
+        when(proxyManager.getProxy(eq("ai_rate_limit:identify-image:" + userId), any(Supplier.class))).thenReturn(bucket);
+        AiRateLimiter limiter = new AiRateLimiter(proxyManager);
+
+        limiter.checkIdentifyImage(userId);
+
+        assertThatThrownBy(() -> limiter.checkIdentifyImage(userId)).isInstanceOfSatisfying(ApiException.class,
+                e -> assertThat(e.getStatusCode().value()).isEqualTo(429));
+    }
 }

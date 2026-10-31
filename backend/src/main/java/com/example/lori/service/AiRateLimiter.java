@@ -13,7 +13,8 @@ import java.util.UUID;
 /**
 * Rate limit rieng cho tac vu AI, theo tung user (khac RateLimitFilter gioi han theo IP):
 * chat, phan tich cau (analyze-text), phan tich quiz (analyze-quiz), phan tich bai thi (analyze-exam),
-* sinh bai tap (generate-exercise) va de xuat on tap (recommend), moi loai toi da 20 request/phut.
+* sinh bai tap (generate-exercise), de xuat on tap (recommend) va nhan dien anh (identify-image),
+* moi loai toi da 20 request/phut.
 * Dung chung ProxyManager (Upstash) voi RateLimitFilter.
 */
 @Component
@@ -26,6 +27,7 @@ public class AiRateLimiter {
     private static final String ANALYZE_EXAM_KEY_PREFIX = "ai_rate_limit:analyze-exam:";
     private static final String GENERATE_EXERCISE_KEY_PREFIX = "ai_rate_limit:generate-exercise:";
     private static final String RECOMMEND_KEY_PREFIX = "ai_rate_limit:recommend:";
+    private static final String IDENTIFY_IMAGE_KEY_PREFIX = "ai_rate_limit:identify-image:";
 
     private final ProxyManager<String> proxyManager;
     private final BucketConfiguration configuration = BucketConfiguration.builder()
@@ -65,6 +67,11 @@ public class AiRateLimiter {
     /** Tru 1 luot de xuat on tap (recommend) cua user; het luot thi nem 429. */
     public void checkRecommend(UUID userId) {
         consume(RECOMMEND_KEY_PREFIX + userId);
+    }
+
+    /** Tru 1 luot nhan dien anh (identify-image) cua user; het luot thi nem 429. */
+    public void checkIdentifyImage(UUID userId) {
+        consume(IDENTIFY_IMAGE_KEY_PREFIX + userId);
     }
 
     private void consume(String key) {

@@ -5,6 +5,7 @@ import com.example.lori.dto.AiChatResponse;
 import com.example.lori.dto.AiExamAnalysisResponse;
 import com.example.lori.dto.AiExerciseResponse;
 import com.example.lori.dto.AiGrammarResponse;
+import com.example.lori.dto.AiImageResponse;
 import com.example.lori.dto.AiVocabularyResponse;
 import com.example.lori.dto.LearningContext;
 import com.example.lori.dto.LearningTopicResponse;
@@ -31,7 +32,7 @@ import java.util.Map;
 /**
  * Goi AI Service (FastAPI) kem chu ky Server-to-Server, khong dung JWT cua user
  * Chua cau hinh secret hoac AI Service loi/khong toi duoc -> 503; Backend van khoi dong binh thuong.
- * Rieng AI Service tra 400 (cau hoi/cau/tu can phan tich khong hop le sau khi lam sach) -> 400.
+ * Rieng AI Service tra 400 (cau hoi/cau/tu/anh can phan tich khong hop le) -> 400.
  */
 @Slf4j
 @Service
@@ -45,6 +46,7 @@ public class AiServiceClient {
     private static final String ANALYZE_EXAM_PATH = "/ai/analyze-exam";
     private static final String GENERATE_EXERCISE_PATH = "/ai/generate-exercise";
     private static final String RECOMMEND_PATH = "/ai/recommend";
+    private static final String IDENTIFY_IMAGE_PATH = "/ai/identify-image";
     private static final int MIN_SECRET_LENGTH = 32;
 
     private final RestClient restClient;
@@ -98,7 +100,16 @@ public class AiServiceClient {
         return post(RECOMMEND_PATH, toJson(payload), AiAnalysisResponse.class);
     }
 
+    /** Gui nguyen byte anh (khong phai JSON); chu ky HMAC ky tren dung cac byte nay. */
+    public AiImageResponse identifyImage(byte[] image) {
+        return post(IDENTIFY_IMAGE_PATH, MediaType.APPLICATION_OCTET_STREAM, image, AiImageResponse.class);
+    }
+
     private <T> T post(String path, byte[] body, Class<T> responseType) {
+        return post(path, MediaType.APPLICATION_JSON, body, responseType);
+    }
+
+    private <T> T post(String path, MediaType contentType, byte[] body, Class<T> responseType) {
         if (sharedSecret.length() < MIN_SECRET_LENGTH) {
             log.error("AI_SERVICE_SHARED_SECRET chua duoc cau hinh hoac ngan hon {} ky tu", MIN_SECRET_LENGTH);
             throw unavailable();
@@ -111,7 +122,7 @@ public class AiServiceClient {
         try {
             T response = restClient.post()
                     .uri(path)
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(contentType)
                     .header(AiServiceSigner.TIMESTAMP_HEADER, timestamp)
                     .header(AiServiceSigner.SIGNATURE_HEADER, signature)
                     .body(body)
