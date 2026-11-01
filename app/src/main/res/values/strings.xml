@@ -491,4 +491,24 @@
     <string name="image_error_prepare">Không mở được ảnh này. Hãy thử ảnh khác</string>
     <string name="image_error_invalid">Ảnh không hợp lệ. Hãy thử ảnh khác</string>
     <string name="image_confidence_format">%1$d%%</string>
+    <string name="nav_label_image_learning">Nhận diện ảnh</string>
+    <string name="image_feature_name">Nhận diện ảnh AI</string>
+    <string name="image_capture_hint">Đưa vật cần học vào khung hình rồi bấm chụp, hoặc chọn ảnh có sẵn</string>
+    <string name="image_camera_permission_needed">Cần quyền camera để chụp ảnh. Bạn vẫn có thể chọn ảnh từ thư viện</string>
+    <string name="image_camera_unavailable">Không dùng được camera. Hãy chọn ảnh từ thư viện</string>
+    <string name="image_error_capture">Không chụp được ảnh. Vui lòng thử lại</string>
+    <string name="image_error_gallery_unavailable">Máy không có ứng dụng chọn ảnh</string>
+    <string name="image_gallery_button">Thư viện</string>
+    <string name="cd_image_capture">Chụp ảnh</string>
+    <string name="image_loading">AI đang nhận diện vật thể… Việc này có thể mất vài chục giây</string>
+    <string name="cd_image_result">Ảnh kèm khung nhận diện vật thể</string>
+    <string name="image_result_title_format">%1$d VẬT THỂ NHẬN DIỆN ĐƯỢC</string>
+    <string name="image_result_empty">Không nhận ra vật nào trong ảnh. Hãy chụp gần hơn hoặc thử ảnh khác (AI nhận ra khoảng 80 loại vật thể phổ biến)</string>
+    <string name="image_example_title_format">Ví dụ câu do AI tạo cho \"%1$s\"</string>
+    <string name="image_example_text_format">\"%1$s\"</string>
+    <string name="image_save_all_format">Lưu cả %1$d từ vào Từ vựng của tôi</string>
+    <string name="image_save_done">Đã lưu</string>
+    <string name="image_saved_format">Đã lưu %1$d từ mới vào Từ vựng của tôi</string>
+    <string name="image_saved_already">Các từ này đã có trong Từ vựng của tôi</string>
+    <string name="image_retake_button">Chụp ảnh mới</string>
 </resources>

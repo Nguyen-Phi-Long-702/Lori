@@ -288,6 +288,13 @@
             app:exitAnim="@anim/nav_fade_out"
             app:popEnterAnim="@anim/nav_fade_in"
             app:popExitAnim="@anim/nav_fade_out" />
+        <action
+            android:id="@+id/action_aiTutorHomeFragment_to_imageLearningFragment"
+            app:destination="@id/imageLearningFragment"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
 
     <fragment
@@ -389,4 +396,9 @@
             android:name="topicName"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/imageLearningFragment"
+        android:name="com.example.lori.view.ImageLearningFragment"
+        android:label="@string/nav_label_image_learning"
+        tools:layout="@layout/fragment_image_learning" />
 </navigation>
