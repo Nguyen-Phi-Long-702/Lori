@@ -11,7 +11,12 @@ import com.example.lori.data.remote.dto.AiGrammarResponse;
 import com.example.lori.data.remote.dto.AiQuizAnalysisRequest;
 import com.example.lori.data.remote.dto.AiQuizAnalysisResponse;
 import com.example.lori.data.remote.dto.AiRecommendResponse;
+import com.example.lori.data.remote.dto.AiImageResponse;
 
+import okhttp3.MultipartBody;
+
+import retrofit2.http.Multipart;
+import retrofit2.http.Part;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
@@ -38,4 +43,9 @@ public interface AiApi {
     //Không có body: Backend lấy điểm yếu theo user đang đăng nhập
     @POST("api/ai/recommend")
     Call<AiRecommendResponse> recommend();
+
+    //Gửi ảnh JPEG (trường "image", tối đa 3 MB) để nhận diện vật thể
+    @Multipart
+    @POST("api/ai/identify-image")
+    Call<AiImageResponse> identifyImage(@Part MultipartBody.Part image);
 }

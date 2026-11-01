@@ -16,6 +16,11 @@ import com.example.lori.data.remote.dto.AiGrammarResponse;
 import com.example.lori.data.remote.dto.AiQuizAnalysisRequest;
 import com.example.lori.data.remote.dto.AiQuizAnalysisResponse;
 import com.example.lori.data.remote.dto.AiRecommendResponse;
+import com.example.lori.data.remote.dto.AiImageResponse;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 //Gọi AI Tutor qua Backend (Premium). User Free nhận HTTP_ERROR 403 với ApiResult.isPremiumRequired() = true
 public class AiRepository extends BaseRepository {
@@ -57,5 +62,11 @@ public class AiRepository extends BaseRepository {
     //Nhận xét và đề xuất ôn tập theo các chủ đề yếu nhất (POST /api/ai/recommend)
     public LiveData<ApiResult<AiRecommendResponse>> recommend() {
         return execute(aiApi.recommend());
+    }
+
+    //Nhận diện vật thể trong ảnh (POST /api/ai/identify-image). jpeg là byte ảnh JPEG đã thu nhỏ (ImagePreparer)
+    public LiveData<ApiResult<AiImageResponse>> identifyImage(byte[] jpeg) {
+        RequestBody body = RequestBody.create(jpeg, MediaType.parse("image/jpeg"));
+        return execute(aiApi.identifyImage(MultipartBody.Part.createFormData("image", "image.jpg", body)));
     }
 }
