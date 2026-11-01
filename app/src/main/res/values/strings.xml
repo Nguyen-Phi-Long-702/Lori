@@ -486,4 +486,8 @@
     <string name="learning_insight_no_weaknesses">Chưa phát hiện điểm yếu nào. Cứ tiếp tục phát huy nhé!</string>
     <string name="learning_insight_accuracy_format">%1$d%%</string>
     <string name="learning_insight_review_button">Ôn theo điểm yếu ngay →</string>
+
+    <!-- Màn Nhận diện ảnh (Tuần 14 Ngày 3-4) -->
+    <string name="image_error_prepare">Không mở được ảnh này. Hãy thử ảnh khác</string>
+    <string name="image_error_invalid">Ảnh không hợp lệ. Hãy thử ảnh khác</string>
 </resources>
