@@ -8,7 +8,10 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.room.migration.Migration;
 
+import com.example.lori.data.local.dao.MyWordDao;
+import com.example.lori.data.local.entity.MyWord;
 import com.example.lori.data.local.dao.ChatMessageDao;
 import com.example.lori.data.local.dao.DictionaryDao;
 import com.example.lori.data.local.dao.GrammarDao;
@@ -37,9 +40,9 @@ import com.example.lori.data.local.entity.WordRelation;
                 Topic.class, TopicWord.class,
                 GrammarLesson.class, GrammarExample.class,
                 VocabQuiz.class, GrammarQuiz.class,
-                UserProgressLocal.class, ChatMessage.class
+                UserProgressLocal.class, ChatMessage.class, MyWord.class
         },
-        version = 1,
+        version = 2,
         exportSchema = false
 )
 @TypeConverters({Converters.class})
@@ -52,6 +55,23 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract QuizDao quizDao();
     public abstract ProgressDao progressDao();
     public abstract ChatMessageDao chatMessageDao();
+    public abstract MyWordDao myWordDao();
+
+    //Version 1 → 2: thêm bảng my_words. Câu lệnh phải khớp đúng những gì Room mong đợi từ MyWord (tên cột, kiểu, NOT NULL, chỉ mục duy nhất)
+    private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS `my_words` ("
+                    + "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                    + "`word` TEXT NOT NULL, "
+                    + "`ipa` TEXT, "
+                    + "`meaning` TEXT NOT NULL, "
+                    + "`example` TEXT, "
+                    + "`example_vi` TEXT, "
+                    + "`saved_at` INTEGER NOT NULL)");
+            db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_my_words_word` ON `my_words` (`word`)");
+        }
+    };
 
     //Singleton instance để toàn bộ ứng dụng sử dụng chung một db
     private static volatile AppDatabase INSTANCE;
@@ -67,6 +87,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             )
                             //Khởi tạo db từ file có sẵn trong assets
                             .createFromAsset("databases/dictionary.db")
+                            .addMigrations(MIGRATION_1_2)
                             .addCallback(new Callback() {
                                 @Override
                                 public void onOpen(@NonNull SupportSQLiteDatabase db) {
