@@ -677,4 +677,18 @@ Kết quả chạy ngày 01/11/2026: Đạt (6/6).
 - IPA lấy nguyên từ `dictionary.db` nên một số từ có phiên âm không đúng dạng IPA (ví dụ `cat` → `kăt`) hoặc `null` (ví dụ `cell phone`).
 - Câu ví dụ và bản dịch do LLM sinh, chưa kiểm tra đúng/sai; mỗi ảnh tốn một lượt gọi Cloudflare (số Neurons chưa đo). LLM lỗi hoặc hết hạn mức 10.000 Neurons/ngày thì ảnh vẫn được nhận diện nhưng không có câu ví dụ.
 - Mọi endpoint của AI Service giờ nạp thêm `onnxruntime`, `numpy`, `pillow` khi khởi động (khoảng 0,3 giây ở máy dev), và lần nhận diện đầu tiên sau khi hàm Vercel khởi động còn phải nạp model (khoảng 1 giây ở máy dev). Chưa đo trên Vercel, kể cả số CPU-giờ hoạt động mỗi ảnh so với hạn mức 4 CPU-giờ/tháng của Hobby.
-- Chưa có chỗ lưu "Từ vựng của tôi" (Android, Ngày 3-4).
+
+### Android (Tuần 14 – Ngày 3-4)
+
+- Màn `ImageLearningFragment` (mở từ thẻ "Nhận diện ảnh" ở AI Tutor Home): chụp bằng CameraX hoặc chọn từ thư viện (Photo Picker) → `POST /api/ai/identify-image` → ảnh kèm khung (`DetectionImageView`), danh sách từ (từ, IPA, nghĩa, độ tin cậy, nút phát âm TTS), câu ví dụ của từ đang chọn, nút "Lưu cả N từ vào Từ vựng của tôi". Premium hết hạn giữa chừng nhận `403 PREMIUM_REQUIRED` → `PremiumPromptDialog`.
+- Ảnh gửi đi: `ImagePreparer` thu nhỏ cạnh dài ≤ 1280 px, xoay thẳng theo EXIF (Glide), nén JPEG chất lượng 85; ảnh hiển thị chính là ảnh đã gửi nên `box` khớp ảnh.
+- "Từ vựng của tôi": bảng Room `my_words` (`word` duy nhất, `ipa`, `meaning`, `example`, `example_vi`, `saved_at`); `AppDatabase` lên version 2 với `MIGRATION_1_2`. Lưu từ đã có thì bị bỏ qua.
+- Quyền mới: `CAMERA` (khai báo `uses-feature camera.any` với `required=false`).
+
+### Giới hạn đã biết — Android Image Learning (không sửa)
+
+- "Từ vựng của tôi" chỉ lưu trên máy, không đồng bộ lên server (gỡ cài đặt app là mất) và **chưa có màn xem danh sách**; dữ liệu chỉ xem được bằng Database Inspector. Đăng xuất **không** xóa `my_words`, nên tài khoản đăng nhập sau trên cùng máy cùng dùng chung bảng này.
+- Chưa có Mini Quiz sau khi lưu từ (UI mẫu v7 có nút "làm Mini Quiz"; kế hoạch không có ngày nào làm).
+- Ảnh PNG có nền trong suốt sẽ có nền đen khi nén JPEG.
+- Chụp bằng CameraX chưa được thử trên điện thoại thật (chỉ LDPlayer 9); đường chọn ảnh từ thư viện là đường đã thử.
+- Hỏi quyền camera một lần mỗi lần mở màn; nếu user từ chối vĩnh viễn thì chỉ còn nút Thư viện (không có nút mở Cài đặt).
