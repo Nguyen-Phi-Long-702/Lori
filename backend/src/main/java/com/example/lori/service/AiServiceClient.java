@@ -2,6 +2,8 @@ package com.example.lori.service;
 
 import com.example.lori.dto.AiAnalysisResponse;
 import com.example.lori.dto.AiChatResponse;
+import com.example.lori.dto.AiConversationRequest;
+import com.example.lori.dto.AiConversationResponse;
 import com.example.lori.dto.AiExamAnalysisResponse;
 import com.example.lori.dto.AiExerciseResponse;
 import com.example.lori.dto.AiGrammarResponse;
@@ -47,6 +49,7 @@ public class AiServiceClient {
     private static final String GENERATE_EXERCISE_PATH = "/ai/generate-exercise";
     private static final String RECOMMEND_PATH = "/ai/recommend";
     private static final String IDENTIFY_IMAGE_PATH = "/ai/identify-image";
+    private static final String CONVERSATION_PATH = "/ai/conversation";
     private static final int MIN_SECRET_LENGTH = 32;
 
     private final RestClient restClient;
@@ -98,6 +101,10 @@ public class AiServiceClient {
 
     public AiAnalysisResponse recommend(RecommendPayload payload) {
         return post(RECOMMEND_PATH, toJson(payload), AiAnalysisResponse.class);
+    }
+
+    public AiConversationResponse conversation(ConversationPayload payload) {
+        return post(CONVERSATION_PATH, toJson(payload), AiConversationResponse.class);
     }
 
     /** Gui nguyen byte anh (khong phai JSON); chu ky HMAC ky tren dung cac byte nay. */
@@ -211,6 +218,14 @@ public class AiServiceClient {
     */
     public record RecommendPayload(
         List<LearningTopicResponse> weakTopics, Map<Integer, String> lessons, LearningContext learningContext) {
+    }
+
+    /**
+    * Body gui /ai/conversation, ten truong khop ConversationRequest ben AI Service. learningContext chi co
+    * khi finish = true, cac luot tro chuyen gui null.
+    */
+    public record ConversationPayload(
+        String mode, List<AiConversationRequest.Turn> messages, boolean finish, LearningContext learningContext) {
     }
 
     /** Phan hoi cua AI Service: {"status": "ok"}. */

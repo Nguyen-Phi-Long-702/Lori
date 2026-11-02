@@ -2,6 +2,8 @@ package com.example.lori.service;
 
 import com.example.lori.dto.AiAnalysisResponse;
 import com.example.lori.dto.AiChatResponse;
+import com.example.lori.dto.AiConversationRequest;
+import com.example.lori.dto.AiConversationResponse;
 import com.example.lori.dto.AiExamAnalysisResponse;
 import com.example.lori.dto.AiExerciseResponse;
 import com.example.lori.dto.AiGrammarResponse;
@@ -287,6 +289,47 @@ class AiServiceClientTest {
 
         assertThatThrownBy(() -> client.chat("Hello", null)).isInstanceOfSatisfying(ApiException.class,
                 e -> assertThat(e.getStatusCode().value()).isEqualTo(503));
+    }
+
+    @Test
+    void conversationSendsSignedHistoryAndParsesFeedback() throws IOException {
+        startServer("/ai/conversation", 200, "{\"type\":\"conversation_feedback\",\"summary\":\"Tot.\","
+                + "\"grammar\":[{\"original\":\"I am agree\",\"better\":\"I agree\",\"explanation\":\"Khong dung am.\"}],"
+                + "\"vocabulary\":[],\"naturalness\":[],"
+                + "\"usefulPhrases\":[{\"original\":null,\"better\":\"Could I get a table?\",\"explanation\":\"Lich su.\"}]}");
+        AiServiceClient client = new AiServiceClient(baseUrl(), SECRET, OBJECT_MAPPER);
+        List<AiConversationRequest.Turn> turns = List.of(new AiConversationRequest.Turn("user", "I am agree."));
+
+        AiConversationResponse response = client.conversation(new AiServiceClient.ConversationPayload(
+                "restaurant", turns, true, new LearningContext(null, List.of(), null, null)));
+
+        assertThat(response.summary()).isEqualTo("Tot.");
+        assertThat(response.grammar())
+                .containsExactly(new AiConversationResponse.FeedbackItem("I am agree", "I agree", "Khong dung am."));
+        assertThat(response.usefulPhrases().get(0).original()).isNull();
+        String timestamp = receivedHeaders.get().getFirst(AiServiceSigner.TIMESTAMP_HEADER);
+        String expectedSignature =
+                AiServiceSigner.sign(SECRET, timestamp, "POST", "/ai/conversation", receivedBody.get());
+        assertThat(receivedHeaders.get().getFirst(AiServiceSigner.SIGNATURE_HEADER)).isEqualTo(expectedSignature);
+        JsonNode sent = OBJECT_MAPPER.readTree(receivedBody.get());
+        assertThat(sent.get("mode").asText()).isEqualTo("restaurant");
+        assertThat(sent.get("finish").asBoolean()).isTrue();
+        assertThat(sent.get("messages").get(0).get("role").asText()).isEqualTo("user");
+        assertThat(sent.get("learningContext").has("weakVocabulary")).isTrue();
+    }
+
+    @Test
+    void conversationTurnSendsNullLearningContext() throws IOException {
+        startServer("/ai/conversation", 200, "{\"type\":\"conversation_reply\",\"reply\":\"Good evening!\"}");
+        AiServiceClient client = new AiServiceClient(baseUrl(), SECRET, OBJECT_MAPPER);
+
+        AiConversationResponse response = client.conversation(
+                new AiServiceClient.ConversationPayload("restaurant", List.of(), false, null));
+
+        assertThat(response.reply()).isEqualTo("Good evening!");
+        JsonNode sent = OBJECT_MAPPER.readTree(receivedBody.get());
+        assertThat(sent.get("messages").isEmpty()).isTrue();
+        assertThat(sent.get("learningContext").isNull()).isTrue();
     }
 
     private void startServer(String path, int status, String responseBody) throws IOException {

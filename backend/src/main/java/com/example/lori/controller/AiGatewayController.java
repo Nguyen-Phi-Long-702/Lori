@@ -4,6 +4,8 @@ import com.example.lori.dto.AiAnalyzeTextRequest;
 import com.example.lori.dto.AiAnalyzeTextResponse;
 import com.example.lori.dto.AiChatRequest;
 import com.example.lori.dto.AiChatResponse;
+import com.example.lori.dto.AiConversationRequest;
+import com.example.lori.dto.AiConversationResponse;
 import com.example.lori.dto.AiExamAnalysisRequest;
 import com.example.lori.dto.AiExamAnalysisResponse;
 import com.example.lori.dto.AiExerciseResponse;
@@ -52,6 +54,12 @@ public class AiGatewayController {
     @PostMapping("/chat")
     public AiChatResponse chat(@AuthenticationPrincipal UUID userId, @Valid @RequestBody AiChatRequest request) {
         return aiGatewayService.chat(userId, request);
+    }
+
+    @PostMapping("/conversation")
+    public AiConversationResponse conversation(
+            @AuthenticationPrincipal UUID userId, @Valid @RequestBody AiConversationRequest request) {
+        return aiGatewayService.conversation(userId, request);
     }
 
     @PostMapping("/analyze-text")

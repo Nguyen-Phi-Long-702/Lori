@@ -4,6 +4,8 @@ import com.example.lori.dto.AiAnalyzeTextRequest;
 import com.example.lori.dto.AiGrammarResponse;
 import com.example.lori.dto.AiChatRequest;
 import com.example.lori.dto.AiChatResponse;
+import com.example.lori.dto.AiConversationRequest;
+import com.example.lori.dto.AiConversationResponse;
 import com.example.lori.dto.AiVocabularyResponse;
 import com.example.lori.dto.LearningContext;
 import com.example.lori.exception.ApiException;
@@ -100,6 +102,43 @@ class AiGatewayServiceTest {
         assertThatThrownBy(() -> service.analyzeGrammar(userId, new AiAnalyzeTextRequest("grammar", "I like tea.")))
                 .isInstanceOf(ApiException.class);
         assertThatThrownBy(() -> service.analyzeVocabulary(userId, new AiAnalyzeTextRequest("vocabulary", "affect")))
+                .isInstanceOf(ApiException.class);
+        verifyNoInteractions(learningContextService, aiServiceClient);
+    }
+
+    @Test
+    void conversationTurnSendsHistoryWithoutLearningContext() {
+        List<AiConversationRequest.Turn> turns = List.of(new AiConversationRequest.Turn("user", "A table for two."));
+        AiConversationResponse reply =
+                new AiConversationResponse("conversation_reply", "Of course!", null, null, null, null, null);
+        when(aiServiceClient.conversation(new AiServiceClient.ConversationPayload("restaurant", turns, false, null)))
+                .thenReturn(reply);
+
+        assertThat(service.conversation(userId, new AiConversationRequest("restaurant", turns, false))).isEqualTo(reply);
+        verify(rateLimiter).checkConversation(userId);
+        verifyNoInteractions(learningContextService);
+    }
+
+    @Test
+    void conversationFinishSendsConversationContext() {
+        LearningContext context = new LearningContext(List.of(), List.of(), null, null);
+        List<AiConversationRequest.Turn> turns = List.of(new AiConversationRequest.Turn("user", "I am agree."));
+        AiConversationResponse feedback = new AiConversationResponse(
+                "conversation_feedback", null, "Tot.", List.of(), List.of(), List.of(), List.of());
+        when(learningContextService.build(userId, AiTaskType.CONVERSATION)).thenReturn(context);
+        when(aiServiceClient.conversation(new AiServiceClient.ConversationPayload("restaurant", turns, true, context)))
+                .thenReturn(feedback);
+
+        assertThat(service.conversation(userId, new AiConversationRequest("restaurant", turns, true))).isEqualTo(feedback);
+        verify(rateLimiter).checkConversation(userId);
+    }
+
+    @Test
+    void rateLimitedConversationNeverReachesContextOrAiService() {
+        doThrow(new ApiException(HttpStatus.TOO_MANY_REQUESTS, "Too many requests"))
+                .when(rateLimiter).checkConversation(userId);
+
+        assertThatThrownBy(() -> service.conversation(userId, new AiConversationRequest("restaurant", List.of(), false)))
                 .isInstanceOf(ApiException.class);
         verifyNoInteractions(learningContextService, aiServiceClient);
     }
