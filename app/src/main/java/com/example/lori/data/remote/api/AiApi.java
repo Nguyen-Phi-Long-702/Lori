@@ -3,6 +3,8 @@ package com.example.lori.data.remote.api;
 import com.example.lori.data.remote.dto.AiAnalyzeTextRequest;
 import com.example.lori.data.remote.dto.AiChatRequest;
 import com.example.lori.data.remote.dto.AiChatResponse;
+import com.example.lori.data.remote.dto.AiConversationRequest;
+import com.example.lori.data.remote.dto.AiConversationResponse;
 import com.example.lori.data.remote.dto.AiExamAnalysisRequest;
 import com.example.lori.data.remote.dto.AiExamAnalysisResponse;
 import com.example.lori.data.remote.dto.AiExerciseResponse;
@@ -26,6 +28,10 @@ public interface AiApi {
 
     @POST("api/ai/chat")
     Call<AiChatResponse> chat(@Body AiChatRequest request);
+
+    //Một lượt hội thoại role-play, hoặc nhận xét cuối buổi khi request.finish = true
+    @POST("api/ai/conversation")
+    Call<AiConversationResponse> conversation(@Body AiConversationRequest request);
 
     //Chỉ dùng type = "grammar"; type = "vocabulary" trả về dạng khác nên chưa có DTO
     @POST("api/ai/analyze-text")

@@ -511,4 +511,20 @@
     <string name="image_saved_format">Đã lưu %1$d từ mới vào Từ vựng của tôi</string>
     <string name="image_saved_already">Các từ này đã có trong Từ vựng của tôi</string>
     <string name="image_retake_button">Chụp ảnh mới</string>
+
+    <!-- Hội thoại luyện tập (Tuần 14): tên tình huống và vai của AI -->
+    <string name="ai_conversation_mode_restaurant">Nhà hàng</string>
+    <string name="ai_conversation_mode_airport">Sân bay</string>
+    <string name="ai_conversation_mode_interview">Phỏng vấn xin việc</string>
+    <string name="ai_conversation_mode_daily">Trò chuyện hàng ngày</string>
+    <string name="ai_conversation_mode_teacher">Giáo viên tiếng Anh</string>
+    <string name="ai_conversation_mode_partner">Bạn luyện hội thoại</string>
+    <string name="ai_conversation_mode_ielts_speaking">IELTS Speaking</string>
+    <string name="ai_conversation_role_restaurant">AI đóng vai nhân viên phục vụ</string>
+    <string name="ai_conversation_role_airport">AI đóng vai nhân viên sân bay</string>
+    <string name="ai_conversation_role_interview">AI đóng vai nhà tuyển dụng</string>
+    <string name="ai_conversation_role_daily">AI trò chuyện cùng bạn về cuộc sống hằng ngày</string>
+    <string name="ai_conversation_role_teacher">AI đóng vai giáo viên, nhắc bạn khi mắc lỗi</string>
+    <string name="ai_conversation_role_partner">AI đóng vai bạn trò chuyện về mọi chủ đề</string>
+    <string name="ai_conversation_role_ielts_speaking">AI đóng vai giám khảo IELTS Speaking</string>
 </resources>
