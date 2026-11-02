@@ -533,4 +533,14 @@
     <string name="ai_conversation_pick_label">Chọn tình huống</string>
     <string name="ai_conversation_input_hint">Nhập câu trả lời tiếng Anh...</string>
     <string name="ai_conversation_full">Buổi hội thoại đã đủ dài. Hãy kết thúc buổi để xem nhận xét.</string>
+
+    <!-- Hội thoại luyện tập (Tuần 14): nút kết thúc và màn nhận xét -->
+    <string name="ai_conversation_finish_button">Kết thúc buổi &amp; xem nhận xét</string>
+    <string name="nav_label_ai_conversation_feedback">Nhận xét buổi hội thoại</string>
+    <string name="ai_conversation_feedback_grammar">Lỗi ngữ pháp</string>
+    <string name="ai_conversation_feedback_vocabulary">Từ vựng</string>
+    <string name="ai_conversation_feedback_naturalness">Diễn đạt tự nhiên hơn</string>
+    <string name="ai_conversation_feedback_phrases">Cụm từ hữu ích</string>
+    <string name="ai_conversation_feedback_better_format">→ %1$s</string>
+    <string name="ai_conversation_done_button">Xong →</string>
 </resources>

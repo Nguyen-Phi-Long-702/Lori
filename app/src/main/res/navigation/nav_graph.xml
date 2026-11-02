@@ -333,7 +333,22 @@
             android:id="@+id/aiConversationChatFragment"
             android:name="com.example.lori.view.AiConversationChatFragment"
             android:label="@string/nav_label_ai_conversation_chat"
-            tools:layout="@layout/fragment_ai_conversation_chat" />
+            tools:layout="@layout/fragment_ai_conversation_chat">
+            <action
+                android:id="@+id/action_aiConversationChatFragment_to_aiConversationFeedbackFragment"
+                app:destination="@id/aiConversationFeedbackFragment"
+                app:popUpTo="@id/aiConversationFragment"
+                app:enterAnim="@anim/nav_fade_in"
+                app:exitAnim="@anim/nav_fade_out"
+                app:popEnterAnim="@anim/nav_fade_in"
+                app:popExitAnim="@anim/nav_fade_out" />
+        </fragment>
+
+        <fragment
+            android:id="@+id/aiConversationFeedbackFragment"
+            android:name="com.example.lori.view.AiConversationFeedbackFragment"
+            android:label="@string/nav_label_ai_conversation_feedback"
+            tools:layout="@layout/fragment_ai_conversation_feedback" />
     </navigation>
 
     <fragment

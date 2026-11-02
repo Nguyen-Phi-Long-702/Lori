@@ -57,6 +57,7 @@ public class AiConversationChatFragment extends Fragment {
         MaterialButton btnSend = view.findViewById(R.id.btnAiConversationSend);
         TextView tvOffline = view.findViewById(R.id.tvAiConversationOffline);
         TextView tvError = view.findViewById(R.id.tvAiConversationError);
+        MaterialButton btnFinish = view.findViewById(R.id.btnConversationFinish);
 
         AiChatAdapter adapter = new AiChatAdapter(requireContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
@@ -72,6 +73,8 @@ public class AiConversationChatFragment extends Fragment {
                 etInput.setText("");
             }
         });
+
+        btnFinish.setOnClickListener(v -> viewModel.finishSession());
 
         //Bàn phím hiện lên thì đẩy ô nhập lên trên bàn phím (thanh điều hướng dưới đã ẩn ở màn này)
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
@@ -95,6 +98,16 @@ public class AiConversationChatFragment extends Fragment {
 
         viewModel.getSendEnabled().observe(getViewLifecycleOwner(), enabled ->
                 btnSend.setEnabled(Boolean.TRUE.equals(enabled)));
+        //Chưa nói câu nào, đang chờ AI hoặc mất mạng thì chưa kết thúc được
+        viewModel.getFinishEnabled().observe(getViewLifecycleOwner(), enabled ->
+                btnFinish.setEnabled(Boolean.TRUE.equals(enabled)));
+
+        //Có nhận xét rồi thì sang màn nhận xét (màn chat bị gỡ khỏi back stack, xem nav_graph.xml)
+        viewModel.getFeedback().observe(getViewLifecycleOwner(), feedback -> {
+            if (feedback != null) {
+                navController.navigate(R.id.action_aiConversationChatFragment_to_aiConversationFeedbackFragment);
+            }
+        });
         viewModel.getOnline().observe(getViewLifecycleOwner(), online ->
                 tvOffline.setVisibility(Boolean.TRUE.equals(online) ? View.GONE : View.VISIBLE));
 
