@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     || destId == R.id.settingsFragment
                     || destId == R.id.quizFragment
                     || destId == R.id.aiChatFragment
+                    || destId == R.id.aiConversationChatFragment
                     || destId == R.id.imageLearningFragment
                     || destId == R.id.aiExerciseFragment;
             bottomNav.setVisibility(hideBottomNav ? View.GONE : View.VISIBLE);
@@ -94,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
         }
         if (destinationId == R.id.aiTutorHomeFragment
                 || destinationId == R.id.aiChatFragment
+                || destinationId == R.id.aiConversationFragment
+                || destinationId == R.id.aiConversationChatFragment
                 || destinationId == R.id.sentenceCheckFragment
                 || destinationId == R.id.aiPersonalizedReviewFragment
                 || destinationId == R.id.learningInsightFragment

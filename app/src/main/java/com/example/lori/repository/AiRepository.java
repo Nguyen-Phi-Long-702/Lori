@@ -8,6 +8,8 @@ import com.example.lori.data.remote.api.AiApi;
 import com.example.lori.data.remote.dto.AiAnalyzeTextRequest;
 import com.example.lori.data.remote.dto.AiChatRequest;
 import com.example.lori.data.remote.dto.AiChatResponse;
+import com.example.lori.data.remote.dto.AiConversationRequest;
+import com.example.lori.data.remote.dto.AiConversationResponse;
 import com.example.lori.data.remote.dto.AiExamAnalysisRequest;
 import com.example.lori.data.remote.dto.AiExamAnalysisResponse;
 import com.example.lori.data.remote.dto.AiExerciseResponse;
@@ -21,6 +23,8 @@ import com.example.lori.data.remote.dto.AiImageResponse;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+
+import java.util.List;
 
 //Gọi AI Tutor qua Backend (Premium). User Free nhận HTTP_ERROR 403 với ApiResult.isPremiumRequired() = true
 public class AiRepository extends BaseRepository {
@@ -37,6 +41,12 @@ public class AiRepository extends BaseRepository {
     //Hỏi đáp tự do (POST /api/ai/chat)
     public LiveData<ApiResult<AiChatResponse>> chat(String message) {
         return execute(aiApi.chat(new AiChatRequest(message)));
+    }
+
+    //Một lượt hội thoại (POST /api/ai/conversation). turns là toàn bộ lịch sử từ đầu buổi; finish = true để nhận nhận xét cuối buổi
+    public LiveData<ApiResult<AiConversationResponse>> conversation(
+            String mode, List<AiConversationRequest.Turn> turns, boolean finish) {
+        return execute(aiApi.conversation(new AiConversationRequest(mode, turns, finish)));
     }
 
     //Kiểm tra ngữ pháp một câu (POST /api/ai/analyze-text, type = grammar)

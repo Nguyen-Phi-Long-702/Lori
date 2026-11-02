@@ -295,6 +295,13 @@
             app:exitAnim="@anim/nav_fade_out"
             app:popEnterAnim="@anim/nav_fade_in"
             app:popExitAnim="@anim/nav_fade_out" />
+        <action
+            android:id="@+id/action_aiTutorHomeFragment_to_aiConversation"
+            app:destination="@id/nav_ai_conversation"
+            app:enterAnim="@anim/nav_fade_in"
+            app:exitAnim="@anim/nav_fade_out"
+            app:popEnterAnim="@anim/nav_fade_in"
+            app:popExitAnim="@anim/nav_fade_out" />
     </fragment>
 
     <fragment
@@ -302,6 +309,32 @@
         android:name="com.example.lori.view.AiChatFragment"
         android:label="@string/nav_label_ai_chat"
         tools:layout="@layout/fragment_ai_chat" />
+
+    <!-- Hội thoại luyện tập (Tuần 14): 3 màn dùng chung một AiConversationViewModel gắn với graph này -->
+    <navigation
+        android:id="@+id/nav_ai_conversation"
+        app:startDestination="@id/aiConversationFragment">
+
+        <fragment
+            android:id="@+id/aiConversationFragment"
+            android:name="com.example.lori.view.AiConversationFragment"
+            android:label="@string/nav_label_ai_conversation"
+            tools:layout="@layout/fragment_ai_conversation">
+            <action
+                android:id="@+id/action_aiConversationFragment_to_aiConversationChatFragment"
+                app:destination="@id/aiConversationChatFragment"
+                app:enterAnim="@anim/nav_fade_in"
+                app:exitAnim="@anim/nav_fade_out"
+                app:popEnterAnim="@anim/nav_fade_in"
+                app:popExitAnim="@anim/nav_fade_out" />
+        </fragment>
+
+        <fragment
+            android:id="@+id/aiConversationChatFragment"
+            android:name="com.example.lori.view.AiConversationChatFragment"
+            android:label="@string/nav_label_ai_conversation_chat"
+            tools:layout="@layout/fragment_ai_conversation_chat" />
+    </navigation>
 
     <fragment
         android:id="@+id/sentenceCheckFragment"
