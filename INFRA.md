@@ -692,3 +692,47 @@ Kết quả chạy ngày 01/11/2026: Đạt (6/6).
 - Ảnh PNG có nền trong suốt sẽ có nền đen khi nén JPEG.
 - Chụp bằng CameraX chưa được thử trên điện thoại thật (chỉ LDPlayer 9); đường chọn ảnh từ thư viện là đường đã thử.
 - Hỏi quyền camera một lần mỗi lần mở màn; nếu user từ chối vĩnh viễn thì chỉ còn nút Thư viện (không có nút mở Cài đặt).
+
+## 27. AI Conversation — hội thoại role-play (Tuần 14 – Ngày 5-6)
+
+- Endpoint: `POST /api/ai/conversation` (`AiGatewayController`), yêu cầu đăng nhập và Premium (`@RequirePremium`). Request: `{"mode":"restaurant","messages":[{"role":"assistant","content":"..."},{"role":"user","content":"..."}],"finish":false}`. `mode` là một trong 7 mã: `daily`, `teacher`, `partner`, `restaurant`, `airport`, `interview`, `ielts_speaking`. `messages` là **toàn bộ** các lượt từ đầu buổi (tối đa 30, mỗi lượt tối đa 4.000 ký tự, `role` là `user` hoặc `assistant`); rỗng khi nhờ AI mở đầu. Server **không lưu** hội thoại (stateless, vì AI Service chạy trên Vercel và kế hoạch không có bảng hội thoại).
+- Response `200` khi `finish = false`: `{"type":"conversation_reply","reply":"..."}`. Khi `finish = true`: `{"type":"conversation_feedback","summary":"...","grammar":[{"original":"...","better":"...","explanation":"..."}],"vocabulary":[...],"naturalness":[...],"usefulPhrases":[{"original":null,"better":"...","explanation":"..."}]}`. `summary` và `explanation` bằng tiếng Việt; mỗi nhóm tối đa 3 mục và có thể rỗng; `usefulPhrases` không có `original`.
+- Luồng: JWT → `@RequirePremium` → Bean Validation → `AiRateLimiter.checkConversation` (bucket riêng 20 request/phút/user; mỗi lượt chat là một request) → **chỉ khi `finish = true`**: `LearningContextService.build(userId, CONVERSATION)` (điểm yếu ngữ pháp và từ vựng, mục 18; `AiContextPolicy` đã có dòng này từ trước) → `AiServiceClient.conversation` (ký HMAC, mục 17) → AI Service `POST /ai/conversation`. Các lượt trò chuyện không gửi Learning Context. Backend không gửi `userId`.
+- AI Service (`ai-service/orchestrator/conversation_workflow.py`, `routers/conversation.py`, `config/conversation_modes.py`, prompt `CONVERSATION_REPLY_TASK` / `CONVERSATION_FEEDBACK_TASK` trong `context/context_builder.py`): mỗi mode là một "vai" tiếng Anh (`CONVERSATION_MODES`); **mọi lượt (kể cả lượt `assistant`) đều qua `sanitize_input`** vì client có thể gửi lượt AI giả; lịch sử được đưa vào khối `<learner_message>` như dữ liệu (không phải chỉ dẫn). Nhận xét do LLM trả JSON, được kiểm tra cấu trúc: thiếu `summary` → lỗi; mục sai dạng bị bỏ; mỗi nhóm cắt còn 3 mục. Mode `teacher` được dặn sửa lỗi của người học bằng một câu mở đầu `Tip:`; mode `ielts_speaking` hỏi từng câu Part 1/Part 3 và không nhận xét hay chấm điểm.
+- Mã lỗi: `400` (mode không hợp lệ, `role` lạ, quá 30 tin, nội dung rỗng sau khi làm sạch (Android gỡ lượt bị từ chối khỏi lịch sử), lượt cuối không phải của user khi `finish = false`, `finish = true` mà chưa có lượt nào của user), `401`, `403 PREMIUM_REQUIRED` (user Free), `429` (quá 20 request/phút/user), `503 AI service unavailable` (AI Service lỗi, quá 30 giây, thiếu secret).
+- Không thêm biến môi trường, thư viện hay migration so với mục 17. Chạy test (PowerShell, thư mục gốc repo): AI Service như mục 22 (318 test sau khi thêm 33 test hội thoại); Backend `docker run --rm -v "${PWD}\backend:/app" -v lori-m2:/root/.m2 -w /app maven:3.9-eclipse-temurin-17 mvn -B test '-Dtest=AiGatewayServiceTest,AiRateLimiterTest,AiServiceClientTest'`.
+
+### Kiểm thử trên Render (Postman, request tạm T25 không lưu vào collection)
+
+| # | Kịch bản | Body | Kết quả kỳ vọng |
+|---|---|---|---|
+| 1 | User Free | `mode = restaurant`, `messages = []` | `403 PREMIUM_REQUIRED` |
+| 2 | AI mở đầu buổi (Premium sau T4) | `mode = restaurant`, `messages = []` | `200`, `conversation_reply` |
+| 3 | Lượt trả lời | có 1 lượt `assistant` và 1 lượt `user` | `200`, `reply` đúng tình huống |
+| 4 | English Teacher | `mode = teacher`, `I am agree with you.` | `200`, `reply` thường bắt đầu bằng `Tip:` |
+| 5 | Nhận xét cuối buổi | `finish = true`, 2 lượt `user` | `200`, `conversation_feedback`, có `summary` và 4 danh sách |
+| 6 | Mode không hợp lệ | `mode = pirate` | `400` |
+| 7 | Role không hợp lệ | `role = system` | `400` |
+| 8 | Lượt cuối là của AI | `finish = false` | `400 Invalid input` |
+| 9 | Kết thúc khi chưa có lượt của user | `finish = true`, chỉ có lượt `assistant` | `400 Invalid input` |
+| 10 | Thiếu `messages` | `{"mode":"daily","finish":false}` | `400` |
+| 11 | Nội dung bị làm sạch thành rỗng | `content = "<>"` | `400 Invalid input` |
+| 12 | Không có JWT | `No Auth` | `401` |
+
+Kết quả chạy ngày 02/11/2026: **Đạt 12/12**.
+
+### Android (Tuần 14 – Ngày 5-6)
+
+- Thẻ "Hội thoại" ở `AiTutorHomeFragment` (không còn "Sắp ra mắt") mở nav graph lồng `nav_ai_conversation` gồm 3 màn: `AiConversationFragment` (lưới 7 tình huống: Nhà hàng, Sân bay, Phỏng vấn xin việc, Trò chuyện hàng ngày, Giáo viên tiếng Anh, Bạn luyện hội thoại, IELTS Speaking) → `AiConversationChatFragment` (chat, nút "Kết thúc buổi & xem nhận xét") → `AiConversationFeedbackFragment` (Tổng quan + 4 nhóm nhận xét).
+- Ba màn dùng chung một `AiConversationViewModel` (gắn với graph lồng): giữ lịch sử, gửi toàn bộ lịch sử mỗi lượt, dùng `AiRepository.conversation`. Chọn tình huống → `startSession` → gọi API với `messages = []` để AI mở đầu. Lịch sử chỉ sống trong ViewModel: xoay màn hình vẫn còn, rời graph (về AI Tutor Home) thì mất; không lưu xuống Room.
+- Giới hạn 30 tin: khi lịch sử đạt 29 tin thì khóa nút Gửi và hiện lời nhắc kết thúc (chừa chỗ để lịch sử gửi lên luôn ≤ 30); nút Kết thúc vẫn dùng được. Mất mạng khóa cả hai nút. User Free hoặc Premium hết hạn nhận `403 PREMIUM_REQUIRED` ngay ở lượt mở đầu → `PremiumPromptDialog`.
+- Màn chat tái dùng `AiChatAdapter` và các bong bóng chat của màn Hỏi đáp. Icon tình huống và loại nhận xét: Phosphor Regular (`ic_feature_restaurant`, `ic_feature_airport`, `ic_feature_interview`, `ic_feature_daily`, `ic_feature_teacher`, `ic_feature_partner`, `ic_feature_feedback_grammar`, `ic_feature_feedback_vocabulary`, `ic_feature_feedback_natural`, `ic_feature_feedback_phrases`; IELTS Speaking dùng `ic_feature_speaking`).
+
+### Giới hạn đã biết (không sửa)
+
+- Chỉ dạng text, chưa có voice hay chấm phát âm (kế hoạch để ở "AI Conversation nâng cao"). Chưa lưu lịch sử hội thoại hay nhận xét (không ở server, không ở Room); tiến trình bị hệ thống thu hồi giữa buổi thì phải chọn tình huống lại.
+- Vai và định dạng câu trả lời do prompt điều khiển, chưa đo chất lượng: AI có thể trả dài hơn 3 câu, mode `teacher` có thể bỏ sót lỗi, mode `ielts_speaking` chỉ hỏi Part 1/Part 3 (không mô phỏng Part 2). Đo với 5+ hội thoại mẫu ở Ngày 7.
+- Nhận xét do LLM sinh, chưa kiểm tra đúng/sai (kể cả việc `original` có thật sự nằm trong lời người học hay không); mỗi nhóm tối đa 3 mục. Nhận xét luôn tiếng Việt, kể cả khi người học chỉ nói vài câu.
+- Mỗi lượt là một lần gọi LLM và prompt chứa toàn bộ lịch sử nên dài dần (mỗi lượt cắt 1.000 ký tự); một buổi 14 lượt tốn khoảng 16 lần gọi (mở đầu + 14 lượt + nhận xét). Số Neurons mỗi lượt chưa đo; hết hạn mức 10.000 Neurons/ngày thì Backend trả `503`. Chưa ghi `ai_feedback_metadata`.
+- Thời gian của lượt nhận xét (JSON dài hơn một câu trả lời) chưa đo trên Vercel; Backend chờ tối đa 30 giây (mục 17).
+- Bấm Quay lại giữa buổi không hỏi xác nhận và buổi bị bỏ; chưa có unit test cho `AiConversationViewModel` (kế hoạch Tuần 17 chỉ liệt kê `AiChatVM`...).
