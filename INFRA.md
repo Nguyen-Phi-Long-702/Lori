@@ -808,3 +808,46 @@ AI Conversation (7 hội thoại, mỗi hội thoại 3 lượt của người h
 | Nhận xét cuối buổi: `original` có thật trong lời người học | 21/22 mục khớp. Mục không khớp: C6 `naturalness`, `original` = "What's your dog's name? I'm curious!" là câu của AI chứ không phải của người học |
 | Nhận xét cuối buổi: từ vựng, diễn đạt tự nhiên, cụm từ hữu ích | `usefulPhrases` hợp tình huống ở cả 5 hội thoại có nhận xét (C2 trùng với `better` của `naturalness`; C6 `I usually [verb]` khá chung chung). Gợi ý tốt: `carry-on bag`, `by the window`, `take over many jobs`. Sai nhỏ: C1 gọi `I'd like to pay with a card` là "câu hỏi" dù là câu khẳng định. `summary` đều bằng tiếng Việt |
 | Request lỗi | 2/34 request (không tính Premium gate): `503 AI service unavailable` ở C4 lượt nhận xét (sau 12,1 s) và C5 lượt 3 (sau 10,6 s). Chưa xác định nguyên nhân (không phải hết thời gian chờ 30 s) |
+
+### Kết quả kiểm thử UI trên LDPlayer 9 (APK 1.3-beta, ngày <điền dd/MM/2026>) - Tạm chưa chạy
+
+| # | Kịch bản | Kết quả |
+|---|---|---|
+| U1 | Free bấm AI English Tutor → dialog Premium; mua Premium mock → vào AI Tutor Home | <Đạt / Không đạt: mô tả> |
+| U2 | Mở đủ 6 công cụ ở AI Tutor Home | <Đạt / Không đạt: mô tả> |
+| U3 | Nhận diện ảnh từ Thư viện: khung, danh sách từ, câu ví dụ | <Đạt / Không đạt: mô tả> |
+| U4 | Chọn từ khác: khung và câu ví dụ đổi theo | <Đạt / Không đạt: mô tả> |
+| U5 | Nút phát âm | <Đạt / Không đạt: mô tả> |
+| U6 | Lưu cả N từ vào Từ vựng của tôi | <Đạt / Không đạt: mô tả> |
+| U7 | Lưu lại ảnh cũ: thông báo từ đã có | <Đạt / Không đạt: mô tả> |
+| U8 | Ảnh nhiều vật: mỗi từ một khung | <Đạt / Không đạt: mô tả> |
+| U9 | Ảnh không có vật: thông báo, không có nút lưu | <Đạt / Không đạt: mô tả> |
+| U10 | Chụp bằng camera trên LDPlayer | <Đạt / Không đạt: mô tả, ghi rõ chụp được hay hiện gợi ý không dùng được camera> |
+| U11 | Offline khóa nút chụp/Thư viện ở Nhận diện ảnh | <Đạt / Không đạt: mô tả> |
+| U12 | Premium hết hạn giữa chừng ở Nhận diện ảnh → dialog | <Đạt / Không đạt: mô tả> |
+| U13 | Lưới 7 tình huống hội thoại | <Đạt / Không đạt: mô tả> |
+| U14 | Một buổi hội thoại trọn vẹn (Nhà hàng): chat, nhận xét, Xong | <Đạt / Không đạt: mô tả> |
+| U15 | Giới hạn 30 tin: khóa Gửi, Kết thúc vẫn nhận xét được | <Đạt / Không đạt: mô tả> |
+| U16 | Offline giữa buổi khóa Gửi và Kết thúc | <Đạt / Không đạt: mô tả> |
+| U17 | Premium hết hạn giữa buổi hội thoại → dialog | <Đạt / Không đạt: mô tả> |
+
+Lỗi phát hiện ở UI: <điền: số lỗi và mô tả ngắn, hoặc "không có lỗi ở UI (17/17 kịch bản đạt)">.
+
+### APK
+
+- `app/build.gradle.kts`: `versionCode = 5`, `versionName = "1.3-beta"`. APK debug build trên máy Dev, **không commit** (`*.apk` nằm trong `.gitignore`); màn Cài đặt → Về ứng dụng hiện "Phiên bản 1.3-beta".
+- APK debug ký bằng debug keystore của máy build, khớp `APP_SIGNATURE` trên Render; build trên máy khác thì chữ ký khác và Backend trả 403.
+- Bản 1.3-beta là bản build theo dòng Ngày 7 của kế hoạch ("đầy đủ AI features MVP") từ code hiện có; hôm nay không thêm tính năng nào vào app.
+
+### Dấu vết để lại sau mỗi lần chạy
+
+- Mỗi lần chạy script: 1 user thử (`image.<thời gian>@example.com` hoặc `convo.<thời gian>@example.com`) và 1 subscription `MOCK` trong Neon (không tự xóa). Test UI để lại 1 user thử `lori.ui.<ngày>@example.com` với `premium_expires_at` đã bị đặt về quá khứ và các dòng `my_words` trong Room trên LDPlayer.
+- Mỗi ảnh và mỗi lượt hội thoại dùng hạn mức Neurons Cloudflare (10.000 Neurons/ngày, reset 00:00 UTC); chưa đo số Neurons thực tế của từng lần chạy.
+
+### Giới hạn đã biết (không sửa)
+
+- Bộ mẫu chỉ có 12 ảnh và 7 hội thoại, không đủ để kết luận tỉ lệ chính xác; kết quả LLM có thể đổi giữa các lần chạy hoặc khi Cloudflare cập nhật model. Bộ đánh giá lớn hơn làm ở Tuần 15 (Evaluation Dataset).
+- YOLOv8n chỉ nhận ra 80 lớp COCO; những vật ngoài danh sách (gối, chăn, đèn, rèm…) không bao giờ được nhận ra dù có trong ảnh.
+- Test UI chỉ làm trên LDPlayer 9 (dùng mạng của máy tính), chưa test bằng điện thoại thật và mạng 4G; CameraX chưa được thử trên điện thoại thật.
+- Kịch bản Premium hết hạn giữa chừng (U12, U17) chỉ làm được bằng cách sửa `users.premium_expires_at` trong Neon.
+- <điền từng điểm bạn phát hiện ở Phần 4 và 6: ví dụ vật bị bỏ sót/nhận nhầm kèm ảnh, mode `teacher` bỏ sót `Tip:`, câu trả lời dài quá 3 câu, `original` không khớp lời người học, thời gian lượt nhận xét… Mỗi điểm một dòng, chỉ ghi điều đã quan sát được>
