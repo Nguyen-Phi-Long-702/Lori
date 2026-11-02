@@ -13,6 +13,7 @@ class TaskType(str, Enum):
     GENERATE_EXERCISE = "generate_exercise"
     RECOMMEND = "recommend"
     IDENTIFY_IMAGE = "identify_image"
+    CONVERSATION = "conversation"
 
 
 class UnsupportedTaskError(Exception):
