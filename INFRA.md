@@ -736,3 +736,75 @@ Kết quả chạy ngày 02/11/2026: **Đạt 12/12**.
 - Mỗi lượt là một lần gọi LLM và prompt chứa toàn bộ lịch sử nên dài dần (mỗi lượt cắt 1.000 ký tự); một buổi 14 lượt tốn khoảng 16 lần gọi (mở đầu + 14 lượt + nhận xét). Số Neurons mỗi lượt chưa đo; hết hạn mức 10.000 Neurons/ngày thì Backend trả `503`. Chưa ghi `ai_feedback_metadata`.
 - Thời gian của lượt nhận xét (JSON dài hơn một câu trả lời) chưa đo trên Vercel; Backend chờ tối đa 30 giây (mục 17).
 - Bấm Quay lại giữa buổi không hỏi xác nhận và buổi bị bỏ; chưa có unit test cho `AiConversationViewModel` (kế hoạch Tuần 17 chỉ liệt kê `AiChatVM`...).
+
+## 28. Kiểm thử Image Learning, AI Conversation và APK 1.3-beta (Tuần 14 – Ngày 7)
+
+### Công cụ
+
+- `tools/ai-test/image_test.py` (Image Learning) và `tools/ai-test/conversation_test.py` (AI Conversation), dùng chung `tools/ai-test/ai_test_common.py`: chạy bằng Docker (image `python:3.12-slim`, chỉ dùng thư viện chuẩn của Python), đi qua đường thật Script → Render (Backend) → Vercel (AI Service) → YOLOv8n / Cloudflare Workers AI, không dùng mock. Biến môi trường (chỉ ghi tên): `BASE_URL` (URL Render, không có `/` ở cuối), `API_KEY`, `APP_SIGNATURE`. Lệnh chạy (PowerShell, ở thư mục gốc repo, sau khi đặt 3 biến môi trường):
+  `docker run --rm -e BASE_URL -e API_KEY -e APP_SIGNATURE -v "${PWD}\tools\ai-test:/work" -w /work python:3.12-slim python -u image_test.py`
+  `docker run --rm -e BASE_URL -e API_KEY -e APP_SIGNATURE -v "${PWD}\tools\ai-test:/work" -w /work python:3.12-slim python -u conversation_test.py`
+- Mỗi lần chạy: đăng ký user mới `image.<thời gian>@example.com` hoặc `convo.<thời gian>@example.com` (Free) → kiểm tra user Free bị `403 PREMIUM_REQUIRED` → `mock-purchase` → chạy các ca, cách nhau 3 giây (giới hạn 20 request/phút/user).
+- Kết quả ghi ở `tools/ai-test/results/image-learning-<ngày>-<giờ UTC>.md` và `conversation-<ngày>-<giờ UTC>.md`. Phần tự động chỉ kiểm tra cấu trúc và các điều biết chắc; vật thừa/bỏ sót, IPA, nghĩa, câu ví dụ, vai diễn, chất lượng nhận xét do người đọc file kết quả.
+- Ảnh mẫu nằm ở `tools/ai-test/images/` (không commit, `tools/ai-test/.gitignore`); tên ảnh và các vật kỳ vọng nằm ở `tools/ai-test/image_cases.json`. Thu nhỏ ảnh về cạnh dài 1280 px trước khi dùng (như `ImagePreparer` của app).
+
+### Dữ liệu mẫu
+
+Image Learning (12 ảnh, `expect` ghi trước khi chạy):
+
+| File | Nội dung ảnh | Vật kỳ vọng |
+|---|---|---|
+| `01-street.jpg` | Đường phố có ô tô và nhiều xe máy, chụp từ trên cao (645×363) | `car`, `motorcycle` |
+| `02-cat.jpg` | Một con mèo ngồi trên tường (330×441) | `cat` |
+| `03-dog.jpg` | Một chú chó con chạy trên cỏ | `dog` |
+| `04-fruit.jpg` | Quả táo và hai quả chuối trên thớt gỗ (ảnh rất nhỏ, 255×191) | `apple`, `banana` |
+| `05-drinks.jpg` | Một chai nước nhựa và một ly nước trong suốt, nền trắng (348×507) | `bottle`, `cup` |
+| `06-desk.jpg` | Bàn làm việc có laptop, bàn phím, chuột; ngoài ra có chậu cây, ấm trà, chén trà | `laptop`, `mouse`, `keyboard` |
+| `07-phone.jpg` | Mặt lưng điện thoại Samsung nằm trên bàn gỗ, vài cuốn sách ở mép trái | `cell phone` |
+| `08-bedroom.jpg` | Phòng ngủ có giường nhung lớn | `bed` |
+| `09-dining.jpg` | Bàn ăn và 4 ghế, nền trắng | `dining table`, `chair` |
+| `10-kitchen.jpg` | Góc bếp có tủ lạnh và bồn rửa (ảnh render 3D) | `refrigerator`, `sink` |
+| `11-bag.jpg` | Một ba lô đen và một cây dù xanh đang mở | `backpack`, `umbrella` |
+| `12-wall.jpg` | Bầu trời xanh có mây, không có vật nào | (không có) |
+
+AI Conversation (7 hội thoại, mỗi hội thoại 3 lượt của người học, mỗi lượt gửi lại toàn bộ lịch sử):
+
+| ID | Mode | Điểm kiểm tra riêng |
+|---|---|---|
+| C1 | `restaurant` | 2 câu có lỗi ngữ pháp |
+| C2 | `airport` | 2 câu có lỗi ngữ pháp |
+| C3 | `interview` | 2 câu có lỗi ngữ pháp |
+| C4 | `teacher` | Câu có lỗi → `Tip:`; câu đúng → không có `Tip:` |
+| C5 | `ielts_speaking` | Có câu hỏi, không nhắc `band`/`score`; 3 câu đúng → `grammar` rỗng |
+| C6 | `daily` | 1 câu có lỗi ngữ pháp |
+| C7 | `partner` | 2 câu có lỗi ngữ pháp |
+
+### Kết quả kiểm thử Image Learning ngày 03/11/2026
+
+| Hạng mục | Kết quả |
+|---|---|
+| Premium gate `identify-image` (user Free) | Đạt |
+| Kiểm tra tự động | 9/12 ảnh đạt (không đạt: `05-drinks`, `07-phone`, `11-bag`, đều do bỏ sót vật) |
+| Vật kỳ vọng nhận ra được | 15/19 |
+| Thời gian mỗi ảnh (gồm mạng từ máy Dev tới Render) | Trung bình 7,0 s; ảnh đầu tiên 6,4 s; nhanh nhất 0,7 s (`12-wall`, không có vật); chậm nhất 18,6 s (`07-phone`). `06-desk` cũng chậm (17,1 s); 9 ảnh còn lại 3,8–7,6 s. Hai ảnh chậm nằm liền nhau, chưa xác định nguyên nhân |
+| Vật thừa (đối chiếu với ảnh) | Thừa đúng: `person` 63% (01, người đi xe máy), `cup` 78% (06, chén trà), `book` 33% (07, sách ở mép trái). Nhận nhầm: `bed` 44% (02, khung phủ gần hết ảnh, ảnh chỉ có mèo trên tường), `dining table` 44% (04, khung phủ gần hết ảnh, ảnh chỉ có thớt gỗ), `remote` 74% (06, khung trùng gần như hoàn toàn với `mouse`: một vật bị gán 2 nhãn). Mơ hồ: `dining table` 25% (07, khung phủ gần hết ảnh, ảnh là mặt bàn gỗ) |
+| Vật bỏ sót | 4/19, cả 4 đều bị gán nhãn khác chứ không phải không thấy gì (theo vị trí khung): `bottle` → `vase` 29% và `cup` → `toilet` 72% (05, chai và ly nước trong suốt; ảnh này 0/2); `cell phone` → `remote` 88% (07, điện thoại nằm úp); `backpack` → `suitcase` 79% (11). Có thể do vật trong suốt, điện thoại nhìn từ mặt lưng và ba lô giống vali với YOLOv8n pretrained; chưa kiểm chứng |
+| IPA và nghĩa tiếng Việt | IPA `null` ở `dining table` (04, 07, 09) và `vase` (05). `apple` (`ăpʹ(ə)l`) và `banana` (`bə-näʹnə`) trả về phiên âm kiểu từ điển Mỹ chứ không phải IPA, cùng loại với `cat → kăt` đã ghi ở mục 26. Nghĩa đúng ở hầu hết từ (`mouse` được dịch đúng là "chuột máy tính"); một số nghĩa lấy từ `dictionary.db` nghe lạ: `refrigerator` = "Tủ ướp lạnh, phòng ướp lạnh", `bed` = "Cái giường: cái đồ gỗ cho ngủ", `sink` = "Thùng rửa bát, chậu rửa bát" |
+| Câu ví dụ | 26/26 vật có `example` và `exampleVi`; câu tự nhiên, bản dịch đúng. Một lệch nhỏ: câu ví dụ của `dining table` ở 09 dùng "table" thay vì "dining table" |
+| Request lỗi | Không có (12/12 ảnh HTTP 200) |
+
+### Kết quả kiểm thử AI Conversation ngày 03/11/2026
+
+| Hạng mục | Kết quả |
+|---|---|
+| Premium gate `conversation` (user Free) | Đạt |
+| Kiểm tra tự động | 3/7 hội thoại đạt (C1, C2, C3). Không đạt: C4 (503 ở lượt nhận xét), C5 (503 ở lượt 3, script dừng hội thoại), C6 (1 `original` là câu của AI), C7 (1 reply 4 câu) |
+| Thời gian | Trung bình mỗi lượt 4,2 s (từ 1,7 đến 14,8 s, tính trên 27 lượt trả về HTTP 200); lượt nhận xét từ 7,0 đến 17,1 s (5 lần thành công, trung bình 10,5 s; Backend chờ tối đa 30 s, chưa lần nào chạm ngưỡng). Lượt thứ 3 (lịch sử dài nhất) là lượt chậm nhất ở cả 7 hội thoại, chưa xác định nguyên nhân |
+| Độ dài câu trả lời | 1/27 lượt vượt 3 câu (C7 lượt 3: 4 câu). Các lượt `Tip:` của C4 đều 2 câu |
+| Đúng vai | 7/7 hội thoại đúng vai (C5 chỉ đánh giá được 3/4 lượt vì lượt 3 bị 503). Lệch nhỏ: C2 chào "Good morning" hai lần; C7 lượt 3 chỉ "I agree!" rồi chuyển sang giới thiệu phim, không bám ý "học kỹ năng mới" của người học |
+| Mode `teacher` (C4) | Đúng 3/3 lượt: 2 câu có lỗi (`go`, `feeled`) đều được mở bằng `Tip:` và sửa đúng; câu đúng ở lượt 3 không có `Tip:` thừa |
+| Mode `ielts_speaking` (C5) | Cả 3 lượt có phản hồi (mở đầu, lượt 1, lượt 2) đều là câu hỏi, không nhắc `band`/`score`, không nhận xét hay chấm điểm. Lượt 3 và nhận xét cuối buổi chưa kiểm tra được do 503, nên chưa xác nhận `grammar` rỗng |
+| Nhận xét cuối buổi: lỗi ngữ pháp | Có nhận xét ở 5/7 hội thoại (C4 và C5 không có do 503). Mọi lỗi cài sẵn đều được chỉ ra: C1 2/2, C2 2/2 (`I am very hurry` bị xếp vào `naturalness` thay vì `grammar`), C3 2/2, C6 1/1 (chỉ sửa `visit`, không nhắc `play` cùng câu), C7 2/2. Gợi ý thừa trên câu đúng: C1 `the grilled chicken` → `grilled chicken`, C6 `have a picnic` → `go on a picnic`. Mâu thuẫn: C7 `naturalness` ghi "câu gốc đúng về mặt ngữ pháp" cho câu có lỗi `skill`. Một lỗi bị lặp ở nhiều nhóm: C3 (`growing` ở 3 nhóm), C7 (8 mục cho 2 lỗi). Giải thích sai nhỏ: C1 nói `orange` bắt đầu bằng âm /oʊ/ |
+| Nhận xét cuối buổi: `original` có thật trong lời người học | 21/22 mục khớp. Mục không khớp: C6 `naturalness`, `original` = "What's your dog's name? I'm curious!" là câu của AI chứ không phải của người học |
+| Nhận xét cuối buổi: từ vựng, diễn đạt tự nhiên, cụm từ hữu ích | `usefulPhrases` hợp tình huống ở cả 5 hội thoại có nhận xét (C2 trùng với `better` của `naturalness`; C6 `I usually [verb]` khá chung chung). Gợi ý tốt: `carry-on bag`, `by the window`, `take over many jobs`. Sai nhỏ: C1 gọi `I'd like to pay with a card` là "câu hỏi" dù là câu khẳng định. `summary` đều bằng tiếng Việt |
+| Request lỗi | 2/34 request (không tính Premium gate): `503 AI service unavailable` ở C4 lượt nhận xét (sau 12,1 s) và C5 lượt 3 (sau 10,6 s). Chưa xác định nguyên nhân (không phải hết thời gian chờ 30 s) |
