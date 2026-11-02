@@ -1,0 +1,14 @@
+[
+  {"file": "01-street.jpg", "expect": ["car", "motorcycle"]},
+  {"file": "02-cat.jpg", "expect": ["cat"]},
+  {"file": "03-dog.jpg", "expect": ["dog"]},
+  {"file": "04-fruit.jpg", "expect": ["apple", "banana"]},
+  {"file": "05-drinks.jpg", "expect": ["bottle", "cup"]},
+  {"file": "06-desk.jpg", "expect": ["laptop", "mouse", "keyboard"]},
+  {"file": "07-phone.jpg", "expect": ["cell phone"]},
+  {"file": "08-bedroom.jpg", "expect": ["bed"]},
+  {"file": "09-dining.jpg", "expect": ["dining table", "chair"]},
+  {"file": "10-kitchen.jpg", "expect": ["refrigerator", "sink"]},
+  {"file": "11-bag.jpg", "expect": ["backpack", "umbrella"]},
+  {"file": "12-wall.jpg", "expect": []}
+]
