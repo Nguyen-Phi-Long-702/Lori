@@ -5,6 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from guardrails.s2s_auth import SECRET_ENV_NAME, SIGNATURE_HEADER, TIMESTAMP_HEADER, compute_signature
+from guardrails.topic_classifier import OFF_TOPIC_REPLY
 from main import app
 from orchestrator.ai_orchestrator import AiOrchestrator, TaskType
 from orchestrator.chat_workflow import chat_workflow
@@ -57,6 +58,18 @@ def test_chat_without_message_is_rejected(monkeypatch):
 def test_message_empty_after_cleaning_returns_400(monkeypatch):
     use_provider(monkeypatch, MockProvider())
     assert post_chat({"message": "<b></b>"}).status_code == 400
+
+
+def test_attack_pattern_returns_400(monkeypatch):
+    use_provider(monkeypatch, MockProvider())
+    assert post_chat({"message": "../../etc/passwd"}).status_code == 400
+
+
+def test_off_topic_question_returns_the_fixed_reply(monkeypatch):
+    use_provider(monkeypatch, MockProvider(reply="Here is the code"))
+    response = post_chat({"message": "Write a Python function that reverses a string"})
+    assert response.status_code == 200
+    assert response.json() == {"type": "chat", "answer": OFF_TOPIC_REPLY, "truncated": False}
 
 
 def test_provider_failure_returns_502_without_details(monkeypatch):

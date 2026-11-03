@@ -1,6 +1,7 @@
 import pytest
 
 from guardrails.ai_input_sanitizer import InvalidInputError
+from guardrails.topic_classifier import OFF_TOPIC_REPLY
 from orchestrator.chat_workflow import chat_workflow
 from providers.base import LlmResponse, ProviderError
 from providers.mock import MockProvider
@@ -58,3 +59,17 @@ def test_truncated_flag_is_passed_through():
             return LlmResponse(text="Cut off", model_id="mock", prompt_tokens=1, completion_tokens=2, truncated=True)
 
     assert chat_workflow(TruncatedProvider(), {"message": "Hello"})["truncated"] is True
+
+
+def test_off_topic_question_gets_a_fixed_reply_without_calling_the_provider():
+    provider = SpyProvider()
+    result = chat_workflow(provider, {"message": "Write a Python function that reverses a string"})
+    assert result == {"type": "chat", "answer": OFF_TOPIC_REPLY, "truncated": False}
+    assert provider.prompts == []
+
+
+def test_attack_pattern_is_rejected_before_the_provider_is_called():
+    provider = SpyProvider()
+    with pytest.raises(InvalidInputError):
+        chat_workflow(provider, {"message": "x' UNION SELECT password FROM users"})
+    assert provider.prompts == []
