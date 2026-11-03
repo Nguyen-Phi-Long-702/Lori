@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 
-from guardrails.s2s_auth import verify_backend_request
 from models.exercise import ExerciseRequest
 from orchestrator.ai_orchestrator import TaskType
 from providers.base import ProviderError
@@ -8,7 +7,7 @@ from providers.base import ProviderError
 router = APIRouter()
 
 
-@router.post("/ai/generate-exercise", dependencies=[Depends(verify_backend_request)])
+@router.post("/ai/generate-exercise")
 def generate_exercise(body: ExerciseRequest, request: Request):
     try:
         return request.app.state.orchestrator.handle(

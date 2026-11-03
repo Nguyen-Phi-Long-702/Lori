@@ -106,3 +106,34 @@ def test_hello_world_still_public():
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"message": "Hello from Lori AI Service"}
+
+
+def protected_endpoints():
+    # GET / la duong dan cong khai duy nhat (UptimeRobot theo doi)
+    return [
+        (method.upper(), path)
+        for path, methods in app.openapi()["paths"].items()
+        for method in methods
+        if (method, path) != ("get", "/")
+    ]
+
+
+@pytest.mark.parametrize("method, path", protected_endpoints())
+def test_every_endpoint_rejects_requests_without_signature(method, path):
+    assert client.request(method, path).status_code == 401
+
+
+@pytest.mark.parametrize("path", ["/docs", "/redoc", "/openapi.json", "/does-not-exist"])
+def test_unlisted_and_documentation_paths_are_rejected_without_signature(path):
+    assert client.get(path).status_code == 401
+
+
+def test_malformed_json_without_signature_is_401_not_422():
+    response = client.post("/ai/chat", content=b"{not json", headers={"Content-Type": "application/json"})
+    assert response.status_code == 401
+
+
+def test_malformed_json_with_valid_signature_still_reaches_validation():
+    body = b"{not json"
+    headers = {"Content-Type": "application/json", **signed_headers(path="/ai/chat", body=body)}
+    assert client.post("/ai/chat", content=body, headers=headers).status_code == 422

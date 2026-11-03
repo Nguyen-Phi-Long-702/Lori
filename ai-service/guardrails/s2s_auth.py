@@ -5,6 +5,7 @@ import os
 import time
 
 from fastapi import HTTPException, Request
+from fastapi.responses import JSONResponse
 
 logger = logging.getLogger(__name__)
 
@@ -47,3 +48,15 @@ async def verify_backend_request(request: Request) -> None:
     # So sanh thoi gian khong doi, tranh lo thong tin qua do tre
     if not hmac.compare_digest(expected.encode("ascii"), signature.encode("utf-8")):
         raise _unauthorized()
+
+
+async def s2s_auth_middleware(request: Request, call_next):
+    # Chi GET / (UptimeRobot) khong can chu ky; moi duong dan khac, ke ca duong dan khong ton tai, deu phai co chu ky
+    if request.method == "GET" and request.url.path == "/":
+        return await call_next(request)
+    # Xac thuc chay truoc khi FastAPI doc JSON, de body hong khong lo ra 422 cho request khong co chu ky
+    try:
+        await verify_backend_request(request)
+    except HTTPException as error:
+        return JSONResponse({"detail": error.detail}, status_code=error.status_code)
+    return await call_next(request)

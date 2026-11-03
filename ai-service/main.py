@@ -1,6 +1,6 @@
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 
-from guardrails.s2s_auth import verify_backend_request
+from guardrails.s2s_auth import s2s_auth_middleware
 from orchestrator.ai_orchestrator import AiOrchestrator, TaskType
 from orchestrator.analysis_workflow import exam_analysis_workflow, quiz_analysis_workflow, recommend_workflow
 from orchestrator.chat_workflow import chat_workflow
@@ -20,6 +20,7 @@ from routers.image import router as image_router
 from routers.vocabulary import router as vocabulary_router
 
 app = FastAPI()
+app.middleware("http")(s2s_auth_middleware)
 app.state.orchestrator = AiOrchestrator(
     create_provider(),
     {
@@ -49,6 +50,6 @@ def hello():
     return {"message": "Hello from Lori AI Service"}
 
 
-@app.post("/ai/ping", dependencies=[Depends(verify_backend_request)])
+@app.post("/ai/ping")
 def ping():
     return {"status": "ok"}

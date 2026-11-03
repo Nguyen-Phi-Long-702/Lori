@@ -1,11 +1,9 @@
-from fastapi import APIRouter, Depends, Request
-
-from guardrails.s2s_auth import verify_backend_request
+from fastapi import APIRouter, Request
 
 router = APIRouter()
 
 
-@router.get("/ai/health", dependencies=[Depends(verify_backend_request)])
+@router.get("/ai/health")
 def health(request: Request):
     provider = request.app.state.orchestrator.provider
     return {
