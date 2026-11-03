@@ -347,7 +347,9 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - `ai-service/context/context_builder.py`: `build_prompt(message, learning_context)` ghép Learning Context (JSON camelCase do Backend gửi, mục 18) và câu đã làm sạch thành prompt: khối `<learner_context>` (chỉ có khi ít nhất một phần có dữ liệu) rồi khối `<learner_message>`. Không đưa `submittedAt` của kỳ thi vào prompt.
 - Thứ tự bắt buộc: `sanitize_input` trước, `build_prompt` sau. Sanitizer xóa sạch mọi ký tự `<` và `>` nên học viên không giả được thẻ ranh giới của prompt.
 - Hai hàm được `chat_workflow` gọi đúng thứ tự trên.
-- Giới hạn đã biết: chưa chặn pattern SQL/path traversal và chưa có Topic classifier (Tuần 15); khối code học viên dán vào bị bỏ hoàn toàn; chỉ `<` + chữ cái, `/`, `!` được coi là thẻ HTML.
+- Từ Tuần 15 (Ngày 1-2), `sanitize_input` thêm một bước ngay sau khi bỏ ký tự bất thường và **trước** khi bỏ khối code/HTML: đối chiếu bản đã giải mã `%XX` (hai lần) và chữ thường với `_UNSAFE_PATTERNS` (SQL injection, lệnh hệ thống/mã, path traversal). Khớp một mẫu → `InvalidInputError` → AI Service `400`, Backend `400 Invalid input`; vì vậy mọi chỗ ghi `400` "rỗng sau khi làm sạch" ở mục 17 (bảng endpoint), 19, 21, 22 và 27 từ nay cũng gồm "chứa mẫu tấn công" (chat, phân tích câu/từ vựng, hội thoại). Mẫu viết hẹp để câu tiếng Anh thường (như `delete from the list`) không bị chặn.
+- `ai-service/guardrails/topic_classifier.py` (Guardrails lớp 4): `is_off_topic(text)` bỏ dấu tiếng Việt rồi chặn khi có từ khóa lạc đề (lập trình, tiền ảo/chứng khoán, toán, chính trị, thời tiết/thể thao, nấu ăn, hack) mà không có dấu hiệu học tiếng Anh (`english`, `nghĩa`, `grammar`...). `chat_workflow` gọi sau `sanitize_input`; lạc đề → `200` với câu cố định `OFF_TOPIC_REPLY`, **không gọi LLM**. Chỉ áp dụng cho chat, không áp dụng cho grammar/vocabulary/conversation (các luồng này nhận nội dung bất kỳ).
+- Giới hạn đã biết: danh sách mẫu và từ khóa là blacklist, không bắt được mọi biến thể (Base64, tiếng lóng, viết tách chữ); câu lạc đề không chứa từ khóa trong danh sách vẫn do `SYSTEM_PROMPT` xử lý; người dùng thêm một dấu hiệu học tiếng Anh (như "in English") vào câu lạc đề thì qua được classifier; khối code học viên dán vào bị bỏ hoàn toàn (trừ khi chứa mẫu tấn công thì bị từ chối); chỉ `<` + chữ cái, `/`, `!` được coi là thẻ HTML. Không tuyên bố chặn 100% prompt injection.
 
 ### Xác thực Server-to-Server
 
@@ -355,6 +357,8 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - AI Service (`ai-service/guardrails/s2s_auth.py`) tính lại chữ ký, so sánh bằng `hmac.compare_digest` và chỉ nhận request lệch thời gian không quá 300 giây. Thiếu header, sai chữ ký, timestamp sai định dạng hoặc hết hạn → `401 Unauthorized`.
 - Fail closed: nếu `AI_SERVICE_SHARED_SECRET` chưa đặt hoặc ngắn hơn 32 ký tự, AI Service từ chối mọi request cần chữ ký (401). Phía Backend, `AiServiceClient` trả `503 AI service unavailable` khi chưa có secret hoặc khi AI Service lỗi/từ chối.
 - Công thức ký được khóa bằng một test vector chung: `AiServiceSignerTest` (Backend) và `test_s2s_auth.py` (AI Service) phải cho cùng một chữ ký.
+- Từ Tuần 15 (Ngày 1-2): xác thực chạy bằng `s2s_auth_middleware` (đăng ký ở `main.py`) cho **mọi** request, từ chối mặc định; chỉ `GET /` (UptimeRobot) công khai. Đường dẫn không tồn tại, `/docs`, `/redoc`, `/openapi.json` và request có JSON hỏng mà không có chữ ký đều nhận `401` (trước đây `/docs` trả `200` và JSON hỏng trả `422`, tái hiện bằng test ở máy Dev). Test `test_every_endpoint_rejects_requests_without_signature` tự liệt kê mọi endpoint từ OpenAPI.
+- Giới hạn đã biết: một request đã ký hợp lệ có thể bị gửi lại trong cửa sổ 300 giây (chưa có nonce), vì chống phát lại cần kho dùng chung (Redis) mà Lớp 1 không cấp cho AI Service. Mọi endpoint AI đều có rate limit và Premium gate ở Backend nên rủi ro hạn chế.
 
 ### Tài nguyên thực tế của AI Service (Vercel Hobby)
 
@@ -392,10 +396,10 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 
 | `AiTaskType` | Điểm yếu ngữ pháp | Điểm yếu từ vựng | Hoạt động gần đây | Kỳ thi gần đây |
 |---|:-:|:-:|:-:|:-:|
-| `CHAT`, `RECOMMEND` | ✅ | ✅ | ✅ | |
+| `CHAT` | ✅ | ✅ | ✅ | |
 | `GRAMMAR` | ✅ | | | |
 | `VOCABULARY` | | ✅ | | |
-| `GENERATE_EXERCISE`, `ANALYZE_QUIZ`, `CONVERSATION` | ✅ | ✅ | | |
+| `RECOMMEND`, `GENERATE_EXERCISE`, `ANALYZE_QUIZ`, `CONVERSATION` | ✅ | ✅ | | |
 | `ANALYZE_EXAM` | ✅ | ✅ | | ✅ |
 | `IDENTIFY_IMAGE` | | | | |
 
@@ -422,7 +426,7 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 
 - Mỗi request độc lập: AI không nhớ các câu hỏi trước đó trong cùng cuộc hội thoại.
 - Hạn mức Cloudflare 10.000 Neurons/ngày dùng chung cho mọi user: model chính tốn khoảng 19-24 Neurons/câu hỏi (`ai-service/BENCHMARK.md` mục 5, 7), tức khoảng 400-500 câu/ngày; hết hạn mức thì chat trả 503 đến 00:00 UTC (07:00 giờ Việt Nam). Không tự chuyển sang model dự phòng.
-- Chưa có Topic classifier, kiểm tra output và log AI đã che thông tin cá nhân (Tuần 15); `AiOutputValidator` chưa có nên câu trả lời của model được trả nguyên văn.
+- Chưa có kiểm tra output và log AI đã che thông tin cá nhân (Tuần 15); `AiOutputValidator` chưa có nên câu trả lời của model được trả nguyên văn. Câu hỏi lạc đề có từ khóa trong danh sách được Topic classifier chặn bằng câu trả lời cố định (mục 17); câu lạc đề khác vẫn do `SYSTEM_PROMPT` xử lý.
 - Timeout: AI Service chờ Cloudflare tối đa 25 giây, Backend chờ AI Service tối đa 30 giây.
 
 ## 20. Kiểm thử AI Tutor (Tuần 11 – Ngày 7)
@@ -478,7 +482,7 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 ### Giới hạn đã biết (không sửa)
 
 - Chưa có ví dụ câu và bài tập liên quan (Module 5.7, Tuần 13); chưa ghi `ai_feedback_metadata`.
-- Giải thích bằng tiếng Anh đơn giản (theo `SYSTEM_PROMPT`); chưa có Topic classifier, kiểm tra output và log đã che thông tin cá nhân (Tuần 15).
+- Giải thích bằng tiếng Anh đơn giản (theo `SYSTEM_PROMPT`); chưa có kiểm tra output và log đã che thông tin cá nhân (Tuần 15). Topic classifier không áp dụng cho phân tích câu (câu cần kiểm tra có thể về chủ đề bất kỳ).
 - Mỗi request chỉ kiểm tra tối đa 1.000 ký tự đầu của câu sau khi làm sạch; model có thể sửa khác nhau giữa các lần gọi nếu Cloudflare đổi model.
 - Model có thể chọn `lessonId` chưa thật sát lỗi; đã kiểm tra thủ công ở Tuần 12 Ngày 7 (mục 23).
 
@@ -851,3 +855,30 @@ Lỗi phát hiện ở UI: <điền: số lỗi và mô tả ngắn, hoặc "kh�
 - Test UI chỉ làm trên LDPlayer 9 (dùng mạng của máy tính), chưa test bằng điện thoại thật và mạng 4G; CameraX chưa được thử trên điện thoại thật.
 - Kịch bản Premium hết hạn giữa chừng (U12, U17) chỉ làm được bằng cách sửa `users.premium_expires_at` trong Neon.
 - <điền từng điểm bạn phát hiện ở Phần 4 và 6: ví dụ vật bị bỏ sót/nhận nhầm kèm ảnh, mode `teacher` bỏ sót `Tip:`, câu trả lời dài quá 3 câu, `original` không khớp lời người học, thời gian lượt nhận xét… Mỗi điểm một dòng, chỉ ghi điều đã quan sát được>
+
+## 29. Guardrails lớp 1b-4 (Tuần 15 – Ngày 1-2)
+
+- Phạm vi: rà soát Server-to-Server Auth (Lớp 1b), nâng cấp `AiInputSanitizer` (Lớp 3), thêm Topic classifier (Lớp 4), review `AiContextPolicy` (Lớp 2). Chi tiết hành vi ở mục 17 (S2S, Sanitizer, Topic classifier) và mục 18 (bảng context).
+- Lớp 2 đã rà soát: mọi `/api/ai/*` qua JWT + `@RequirePremium` (cấp class của `AiGatewayController`); `AiServiceClient` không gửi `userId`; các nơi gọi `LearningContextService.build` dùng đúng `AiTaskType`. Lớp 3 phía Backend: các DTO `Ai*Request` đã validate (rỗng, tối đa 4.000 ký tự, giá trị ngoài danh sách, tối đa 30 lượt hội thoại), không sửa. Thay đổi duy nhất ở Backend: `AiContextPolicy` bỏ `RECENT_ACTIVITY` khỏi `RECOMMEND` vì prompt của tác vụ này mô tả context chỉ là các chủ đề yếu.
+- Không thêm biến môi trường, thư viện hay migration so với mục 17.
+- Chạy test (PowerShell, ở thư mục gốc repo): AI Service như mục 22 (395 test); Backend `docker run --rm -v "${PWD}\backend:/app" -v lori-m2:/root/.m2 -w /app maven:3.9-eclipse-temurin-17 mvn -B test '-Dtest=AiRecommendServiceTest,AiGatewayServiceTest,AiServiceClientTest,AiRateLimiterTest'`.
+
+### Kiểm tra trên môi trường thật (ngày <dd/MM/2026>)
+
+| # | Kịch bản | Cách chạy | Kết quả kỳ vọng | Kết quả |
+|---|---|---|---|---|
+| 1 | Đường dẫn gốc vẫn công khai | `curl.exe` `GET /` | `200` | Đạt |
+| 2 | Tài liệu API đóng | `GET /docs`, `GET /openapi.json` không chữ ký | `401` | Đạt |
+| 3 | JSON hỏng không chữ ký | `POST /ai/chat` body `{not json` | `401` | Đạt |
+| 4 | Luồng AI Tutor có sẵn sau khi đổi sanitizer, middleware và policy | Postman: Run folder `3. AI Tutor flow` (T1-T23) | Mọi request và test Pass (gồm chat T5, T7, T8, T12 và recommend T23) | Đạt |
+| 5 | Chat lạc đề | `POST /api/ai/chat` "Write a short Python function that reverses a string." | `200`, câu từ chối cố định, không gọi LLM | Đạt |
+| 6 | Chat chứa SQL injection | `POST /api/ai/chat` "x' UNION SELECT password FROM users" | `400 Invalid input` | Đạt |
+| 7 | Từ lạc đề nhưng là câu hỏi học tiếng Anh | `POST /api/ai/chat` "What does 'bitcoin' mean in English?" | `200`, có câu trả lời của AI | Đạt |
+
+### Giới hạn đã biết (không sửa)
+
+- Topic classifier và mẫu tấn công là blacklist theo từ khóa/regex (xem mục 17); bộ 30-50 case prompt injection chạy vào AI Service thật là việc của Tuần 15 – Ngày 7, kết quả đo thật sẽ ghi ở đó.
+- Câu từ chối lạc đề là một câu cố định bằng tiếng Việt, không đổi ngôn ngữ theo câu hỏi.
+- Chưa có chống phát lại cho chữ ký S2S (mục 17).
+- Mẫu `exec (` / `eval (` bị chặn dù là câu tiếng Anh hiếm gặp như "he is an exec (executive)".
+- Hội thoại gửi lại toàn bộ lịch sử mỗi lượt và mọi lượt (kể cả của AI) đều qua `sanitize_input`: nếu một lượt trả lời của AI tình cờ chứa mẫu tấn công thì các request sau của buổi đó nhận `400`; chưa gặp trường hợp thật.
