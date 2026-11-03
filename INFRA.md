@@ -813,29 +813,29 @@ AI Conversation (7 hội thoại, mỗi hội thoại 3 lượt của người h
 | Nhận xét cuối buổi: từ vựng, diễn đạt tự nhiên, cụm từ hữu ích | `usefulPhrases` hợp tình huống ở cả 5 hội thoại có nhận xét (C2 trùng với `better` của `naturalness`; C6 `I usually [verb]` khá chung chung). Gợi ý tốt: `carry-on bag`, `by the window`, `take over many jobs`. Sai nhỏ: C1 gọi `I'd like to pay with a card` là "câu hỏi" dù là câu khẳng định. `summary` đều bằng tiếng Việt |
 | Request lỗi | 2/34 request (không tính Premium gate): `503 AI service unavailable` ở C4 lượt nhận xét (sau 12,1 s) và C5 lượt 3 (sau 10,6 s). Chưa xác định nguyên nhân (không phải hết thời gian chờ 30 s) |
 
-### Kết quả kiểm thử UI trên LDPlayer 9 (APK 1.3-beta, ngày <điền dd/MM/2026>) - Tạm chưa chạy
+### Kết quả kiểm thử UI trên LDPlayer 9 (APK 1.3-beta, ngày 03/11/2026)
 
 | # | Kịch bản | Kết quả |
 |---|---|---|
-| U1 | Free bấm AI English Tutor → dialog Premium; mua Premium mock → vào AI Tutor Home | <Đạt / Không đạt: mô tả> |
-| U2 | Mở đủ 6 công cụ ở AI Tutor Home | <Đạt / Không đạt: mô tả> |
-| U3 | Nhận diện ảnh từ Thư viện: khung, danh sách từ, câu ví dụ | <Đạt / Không đạt: mô tả> |
-| U4 | Chọn từ khác: khung và câu ví dụ đổi theo | <Đạt / Không đạt: mô tả> |
-| U5 | Nút phát âm | <Đạt / Không đạt: mô tả> |
-| U6 | Lưu cả N từ vào Từ vựng của tôi | <Đạt / Không đạt: mô tả> |
-| U7 | Lưu lại ảnh cũ: thông báo từ đã có | <Đạt / Không đạt: mô tả> |
-| U8 | Ảnh nhiều vật: mỗi từ một khung | <Đạt / Không đạt: mô tả> |
-| U9 | Ảnh không có vật: thông báo, không có nút lưu | <Đạt / Không đạt: mô tả> |
-| U10 | Chụp bằng camera trên LDPlayer | <Đạt / Không đạt: mô tả, ghi rõ chụp được hay hiện gợi ý không dùng được camera> |
-| U11 | Offline khóa nút chụp/Thư viện ở Nhận diện ảnh | <Đạt / Không đạt: mô tả> |
-| U12 | Premium hết hạn giữa chừng ở Nhận diện ảnh → dialog | <Đạt / Không đạt: mô tả> |
-| U13 | Lưới 7 tình huống hội thoại | <Đạt / Không đạt: mô tả> |
-| U14 | Một buổi hội thoại trọn vẹn (Nhà hàng): chat, nhận xét, Xong | <Đạt / Không đạt: mô tả> |
-| U15 | Giới hạn 30 tin: khóa Gửi, Kết thúc vẫn nhận xét được | <Đạt / Không đạt: mô tả> |
-| U16 | Offline giữa buổi khóa Gửi và Kết thúc | <Đạt / Không đạt: mô tả> |
-| U17 | Premium hết hạn giữa buổi hội thoại → dialog | <Đạt / Không đạt: mô tả> |
+| U1 | Free bấm AI English Tutor → dialog Premium; mua Premium mock → vào AI Tutor Home | Đạt |
+| U2 | Mở đủ 6 công cụ ở AI Tutor Home | Đạt |
+| U3 | Nhận diện ảnh từ Thư viện: khung, danh sách từ, câu ví dụ | Đạt |
+| U4 | Chọn từ khác: khung và câu ví dụ đổi theo | Đạt |
+| U5 | Nút phát âm | Đạt |
+| U6 | Lưu cả N từ vào Từ vựng của tôi | Đạt |
+| U7 | Lưu lại ảnh cũ: thông báo từ đã có | Đạt |
+| U8 | Ảnh nhiều vật: mỗi từ một khung | Đạt |
+| U9 | Ảnh không có vật: thông báo, không có nút lưu | Đạt |
+| U10 | Chụp bằng camera trên LDPlayer | Đạt |
+| U11 | Offline khóa nút chụp/Thư viện ở Nhận diện ảnh | Đạt |
+| U12 | Premium hết hạn giữa chừng ở Nhận diện ảnh → dialog | Đạt |
+| U13 | Lưới 7 tình huống hội thoại | Đạt |
+| U14 | Một buổi hội thoại trọn vẹn (Nhà hàng): chat, nhận xét, Xong | Đạt |
+| U15 | Giới hạn 30 tin: khóa Gửi, Kết thúc vẫn nhận xét được | Đạt |
+| U16 | Offline giữa buổi khóa Gửi và Kết thúc | Đạt |
+| U17 | Premium hết hạn giữa buổi hội thoại → dialog | Đạt |
 
-Lỗi phát hiện ở UI: <điền: số lỗi và mô tả ngắn, hoặc "không có lỗi ở UI (17/17 kịch bản đạt)">.
+Lỗi phát hiện ở UI: Không có lỗi ở UI (17/17 kịch bản đạt).
 
 ### APK
 
@@ -863,7 +863,7 @@ Lỗi phát hiện ở UI: <điền: số lỗi và mô tả ngắn, hoặc "kh�
 - Không thêm biến môi trường, thư viện hay migration so với mục 17.
 - Chạy test (PowerShell, ở thư mục gốc repo): AI Service như mục 22 (395 test); Backend `docker run --rm -v "${PWD}\backend:/app" -v lori-m2:/root/.m2 -w /app maven:3.9-eclipse-temurin-17 mvn -B test '-Dtest=AiRecommendServiceTest,AiGatewayServiceTest,AiServiceClientTest,AiRateLimiterTest'`.
 
-### Kiểm tra trên môi trường thật (ngày <dd/MM/2026>)
+### Kiểm tra trên môi trường thật (ngày 03/11/2026)
 
 | # | Kịch bản | Cách chạy | Kết quả kỳ vọng | Kết quả |
 |---|---|---|---|---|
