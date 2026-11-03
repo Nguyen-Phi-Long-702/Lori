@@ -18,10 +18,10 @@ public class AiContextPolicy {
 
     public Set<AiContextField> allowedFields(AiTaskType taskType) {
         return switch (taskType) {
-            case CHAT, RECOMMEND -> Set.of(WEAK_GRAMMAR, WEAK_VOCABULARY, RECENT_ACTIVITY);
+            case CHAT -> Set.of(WEAK_GRAMMAR, WEAK_VOCABULARY, RECENT_ACTIVITY);
             case GRAMMAR -> Set.of(WEAK_GRAMMAR);
             case VOCABULARY -> Set.of(WEAK_VOCABULARY);
-            case GENERATE_EXERCISE, ANALYZE_QUIZ, CONVERSATION -> Set.of(WEAK_GRAMMAR, WEAK_VOCABULARY);
+            case RECOMMEND, GENERATE_EXERCISE, ANALYZE_QUIZ, CONVERSATION -> Set.of(WEAK_GRAMMAR, WEAK_VOCABULARY);
             case ANALYZE_EXAM -> Set.of(WEAK_GRAMMAR, WEAK_VOCABULARY, RECENT_EXAMS);
             case IDENTIFY_IMAGE -> Set.of();
         };
