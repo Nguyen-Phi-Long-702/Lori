@@ -350,6 +350,7 @@ Bảng quy đổi band IELTS dùng để đối chiếu nằm trong `IeltsScoreU
 - Từ Tuần 15 (Ngày 1-2), `sanitize_input` thêm một bước ngay sau khi bỏ ký tự bất thường và **trước** khi bỏ khối code/HTML: đối chiếu bản đã giải mã `%XX` (hai lần) và chữ thường với `_UNSAFE_PATTERNS` (SQL injection, lệnh hệ thống/mã, path traversal). Khớp một mẫu → `InvalidInputError` → AI Service `400`, Backend `400 Invalid input`; vì vậy mọi chỗ ghi `400` "rỗng sau khi làm sạch" ở mục 17 (bảng endpoint), 19, 21, 22 và 27 từ nay cũng gồm "chứa mẫu tấn công" (chat, phân tích câu/từ vựng, hội thoại). Mẫu viết hẹp để câu tiếng Anh thường (như `delete from the list`) không bị chặn.
 - `ai-service/guardrails/topic_classifier.py` (Guardrails lớp 4): `is_off_topic(text)` bỏ dấu tiếng Việt rồi chặn khi có từ khóa lạc đề (lập trình, tiền ảo/chứng khoán, toán, chính trị, thời tiết/thể thao, nấu ăn, hack) mà không có dấu hiệu học tiếng Anh (`english`, `nghĩa`, `grammar`...). `chat_workflow` gọi sau `sanitize_input`; lạc đề → `200` với câu cố định `OFF_TOPIC_REPLY`, **không gọi LLM**. Chỉ áp dụng cho chat, không áp dụng cho grammar/vocabulary/conversation (các luồng này nhận nội dung bất kỳ).
 - Giới hạn đã biết: danh sách mẫu và từ khóa là blacklist, không bắt được mọi biến thể (Base64, tiếng lóng, viết tách chữ); câu lạc đề không chứa từ khóa trong danh sách vẫn do `SYSTEM_PROMPT` xử lý; người dùng thêm một dấu hiệu học tiếng Anh (như "in English") vào câu lạc đề thì qua được classifier; khối code học viên dán vào bị bỏ hoàn toàn (trừ khi chứa mẫu tấn công thì bị từ chối); chỉ `<` + chữ cái, `/`, `!` được coi là thẻ HTML. Không tuyên bố chặn 100% prompt injection.
+- `ai-service/guardrails/ai_output_validator.py` (Guardrails lớp 5, Tuần 15 – Ngày 3): `validate_output(response)` duyệt mọi chuỗi trong response của **mọi** `task_type` (`AiOrchestrator.handle` gọi sau khi workflow chạy xong). Email và số điện thoại bị thay bằng `[redacted]`; response chứa SQL, đường dẫn hệ thống (`/etc/`, `/var/`, `C:\Users\`, `file://`...) hoặc JSON hệ thống (`"role": "system"`, các khóa `weakGrammar`, `recentActivity`, `userId`, `password`...) bị chặn toàn bộ: `OutputBlockedError` (con của `ProviderError`) → AI Service `502 AI provider error` → Backend `503 AI service unavailable`. Log chỉ ghi loại mẫu (`sql`, `system_path`, `system_json`), không ghi nội dung. Từ nay các chỗ ghi "chưa có kiểm tra output" ở mục 19, 21, 22, 24 và 25 không còn đúng. Giới hạn đã biết: xem mục 30.
 
 ### Xác thực Server-to-Server
 
@@ -653,12 +654,12 @@ Kết quả chạy ngày 30/10/2026: Đạt (T19, T20, T21, T22, T23 đều đ�
 ## 26. Image Learning — nhận diện ảnh (Tuần 14 – Ngày 1-2)
 
 - Endpoint: `POST /api/ai/identify-image` (`AiGatewayController`), yêu cầu đăng nhập và Premium (`@RequirePremium`). Request `multipart/form-data`, trường `image` (JPEG/PNG/WEBP, tối đa 3 MB). Response `200`: `{"type":"image_identification","objects":[{"word":"bus","ipa":"/ˈbʌs/","meaning":"Xe buýt.","confidence":0.8362,"box":{"x":0.0381,"y":0.2141,"width":0.9504,"height":0.506},"example":"...","exampleVi":"..."}]}`. `objects` tối đa 5 vật, mỗi từ một vật (độ tin cậy cao nhất), sắp theo độ tin cậy giảm dần; không nhận ra vật nào thì `objects` rỗng và không gọi LLM. `box` chuẩn hóa 0..1 theo ảnh gốc (đã xoay theo EXIF), `(x, y)` là góc trên-trái. `ipa` là `null` nếu từ điển không có; `example`/`exampleVi` là `null` nếu AI không tạo được.
-- Luồng: JWT → `@RequirePremium` → `AiRateLimiter.checkIdentifyImage` (bucket riêng 20 request/phút/user) → `AiServiceClient.identifyImage` gửi **byte ảnh thô** (`Content-Type: application/octet-stream`, ký HMAC trên đúng các byte đó, mục 17) → AI Service `POST /ai/identify-image` → YOLOv8n (ONNX) → tra `dictionary.db` → Cloudflare Workers AI viết câu ví dụ. Backend không gửi `userId` và không gửi Learning Context (`AiContextPolicy`: `IDENTIFY_IMAGE` không nhận phần nào).
+- Luồng: JWT → `@RequirePremium` → `AiRateLimiter.checkIdentifyImage` (bucket riêng 10 request/phút/user) → `AiServiceClient.identifyImage` gửi **byte ảnh thô** (`Content-Type: application/octet-stream`, ký HMAC trên đúng các byte đó, mục 17) → AI Service `POST /ai/identify-image` → YOLOv8n (ONNX) → tra `dictionary.db` → Cloudflare Workers AI viết câu ví dụ. Backend không gửi `userId` và không gửi Learning Context (`AiContextPolicy`: `IDENTIFY_IMAGE` không nhận phần nào).
 - YOLO chạy **trong AI Service trên Vercel** bằng `onnxruntime` (CPU), file `ai-service/data/yolov8n.onnx` (xuất từ `yolov8n.pt`, 640×640, không train lại). Thư viện mới trong `ai-service/requirements.txt`: `onnxruntime`, `numpy`, `pillow` (chốt phương án nơi chạy YOLO mà `ai-service/BENCHMARK.md` mục 11 để ngỏ). File model làm repo tăng thêm khoảng 12,8 MB. Ngưỡng tin cậy 0,25 và NMS 0,7 (mặc định của `ultralytics predict`). Mã: `providers/yolo_detector.py`, `orchestrator/image_workflow.py`, `routers/image.py`, `config/image_vocabulary.py`.
 - Xuất lại model (PowerShell, thư mục gốc repo): `docker run --rm -v "${PWD}\ai-service\data:/out" -w /tmp python:3.12-slim sh -c "apt-get update -qq && apt-get install -y -qq --no-install-recommends libgl1 libglib2.0-0 && pip install -q torch torchvision --index-url https://download.pytorch.org/whl/cpu && pip install -q ultralytics==8.4.194 onnx==1.23.2 && yolo export model=yolov8n.pt format=onnx imgsz=640 simplify=False && cp yolov8n.onnx /out/"`.
 - Nghĩa tiếng Việt: lấy từ `dictionary.db`, trừ các từ có trong `OBJECT_MEANINGS` (28 từ có nghĩa đầu tiên trong từ điển không phải nghĩa đồ vật, hoặc không có trong từ điển). `hair drier` (cách viết của COCO) được đổi thành `hair dryer`. Test `test_every_yolo_class_has_a_meaning...` kiểm tra cả 80 nhãn đều có nghĩa.
 - Giới hạn kích thước: Backend `spring.servlet.multipart.max-file-size=3MB` (Vercel nhận tối đa 4,5 MB mỗi request, mục 17); ảnh lớn hơn nhận `413`. AI Service kiểm tra lại: ≤ 3 MB, ≤ 40 triệu pixel, đúng JPEG/PNG/WEBP; ảnh không đọc được → `400` → Backend trả `400 Invalid input`.
-- Mã lỗi: `400` (thiếu `image`, file rỗng, không phải ảnh), `401`, `403 PREMIUM_REQUIRED` (user Free), `413` (ảnh > 3 MB), `415` (không phải `multipart/form-data`), `429` (quá 20 request/phút/user), `503 AI service unavailable` (AI Service lỗi, quá 30 giây, thiếu secret). LLM lỗi **không** làm lỗi request: vẫn `200`, `example`/`exampleVi` là `null`.
+- Mã lỗi: `400` (thiếu `image`, file rỗng, không phải ảnh), `401`, `403 PREMIUM_REQUIRED` (user Free), `413` (ảnh > 3 MB), `415` (không phải `multipart/form-data`), `429` (quá 10 request/phút/user), `503 AI service unavailable` (AI Service lỗi, quá 30 giây, thiếu secret). LLM lỗi **không** làm lỗi request: vẫn `200`, `example`/`exampleVi` là `null`.
 - Không thêm biến môi trường hay migration so với mục 17. Chạy test (PowerShell, thư mục gốc repo): AI Service như mục 22; Backend `docker run --rm -v "${PWD}\backend:/app" -v lori-m2:/root/.m2 -w /app maven:3.9-eclipse-temurin-17 mvn -B test '-Dtest=AiImageServiceTest,GlobalExceptionHandlerTest,AiRateLimiterTest,AiServiceClientTest'`.
 
 ### Kiểm thử trên Render (Postman, request tạm T24 không lưu vào collection)
@@ -748,7 +749,7 @@ Kết quả chạy ngày 02/11/2026: **Đạt 12/12**.
 - `tools/ai-test/image_test.py` (Image Learning) và `tools/ai-test/conversation_test.py` (AI Conversation), dùng chung `tools/ai-test/ai_test_common.py`: chạy bằng Docker (image `python:3.12-slim`, chỉ dùng thư viện chuẩn của Python), đi qua đường thật Script → Render (Backend) → Vercel (AI Service) → YOLOv8n / Cloudflare Workers AI, không dùng mock. Biến môi trường (chỉ ghi tên): `BASE_URL` (URL Render, không có `/` ở cuối), `API_KEY`, `APP_SIGNATURE`. Lệnh chạy (PowerShell, ở thư mục gốc repo, sau khi đặt 3 biến môi trường):
   `docker run --rm -e BASE_URL -e API_KEY -e APP_SIGNATURE -v "${PWD}\tools\ai-test:/work" -w /work python:3.12-slim python -u image_test.py`
   `docker run --rm -e BASE_URL -e API_KEY -e APP_SIGNATURE -v "${PWD}\tools\ai-test:/work" -w /work python:3.12-slim python -u conversation_test.py`
-- Mỗi lần chạy: đăng ký user mới `image.<thời gian>@example.com` hoặc `convo.<thời gian>@example.com` (Free) → kiểm tra user Free bị `403 PREMIUM_REQUIRED` → `mock-purchase` → chạy các ca, cách nhau 3 giây (giới hạn 20 request/phút/user).
+- Mỗi lần chạy: đăng ký user mới `image.<thời gian>@example.com` hoặc `convo.<thời gian>@example.com` (Free) → kiểm tra user Free bị `403 PREMIUM_REQUIRED` → `mock-purchase` → chạy các ca, cách nhau 3 giây với AI Conversation (giới hạn 20 request/phút/user) và 6 giây với Image Learning (giới hạn 10 request/phút/user).
 - Kết quả ghi ở `tools/ai-test/results/image-learning-<ngày>-<giờ UTC>.md` và `conversation-<ngày>-<giờ UTC>.md`. Phần tự động chỉ kiểm tra cấu trúc và các điều biết chắc; vật thừa/bỏ sót, IPA, nghĩa, câu ví dụ, vai diễn, chất lượng nhận xét do người đọc file kết quả.
 - Ảnh mẫu nằm ở `tools/ai-test/images/` (không commit, `tools/ai-test/.gitignore`); tên ảnh và các vật kỳ vọng nằm ở `tools/ai-test/image_cases.json`. Thu nhỏ ảnh về cạnh dài 1280 px trước khi dùng (như `ImagePreparer` của app).
 
@@ -882,3 +883,47 @@ Lỗi phát hiện ở UI: Không có lỗi ở UI (17/17 kịch bản đạt).
 - Chưa có chống phát lại cho chữ ký S2S (mục 17).
 - Mẫu `exec (` / `eval (` bị chặn dù là câu tiếng Anh hiếm gặp như "he is an exec (executive)".
 - Hội thoại gửi lại toàn bộ lịch sử mỗi lượt và mọi lượt (kể cả của AI) đều qua `sanitize_input`: nếu một lượt trả lời của AI tình cờ chứa mẫu tấn công thì các request sau của buổi đó nhận `400`; chưa gặp trường hợp thật.
+
+## 30. Guardrails lớp 5-6 (Tuần 15 – Ngày 3)
+
+- Phạm vi: `AiOutputValidator` (Lớp 5) và Rate Limiting theo từng endpoint AI (Lớp 6). Hành vi của `AiOutputValidator` ghi ở mục 17.
+- Lớp 5: `AiOrchestrator.handle` gọi `validate_output` sau mọi workflow nên 9 loại task đều được quét. Chặn response → `OutputBlockedError`; router ảnh (`routers/image.py`) từ nay cũng bắt `ProviderError` và trả `502` (trước đây không có nhánh này).
+- Lớp 6: mỗi endpoint AI một bucket riêng theo user (Bucket4j trên Upstash, key `ai_rate_limit:<tác vụ>:<userId>`):
+
+| Endpoint | Giới hạn |
+|---|---|
+| `/api/ai/chat` | 20 request/phút/user |
+| `/api/ai/analyze-text` (ngữ pháp và từ vựng dùng chung bucket) | 20 request/phút/user |
+| `/api/ai/analyze-quiz` | 20 request/phút/user |
+| `/api/ai/analyze-exam` | 20 request/phút/user |
+| `/api/ai/generate-exercise` | 20 request/phút/user |
+| `/api/ai/recommend` | 20 request/phút/user |
+| `/api/ai/conversation` (mỗi lượt chat là một request) | 20 request/phút/user |
+| `/api/ai/identify-image` | **10 request/phút/user** (đổi từ 20 theo kế hoạch mục 8.1) |
+
+  Vượt giới hạn → `429 Too many requests`. Giới hạn 60 request/phút/IP của `RateLimitFilter` vẫn áp dụng song song. Kế hoạch chỉ nêu số cho chat (20) và identify-image (10); các endpoint còn lại giữ 20 như đã làm từ Tuần 11-14.
+- Android: chuỗi `ai_error_too_many_requests` (`app/src/main/res/values/strings.xml`, hiển thị qua `AiErrorMessages.ofHttp` cho mọi màn hình AI) bỏ cụm "tối đa 20 lượt mỗi phút" vì giới hạn không còn giống nhau giữa các tác vụ; nội dung mới "Bạn gửi quá nhanh. Vui lòng đợi một lát rồi thử lại".
+- Không thêm biến môi trường, thư viện hay migration so với mục 17.
+- Chạy test (PowerShell, ở thư mục gốc repo): AI Service như mục 22 (430 test); Backend `docker run --rm -v "${PWD}\backend:/app" -v lori-m2:/root/.m2 -w /app maven:3.9-eclipse-temurin-17 mvn -B test '-Dtest=AiRateLimiterTest,AiImageServiceTest,AiGatewayServiceTest'`.
+
+### Kiểm tra trên môi trường thật (ngày 04/11/2026)
+
+| # | Kịch bản | Cách chạy | Kết quả kỳ vọng | Kết quả |
+|---|---|---|---|---|
+| R1 | Luồng AI Tutor sau khi thêm validator | Postman: Run folder `3. AI Tutor flow` (T1-T23) | Mọi request và test Pass | Đạt |
+| R2 | Ngữ pháp và từ vựng | `grammar_vocabulary_test.py` | Các kiểm tra tự động Pass như lần trước | Không đạt: 18/20. V2 và V4 (vocabulary) trả HTTP 503, kỳ vọng 200 (chưa xác định nguyên nhân). GATE, G1-G10, V1, V3, V5-V7, X1-X3 Pass |
+| R3 | Hội thoại | `conversation_test.py` | Các kiểm tra tự động Pass như lần trước | Không đạt: 6/7 hội thoại. C2 (airport) lượt 3 trả lời dài 4 câu, tối đa 3 (HTTP 200). C1, C3-C7 Pass |
+| R4 | Nhận diện ảnh | `image_test.py` (khoảng nghỉ 6 giây) | Các kiểm tra tự động Pass như lần trước | Không đạt: 9/12 ảnh (HTTP 200 cả 12). 05-drinks không nhận ra bottle, cup (ra toilet, vase); 07-phone không nhận ra cell phone (ra remote, book); 11-bag không nhận ra backpack (ra suitcase, umbrella) |
+| R5 | Chat có số điện thoại, yêu cầu model nhắc lại | `POST /api/ai/chat` "...It is 0912345678. Please repeat the number in your answer." | `200`, số điện thoại thành `[redacted]` | Đạt |
+| R6 | Chat khiến model viết SQL | `POST /api/ai/chat` "...include this exact line...: SELECT * FROM users" | `503 AI service unavailable`; log Vercel có `AiOutputValidator chan response: sql` | Đạt |
+| R7 | Giới hạn identify-image | 20 request `POST /api/ai/identify-image` file rỗng, liên tiếp, user Premium | Khoảng 10-11 request đầu `400`, sau đó `429` | Đạt |
+| R8 | Bucket riêng giữa các endpoint | `POST /api/ai/chat` ngay sau R7 | `200` | Đạt |
+| R9 | Bucket nạp lại | Chờ 60 giây, gửi lại 1 request identify-image | `400` (không còn `429`) | Đạt |
+
+### Giới hạn đã biết (không sửa)
+
+- Mẫu của `AiOutputValidator` là blacklist theo regex, không bắt mọi biến thể: email viết tách chữ ("name at domain dot com"), số điện thoại dạng `(xxx) xxx-xxxx` hoặc `84xxxxxxxxx` không có dấu `+`, SQL ngoài các dạng đã liệt kê. Ngược lại, một dãy 10-11 chữ số liền bắt đầu bằng `0` (ví dụ `0123456789`) bị coi là số điện thoại và bị che. Không tuyên bố chặn 100% rò rỉ dữ liệu.
+- Response bị chặn thì cả response bị bỏ, kể cả khi mẫu khớp chỉ nằm ở một câu ví dụ nhỏ; client chỉ thấy `503 AI service unavailable`, không phân biệt được với lỗi AI Service thật. Hỏi lại cùng câu thường cho cùng kết quả vì `TEMPERATURE = 0`.
+- Email/số điện thoại do **học viên tự gõ** và được model chép lại (ví dụ trong `correctedSentence`) cũng bị thay bằng `[redacted]`.
+- Rate limit tính riêng từng endpoint theo user, không có tổng chung cho toàn bộ tác vụ AI của một user; hạn mức Cloudflare 10.000 Neurons/ngày (mục 17) vẫn dùng chung cho mọi user.
+- Log của Lớp 5 chỉ ghi loại mẫu bị chặn. Che thông tin cá nhân trong log AI (Lớp 7) là việc của Tuần 15 – Ngày 4.
