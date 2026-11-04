@@ -15,8 +15,8 @@ import ai_test_common as api
 
 HERE = Path(__file__).parent
 IMAGES = HERE / "images"
-# AiRateLimiter cho 20 request/phut/user; nghi 3 giay giua 2 anh de khong cham gioi han
-DELAY_SECONDS = 3
+# AiRateLimiter cho identify-image 10 request/phut/user (nap lai 1 luot moi 6 giay); nghi 6 giay giua 2 anh de khong cham gioi han
+DELAY_SECONDS = 6
 MAX_IMAGE_BYTES = 3 * 1024 * 1024
 MAX_OBJECTS = 5
 

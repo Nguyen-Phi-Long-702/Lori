@@ -11,16 +11,17 @@ import java.time.Duration;
 import java.util.UUID;
 
 /**
-* Rate limit rieng cho tac vu AI, theo tung user (khac RateLimitFilter gioi han theo IP):
-* chat, phan tich cau (analyze-text), phan tich quiz (analyze-quiz), phan tich bai thi (analyze-exam),
-* sinh bai tap (generate-exercise), de xuat on tap (recommend), nhan dien anh (identify-image)
-* va hoi thoai (conversation), moi loai toi da 20 request/phut.
+* Rate limit rieng cho tac vu AI, theo tung user (khac RateLimitFilter gioi han theo IP): moi tac vu mot bucket rieng.
+* Chat, phan tich cau (analyze-text), phan tich quiz (analyze-quiz), phan tich bai thi (analyze-exam),
+* sinh bai tap (generate-exercise), de xuat on tap (recommend) va hoi thoai (conversation): toi da 20 request/phut.
+* Nhan dien anh (identify-image) nang hon (YOLO + LLM): toi da 10 request/phut.
 * Dung chung ProxyManager (Upstash) voi RateLimitFilter.
 */
 @Component
 public class AiRateLimiter {
 
     private static final int REQUESTS_PER_MINUTE = 20;
+    private static final int IDENTIFY_IMAGE_REQUESTS_PER_MINUTE = 10;
     private static final String CHAT_KEY_PREFIX = "ai_rate_limit:chat:";
     private static final String ANALYZE_TEXT_KEY_PREFIX = "ai_rate_limit:analyze-text:";
     private static final String ANALYZE_QUIZ_KEY_PREFIX = "ai_rate_limit:analyze-quiz:";
@@ -31,10 +32,8 @@ public class AiRateLimiter {
     private static final String CONVERSATION_KEY_PREFIX = "ai_rate_limit:conversation:";
 
     private final ProxyManager<String> proxyManager;
-    private final BucketConfiguration configuration = BucketConfiguration.builder()
-            .addLimit(limit -> limit.capacity(REQUESTS_PER_MINUTE)
-                    .refillGreedy(REQUESTS_PER_MINUTE, Duration.ofMinutes(1)))
-            .build();
+    private final BucketConfiguration configuration = perMinute(REQUESTS_PER_MINUTE);
+    private final BucketConfiguration identifyImageConfiguration = perMinute(IDENTIFY_IMAGE_REQUESTS_PER_MINUTE);
 
     public AiRateLimiter(ProxyManager<String> proxyManager) {
         this.proxyManager = proxyManager;
@@ -72,7 +71,7 @@ public class AiRateLimiter {
 
     /** Tru 1 luot nhan dien anh (identify-image) cua user; het luot thi nem 429. */
     public void checkIdentifyImage(UUID userId) {
-        consume(IDENTIFY_IMAGE_KEY_PREFIX + userId);
+        consume(IDENTIFY_IMAGE_KEY_PREFIX + userId, identifyImageConfiguration);
     }
 
     /** Tru 1 luot hoi thoai (conversation) cua user; het luot thi nem 429. */
@@ -80,8 +79,18 @@ public class AiRateLimiter {
         consume(CONVERSATION_KEY_PREFIX + userId);
     }
 
+    private static BucketConfiguration perMinute(int requests) {
+        return BucketConfiguration.builder()
+                .addLimit(limit -> limit.capacity(requests).refillGreedy(requests, Duration.ofMinutes(1)))
+                .build();
+    }
+
     private void consume(String key) {
-        Bucket bucket = proxyManager.getProxy(key, () -> configuration);
+        consume(key, configuration);
+    }
+
+    private void consume(String key, BucketConfiguration bucketConfiguration) {
+        Bucket bucket = proxyManager.getProxy(key, () -> bucketConfiguration);
         if (!bucket.tryConsume(1)) {
             throw new ApiException(HttpStatus.TOO_MANY_REQUESTS, "Too many requests");
         }
