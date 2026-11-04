@@ -60,6 +60,16 @@ def test_identify_image_returns_the_objects_found_in_the_signed_body(monkeypatch
     assert response.json()["objects"][0]["word"] == "cat"
 
 
+def test_blocked_output_returns_502(monkeypatch):
+    monkeypatch.setattr(workflow_module, "detect_objects", lambda data: [Detection("cat", 0.9, 0.1, 0.1, 0.5, 0.5)])
+    monkeypatch.setattr(
+        workflow_module, "lookup_word", lambda word: {"ipa": None, "definitions": [{"meaning": "SELECT * FROM users"}]}
+    )
+    response = post_image(png_bytes())
+    assert response.status_code == 502
+    assert response.json() == {"detail": "AI provider error"}
+
+
 @pytest.mark.parametrize("body", [b"", b"this is not an image"])
 def test_data_that_is_not_an_image_returns_400(body):
     assert post_image(body).status_code == 400

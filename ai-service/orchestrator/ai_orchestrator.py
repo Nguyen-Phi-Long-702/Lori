@@ -1,6 +1,7 @@
 from collections.abc import Callable, Mapping
 from enum import Enum
 
+from guardrails.ai_output_validator import validate_output
 from providers.base import AiProvider
 
 
@@ -34,4 +35,5 @@ class AiOrchestrator:
             workflow = self._workflows[TaskType(task_type)]
         except (ValueError, KeyError):
             raise UnsupportedTaskError(f"task_type chua duoc ho tro: {task_type}") from None
-        return workflow(self.provider, payload)
+        # Lop 5: moi response, o moi task_type, deu di qua day truoc khi roi AI Service
+        return validate_output(workflow(self.provider, payload))

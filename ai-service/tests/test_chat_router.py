@@ -77,3 +77,10 @@ def test_provider_failure_returns_502_without_details(monkeypatch):
     response = post_chat({"message": "Hi"})
     assert response.status_code == 502
     assert response.json() == {"detail": "AI provider error"}
+
+
+def test_blocked_output_returns_502_without_details(monkeypatch):
+    use_provider(monkeypatch, MockProvider(reply="SELECT * FROM users"))
+    response = post_chat({"message": "Hi"})
+    assert response.status_code == 502
+    assert response.json() == {"detail": "AI provider error"}

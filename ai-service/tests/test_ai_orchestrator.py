@@ -1,6 +1,7 @@
 import pytest
 
 from orchestrator.ai_orchestrator import AiOrchestrator, TaskType, UnsupportedTaskError
+from providers.base import ProviderError
 from providers.mock import MockProvider
 
 
@@ -35,3 +36,14 @@ def test_workflow_receives_the_orchestrator_provider():
 
     AiOrchestrator(provider, {TaskType.CHAT: spy}).handle("chat", {})
     assert received["provider"] is provider
+
+
+def test_response_is_validated_for_every_task_type():
+    orchestrator = AiOrchestrator(MockProvider(reply="Mail a@b.co"), {TaskType.CHAT: chat_workflow})
+    assert orchestrator.handle("chat", {"message": "Hi"}) == {"type": "chat", "answer": "Mail [redacted]"}
+
+
+def test_blocked_response_is_a_provider_error():
+    orchestrator = AiOrchestrator(MockProvider(reply="SELECT * FROM users"), {TaskType.CHAT: chat_workflow})
+    with pytest.raises(ProviderError):
+        orchestrator.handle("chat", {"message": "Hi"})
