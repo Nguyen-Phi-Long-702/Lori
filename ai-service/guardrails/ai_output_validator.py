@@ -1,19 +1,13 @@
 import logging
 import re
 
+from guardrails.pii_redactor import EMAIL_PATTERN, PHONE_PATTERN, REDACTED
 from providers.base import ProviderError
 
 logger = logging.getLogger(__name__)
 
-REDACTED = "[redacted]"
-
 # Email va so dien thoai chi bi thay the: phan con lai cua cau tra loi van dung duoc.
-# shortcut: so dien thoai chi nhan dang dang 0xxxxxxxxx, 0xxx xxx xxx (dau cach/cham/gach ngang) hoac +<ma nuoc> ...;
-# dang (xxx) xxx-xxxx cua My khong bi bat. (?<!\d[ .-]) de nhom cuoi cua so ngan cach hang nghin ("1 000 000 000") khong bi coi la SDT
-_REDACT_PATTERNS = (
-    re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+"),
-    re.compile(r"(?<!\w)(?<!\d[ .-])(?:\+\d{1,3}(?:[ .-]?\d){8,12}|0\d{9,10}|0\d{2,3}[ .-]\d{3,4}[ .-]\d{3,4})(?!\w)"),
-)
+_REDACT_PATTERNS = (EMAIL_PATTERN, PHONE_PATTERN)
 
 # Mau chi can xuat hien la chan ca response. Viet hep de cau tieng Anh thuong nhu "Select one from the list" khong bi chan.
 _BLOCK_PATTERNS = (
