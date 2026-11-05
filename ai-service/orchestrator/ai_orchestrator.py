@@ -1,7 +1,10 @@
+import time
+import uuid
 from collections.abc import Callable, Mapping
 from enum import Enum
 
 from guardrails.ai_output_validator import validate_output
+from guardrails.sanitized_log import log_ai_call
 from providers.base import AiProvider
 
 
@@ -35,5 +38,19 @@ class AiOrchestrator:
             workflow = self._workflows[TaskType(task_type)]
         except (ValueError, KeyError):
             raise UnsupportedTaskError(f"task_type chua duoc ho tro: {task_type}") from None
-        # Lop 5: moi response, o moi task_type, deu di qua day truoc khi roi AI Service
-        return validate_output(workflow(self.provider, payload))
+        request_id = uuid.uuid4().hex[:12]
+        started = time.perf_counter()
+        response, error = None, None
+        try:
+            # Lop 5: moi response, o moi task_type, deu di qua day truoc khi roi AI Service
+            response = validate_output(workflow(self.provider, payload))
+            return response
+        except Exception as exc:
+            error = type(exc).__name__
+            raise
+        finally:
+            # Lop 7: ghi log (da che thong tin nhay cam) ca khi workflow hoac validator nem loi
+            log_ai_call(
+                request_id, task_type, self.provider.model_id, int((time.perf_counter() - started) * 1000),
+                payload, response, error,
+            )

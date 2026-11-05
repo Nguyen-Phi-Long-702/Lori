@@ -17,6 +17,8 @@ class LlmResponse:
 
 class AiProvider(ABC):
     name: str
+    # Ten model ghi vao log (Lop 7)
+    model_id: str
 
     @abstractmethod
     def generate(self, prompt: str) -> LlmResponse:

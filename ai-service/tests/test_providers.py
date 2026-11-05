@@ -1,8 +1,10 @@
 import pytest
 
+from config.model_config import PRIMARY_MODEL
 from providers.base import AiProvider, LlmResponse, ProviderError
 from providers.external_api import ExternalApiProvider
 from providers.mock import MockProvider
+from providers.self_hosted import SelfHostedLlmProvider
 
 
 def test_mock_provider_returns_response_with_full_schema():
@@ -26,3 +28,9 @@ def test_external_provider_is_a_stub_that_always_fails():
 def test_providers_follow_the_interface():
     assert isinstance(MockProvider(), AiProvider)
     assert isinstance(ExternalApiProvider(), AiProvider)
+
+
+def test_providers_expose_model_id_for_logging():
+    assert MockProvider().model_id == "mock"
+    assert ExternalApiProvider().model_id == "external"
+    assert SelfHostedLlmProvider().model_id == PRIMARY_MODEL.model_id

@@ -25,6 +25,7 @@ class SelfHostedLlmProvider(AiProvider):
 
     def __init__(self, model: ModelSettings = PRIMARY_MODEL):
         self._model = model
+        self.model_id = model.model_id
 
     def is_available(self) -> bool:
         return bool(os.environ.get(ACCOUNT_ID_ENV) and os.environ.get(API_TOKEN_ENV))

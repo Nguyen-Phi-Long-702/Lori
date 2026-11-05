@@ -3,6 +3,7 @@ from providers.base import AiProvider, LlmResponse
 
 class MockProvider(AiProvider):
     name = "mock"
+    model_id = "mock"
 
     def __init__(self, reply: str = "This is a mock reply."):
         self._reply = reply
