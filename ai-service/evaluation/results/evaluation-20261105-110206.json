@@ -1,0 +1,133 @@
+{
+  "run_at": "2026-11-05T11:02:06+00:00",
+  "model_version": "@cf/qwen/qwen3-30b-a3b-fp8",
+  "total_cases": 7,
+  "pass_count": 7,
+  "fail_count": 0,
+  "avg_latency_ms": 1239,
+  "cases": [
+    {
+      "test": "evaluation/test_live_smoke.py::test_root_is_public",
+      "outcome": "passed",
+      "calls": [
+        {
+          "test": "evaluation/test_live_smoke.py::test_root_is_public",
+          "request": "GET /",
+          "input": null,
+          "status": 200,
+          "latency_ms": 431,
+          "output": {
+            "message": "Hello from Lori AI Service"
+          }
+        }
+      ]
+    },
+    {
+      "test": "evaluation/test_live_smoke.py::test_ping_with_valid_signature_is_accepted",
+      "outcome": "passed",
+      "calls": [
+        {
+          "test": "evaluation/test_live_smoke.py::test_ping_with_valid_signature_is_accepted",
+          "request": "POST /ai/ping",
+          "input": null,
+          "status": 200,
+          "latency_ms": 369,
+          "output": {
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "test": "evaluation/test_live_smoke.py::test_ping_without_signature_is_rejected",
+      "outcome": "passed",
+      "calls": [
+        {
+          "test": "evaluation/test_live_smoke.py::test_ping_without_signature_is_rejected",
+          "request": "POST /ai/ping",
+          "input": null,
+          "status": 401,
+          "latency_ms": 364,
+          "output": {
+            "detail": "Unauthorized"
+          }
+        }
+      ]
+    },
+    {
+      "test": "evaluation/test_live_smoke.py::test_health_reports_provider_configured",
+      "outcome": "passed",
+      "calls": [
+        {
+          "test": "evaluation/test_live_smoke.py::test_health_reports_provider_configured",
+          "request": "GET /ai/health",
+          "input": null,
+          "status": 200,
+          "latency_ms": 110,
+          "output": {
+            "status": "ok",
+            "provider": "self_hosted"
+          }
+        }
+      ]
+    },
+    {
+      "test": "evaluation/test_live_smoke.py::test_attack_pattern_is_rejected_and_sensitive_data_is_redacted_in_record",
+      "outcome": "passed",
+      "calls": [
+        {
+          "test": "evaluation/test_live_smoke.py::test_attack_pattern_is_rejected_and_sensitive_data_is_redacted_in_record",
+          "request": "POST /ai/chat",
+          "input": {
+            "message": "x' UNION SELECT password FROM users -- my email is [redacted], phone [redacted], password=[redacted]"
+          },
+          "status": 400,
+          "latency_ms": 410,
+          "output": {
+            "detail": "Invalid input"
+          }
+        }
+      ]
+    },
+    {
+      "test": "evaluation/test_live_smoke.py::test_off_topic_question_gets_fixed_reply",
+      "outcome": "passed",
+      "calls": [
+        {
+          "test": "evaluation/test_live_smoke.py::test_off_topic_question_gets_fixed_reply",
+          "request": "POST /ai/chat",
+          "input": {
+            "message": "Write a short Python function that reverses a string."
+          },
+          "status": 200,
+          "latency_ms": 364,
+          "output": {
+            "type": "chat",
+            "answer": "Mình chỉ hỗ trợ học tiếng Anh: từ vựng, ngữ pháp, phát âm và luyện thi TOEIC/IELTS. Bạn hãy hỏi mình về tiếng Anh nhé!",
+            "truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "test": "evaluation/test_live_smoke.py::test_english_question_gets_an_answer",
+      "outcome": "passed",
+      "calls": [
+        {
+          "test": "evaluation/test_live_smoke.py::test_english_question_gets_an_answer",
+          "request": "POST /ai/chat",
+          "input": {
+            "message": "What is the difference between 'a' and 'an'?"
+          },
+          "status": 200,
+          "latency_ms": 6624,
+          "output": {
+            "type": "chat",
+            "answer": "The difference between **\"a\"** and **\"an\"** is based on the **sound** of the word that follows, not just the first letter.  \n\n### Use **\"a\"** before words that start with a **consonant sound**:  \n- **a book** (book starts with a \"b\" sound)  \n- **a university** (university starts with a \"y\" sound, not a vowel)  \n- **a one** (one starts with a \"w\" sound)  \n\n### Use **\"an\"** before words that start with a **vowel sound** (a, e, i, o, u):  \n- **an apple** (apple starts with an \"a\" sound)  \n- **an hour** (hour starts with a silent \"h,\" so the sound is \"o\")  \n- **an umbrella** (umbrella starts with an \"u\" sound)  \n\n### Key rule:  \n**\"A\"** = consonant sound  \n**\"An\"** = vowel sound  \n\nExample:  \n- **a** \"hour\" (silent \"h\" → vowel sound)  \n- **an** \"honor\" (\"h\" is pronounced → consonant sound)  \n\nLet me know if you need more examples! 😊",
+            "truncated": false
+          }
+        }
+      ]
+    }
+  ]
+}

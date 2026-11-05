@@ -855,7 +855,6 @@ Lỗi phát hiện ở UI: Không có lỗi ở UI (17/17 kịch bản đạt).
 - YOLOv8n chỉ nhận ra 80 lớp COCO; những vật ngoài danh sách (gối, chăn, đèn, rèm…) không bao giờ được nhận ra dù có trong ảnh.
 - Test UI chỉ làm trên LDPlayer 9 (dùng mạng của máy tính), chưa test bằng điện thoại thật và mạng 4G; CameraX chưa được thử trên điện thoại thật.
 - Kịch bản Premium hết hạn giữa chừng (U12, U17) chỉ làm được bằng cách sửa `users.premium_expires_at` trong Neon.
-- <điền từng điểm bạn phát hiện ở Phần 4 và 6: ví dụ vật bị bỏ sót/nhận nhầm kèm ảnh, mode `teacher` bỏ sót `Tip:`, câu trả lời dài quá 3 câu, `original` không khớp lời người học, thời gian lượt nhận xét… Mỗi điểm một dòng, chỉ ghi điều đã quan sát được>
 
 ## 29. Guardrails lớp 1b-4 (Tuần 15 – Ngày 1-2)
 
@@ -927,3 +926,36 @@ Lỗi phát hiện ở UI: Không có lỗi ở UI (17/17 kịch bản đạt).
 - Email/số điện thoại do **học viên tự gõ** và được model chép lại (ví dụ trong `correctedSentence`) cũng bị thay bằng `[redacted]`.
 - Rate limit tính riêng từng endpoint theo user, không có tổng chung cho toàn bộ tác vụ AI của một user; hạn mức Cloudflare 10.000 Neurons/ngày (mục 17) vẫn dùng chung cho mọi user.
 - Log của Lớp 5 chỉ ghi loại mẫu bị chặn. Che thông tin cá nhân trong log AI (Lớp 7) là việc của Tuần 15 – Ngày 4.
+
+## 31. Guardrails lớp 7 — log AI đã che thông tin nhạy cảm và khung Evaluation (Tuần 15 – Ngày 4)
+
+- Phạm vi: `PiiRedactor` + ghi log AI đã che (Lớp 7, kế hoạch mục 8.1b) và khung pytest gọi AI Service thật. Chưa có Evaluation Dataset (Tuần 15 – Ngày 5-6).
+- `ai-service/guardrails/pii_redactor.py`: `redact(text)` và `redact_value(dữ liệu lồng nhau)` che JWT, chuỗi kết nối có tài khoản (`scheme://user:pass@`), `Bearer <token ≥ 8 ký tự>`, giá trị của `password`/`passwd`/`pwd`/`secret`/`token`/`api_key`/`authorization` (dạng `khóa=giá trị` hoặc `"khóa": "giá trị"`), số thẻ 13–19 chữ số **qua kiểm tra Luhn**, email và số điện thoại. Mẫu email và số điện thoại dùng chung với `AiOutputValidator` (Lớp 5).
+- `ai-service/guardrails/sanitized_log.py`: `AiOrchestrator.handle` ghi **một dòng** `ai_call id=… task=… model=… status=ok|error error=<tên lớp lỗi>|- latency_ms=… input=… output=…` cho mọi tác vụ AI (kể cả khi lỗi). `input` là payload gửi vào workflow, `output` là response sau `AiOutputValidator`; cả hai đã qua `PiiRedactor`, tối đa 500 ký tự (che trước, cắt sau); chuỗi đơn lẻ dài hơn 5.000 ký tự không được quét mà chỉ ghi `<N chars omitted>`. **Không ghi**: `learningContext`, byte của ảnh (chỉ ghi kích thước), thông điệp của lỗi. Log ghi ra stdout nên xem ở Vercel → Logs (tìm `ai_call`); gói Hobby chỉ giữ 1 giờ.
+- Các provider có thêm thuộc tính `model_id` (ghi vào log): `SelfHostedLlmProvider` = model trong `config/model_config.py`; `mock` và `external` ghi tên của chính chúng.
+- Khung Evaluation: thư mục `ai-service/evaluation/` (`live_client.py`, `conftest.py`, `test_live_smoke.py`), **không** nằm trong `tests/` nên `pytest` thường không chạy. Biến môi trường (chỉ ghi tên): `AI_SERVICE_BASE_URL` (URL Vercel, không có `/` ở cuối), `AI_SERVICE_SHARED_SECRET` (cùng giá trị với Vercel và Render). Lệnh chạy (PowerShell, ở thư mục gốc repo, sau khi đặt 2 biến):
+  `docker run --rm -e AI_SERVICE_BASE_URL -e AI_SERVICE_SHARED_SECRET -v "${PWD}\ai-service:/app" -w /app python:3.12-slim sh -c "pip install -q -r requirements.txt -r requirements-dev.txt && python -m pytest evaluation -q"`
+- Mỗi lần chạy ghi `ai-service/evaluation/results/evaluation-<ngày>-<giờ UTC>.json` gồm `run_at`, `model_version`, `total_cases`, `pass_count`, `fail_count`, `avg_latency_ms` (đúng tên cột bảng `ai_evaluation_result`) và `cases` (từng test: kết quả, request, input, status, latency, output — input/output đã che). `model_version` lấy từ `PRIMARY_MODEL` của code nên phải chạy khi Vercel đã deploy code mới nhất.
+- Chạy test (PowerShell, ở thư mục gốc repo): AI Service như mục 22 (463 test); Backend không thay đổi.
+- Mục 30 ghi "che thông tin cá nhân trong log AI (Lớp 7) là việc của Tuần 15 – Ngày 4": đã làm ở mục này.
+- Không thêm biến môi trường (cho Vercel/Render), thư viện hay migration so với mục 17.
+
+### Kiểm tra trên môi trường thật (ngày 05/11/2026)
+
+| # | Kịch bản | Cách chạy | Kết quả kỳ vọng | Kết quả |
+|---|---|---|---|---|
+| L1 | Khung chạy trên URL Vercel thật | `pytest evaluation` (lệnh ở trên) | 7/7 test đạt, có file JSON kết quả | Đạt |
+| L2 | File kết quả không chứa dữ liệu nhạy cảm giả | Tìm `test.user`, `0912345678`, `hunter2` trong file JSON | Không có, chỉ có `[redacted]` | Đạt |
+| L3 | Log Vercel có dòng `ai_call` cho mỗi request chat | Vercel → Logs, tìm `ai_call` | Đủ dòng; dòng đầu `status=error error=InvalidInputError`, input đã che | Đạt |
+| L4 | Log Vercel không có dữ liệu nhạy cảm giả | Tìm `hunter2`, `test.user`, `0912345678` | Không có kết quả | Đạt |
+| L5 | Luồng AI Tutor có sẵn sau khi thêm log | Postman: Run folder `3. AI Tutor flow` (T1-T23) | Mọi request và test Pass | Đạt |
+
+Số liệu của lần chạy L1: `avg_latency_ms` = 1239, thời gian của `test_english_question_gets_an_answer` = 6624 ms (đo thật, gồm cả cold start nếu có).
+
+### Giới hạn đã biết (không sửa)
+
+- `PiiRedactor` là regex/quy tắc, không bắt mọi biến thể: email viết tách chữ ("name at domain dot com"), số điện thoại dạng `(xxx) xxx-xxxx` hoặc `84xxxxxxxxx` không có dấu `+`, mật khẩu nói bằng lời ("mật khẩu của tôi là abc") không có dấu `:` hoặc `=`, số thẻ không qua kiểm tra Luhn, tên người và địa chỉ. Ngược lại, dãy 10–11 chữ số liền bắt đầu bằng `0` bị coi là số điện thoại và bị che. Không tuyên bố che 100%.
+- Log chỉ ở Vercel Runtime Logs (Hobby giữ 1 giờ), không phải nơi lưu lâu dài; Evaluation dùng file JSON của khung, không dùng log Vercel.
+- Chỉ ghi 500 ký tự đầu của input và của output; không có token count (workflow không trả `LlmResponse` lên `AiOrchestrator`).
+- Request bị từ chối trước khi tới `AiOrchestrator` (thiếu chữ ký `401`, sai cấu trúc `422`) không có dòng `ai_call`.
+- Khung Evaluation: `model_version` lấy từ code chứ không hỏi AI Service; `avg_latency_ms` gộp cả request bị chặn sớm; chưa ghi vào bảng `ai_evaluation_result` (Ngày 5-6). Test phụ thuộc mạng và hạn mức 10.000 Neurons/ngày của Cloudflare (mỗi lần chạy khoảng 100 Neurons).
