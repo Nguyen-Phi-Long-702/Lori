@@ -1,0 +1,2 @@
+INSERT INTO ai_evaluation_result (run_at, model_version, total_cases, pass_count, fail_count, avg_latency_ms, notes)
+VALUES ('2026-11-06T02:43:37+00:00', '@cf/qwen/qwen3-30b-a3b-fp8', 170, 157, 13, 3753, 'grammar 40/40 (avg 3008 ms); guardrails 29/30 (avg 1999 ms); image 17/20 (avg 4978 ms); personalization 20/20 (avg 3187 ms); quiz_exam 19/20 (avg 6185 ms); vocabulary 32/40 (avg 4267 ms); request loi ha tang (HTTP 0/502/503): 8; Neurons Cloudflare dung: 2860');
