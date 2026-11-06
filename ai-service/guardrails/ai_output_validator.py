@@ -1,6 +1,7 @@
 import logging
 import re
 
+from config.model_config import SYSTEM_PROMPT
 from guardrails.pii_redactor import EMAIL_PATTERN, PHONE_PATTERN, REDACTED
 from providers.base import ProviderError
 
@@ -27,6 +28,12 @@ _BLOCK_PATTERNS = (
         r"|secret|access[_-]?token|authorization|system[_-]?prompt)\"\s*:",
     ),
 )
+# Moi cau cua SYSTEM_PROMPT (>= 25 ky tu): response chua nguyen van mot cau la da lo chi dan he thong
+PROMPT_SENTENCES = tuple(
+    " ".join(sentence.lower().split())
+    for sentence in re.split(r"(?<=[.!?])\s+|\n", SYSTEM_PROMPT)
+    if len(sentence.strip()) >= 25
+)
 _BLOCK_COMPILED = tuple((reason, re.compile(pattern, re.IGNORECASE)) for reason, pattern in _BLOCK_PATTERNS)
 
 
@@ -46,6 +53,10 @@ def validate_output(response):
 
 
 def _validate_text(text: str) -> str:
+    normalized = " ".join(text.lower().split())
+    if any(sentence in normalized for sentence in PROMPT_SENTENCES):
+        logger.warning("AiOutputValidator chan response: system_prompt")
+        raise OutputBlockedError("Response chua mau nhay cam: system_prompt")
     for reason, pattern in _BLOCK_COMPILED:
         if pattern.search(text):
             # Chi ghi loai mau, khong ghi noi dung (co the chua thong tin ca nhan)

@@ -1,5 +1,6 @@
 import pytest
 
+from config.model_config import SYSTEM_PROMPT
 from guardrails.ai_output_validator import REDACTED, OutputBlockedError, validate_output
 
 
@@ -13,6 +14,7 @@ from guardrails.ai_output_validator import REDACTED, OutputBlockedError, validat
         "Use 'an' before a vowel sound: an apple.",
         "Count from 0 1 2 3 4 5 6 7 8 9, and write 03-11-2026 as the date.",
         "It is about 1 000 000 000 bytes, or 1 099 511 627 776 bytes.",
+        "Sorry, I can only help with learning English: grammar, vocabulary, pronunciation, TOEIC and IELTS.",
     ],
 )
 def test_normal_text_is_unchanged(text):
@@ -79,3 +81,10 @@ def test_block_log_names_the_reason_but_not_the_content(caplog):
         validate_output("my mail is a@b.co, SELECT * FROM users")
     assert "sql" in caplog.text
     assert "a@b.co" not in caplog.text
+
+
+def test_response_quoting_a_system_prompt_sentence_is_blocked():
+    quoted = "Sure! " + SYSTEM_PROMPT.splitlines()[-1]
+    for text in (quoted, quoted.upper(), quoted.replace(" ", "\n")):
+        with pytest.raises(OutputBlockedError):
+            validate_output({"answer": text})
