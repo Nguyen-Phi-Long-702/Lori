@@ -27,9 +27,17 @@ class LiveClient:
         self.calls = []
         self.current_test = None
 
-    def request(self, method: str, path: str, payload: dict | None = None, signed: bool = True) -> LiveResponse:
-        body = b"" if payload is None else json.dumps(payload).encode("utf-8")
-        headers = {"Content-Type": "application/json", "User-Agent": "lori-ai-eval/1.0"}
+    def request(
+        self,
+        method: str,
+        path: str,
+        payload: dict | None = None,
+        signed: bool = True,
+        image: tuple[str, bytes] | None = None,
+    ) -> LiveResponse:
+        # Anh gui nguyen byte (khong phai JSON), giong Backend; ban ghi chi giu ten file va kich thuoc
+        body = image[1] if image else (b"" if payload is None else json.dumps(payload).encode("utf-8"))
+        headers = {"Content-Type": "application/octet-stream" if image else "application/json", "User-Agent": "lori-ai-eval/1.0"}
         if signed:
             timestamp = str(int(time.time()))
             headers[TIMESTAMP_HEADER] = timestamp
@@ -54,7 +62,7 @@ class LiveClient:
             {
                 "test": self.current_test,
                 "request": f"{method} {path}",
-                "input": redact_value(payload),
+                "input": {"file": image[0], "bytes": len(image[1])} if image else redact_value(payload),
                 "status": status,
                 "latency_ms": latency_ms,
                 "output": redact_value(parsed),
