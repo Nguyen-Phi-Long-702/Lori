@@ -1,0 +1,22 @@
+[
+  {"id": "IMG-01", "kind": "image", "file": "01-street.jpg", "expect": ["car", "motorcycle"]},
+  {"id": "IMG-02", "kind": "image", "file": "02-cat.jpg", "expect": ["cat"]},
+  {"id": "IMG-03", "kind": "image", "file": "03-dog.jpg", "expect": ["dog"]},
+  {"id": "IMG-04", "kind": "image", "file": "04-fruit.jpg", "expect": ["apple", "banana"]},
+  {"id": "IMG-05", "kind": "image", "file": "05-drinks.jpg", "expect": ["bottle", "cup"]},
+  {"id": "IMG-06", "kind": "image", "file": "06-desk.jpg", "expect": ["laptop", "mouse", "keyboard"]},
+  {"id": "IMG-07", "kind": "image", "file": "07-phone.jpg", "expect": ["cell phone"]},
+  {"id": "IMG-08", "kind": "image", "file": "08-bedroom.jpg", "expect": ["bed"]},
+  {"id": "IMG-09", "kind": "image", "file": "09-dining.jpg", "expect": ["dining table", "chair"]},
+  {"id": "IMG-10", "kind": "image", "file": "10-kitchen.jpg", "expect": ["refrigerator", "sink"]},
+  {"id": "IMG-11", "kind": "image", "file": "11-bag.jpg", "expect": ["backpack", "umbrella"]},
+  {"id": "IMG-12", "kind": "image", "file": "12-wall.jpg", "expect": []},
+  {"id": "IMG-13", "kind": "image", "file": "13-bus.jpg", "expect": ["bus"]},
+  {"id": "IMG-14", "kind": "image", "file": "14-pizza.jpg", "expect": ["pizza"]},
+  {"id": "IMG-15", "kind": "image", "file": "15-elephant.jpg", "expect": ["elephant"]},
+  {"id": "IMG-16", "kind": "image", "file": "16-bicycle.jpg", "expect": ["bicycle"]},
+  {"id": "IMG-17", "kind": "image", "file": "17-living-room.jpg", "expect": ["couch", "tv"]},
+  {"id": "IMG-18", "kind": "image", "file": "18-clock.jpg", "expect": ["clock"]},
+  {"id": "IMG-19", "kind": "image", "file": "19-zebra.jpg", "expect": ["zebra"]},
+  {"id": "IMG-20", "kind": "image", "file": "20-airplane.jpg", "expect": ["airplane"]}
+]
