@@ -1097,3 +1097,17 @@ Ghi chú về 8 lỗi 502: cả 8 đều là câu hỏi cặp từ (8/12 case c�
 
 - `app/build.gradle.kts`: `versionCode = 6`, `versionName = "1.4-alpha"`. APK debug build trên máy Dev, **không commit** (`*.apk` nằm trong `.gitignore`); màn Cài đặt → Về ứng dụng hiện "Phiên bản 1.4-alpha".
 - APK debug ký bằng debug keystore của máy build, khớp `APP_SIGNATURE` trên Render; build trên máy khác thì chữ ký khác và Backend trả 403.
+
+## 34. Unit test Backend (Tuần 16 – Ngày 1-2)
+
+- Phạm vi: unit test (JUnit 5 + Mockito + AssertJ, không dùng Spring context) cho `AuthService`, `ExamService`, `ExpService`, `LeaderboardService`, `PaymentService`, `SubscriptionService`, `LearningContextService`, `AiContextPolicy`: 140 test, nằm ở `backend/src/test/java/com/example/lori/service/`; lớp dùng chung `support/ApiAssertions` (kiểm tra mã HTTP và thông điệp của `ApiException`). Không sửa code production, không thêm thư viện, biến môi trường hay migration.
+- Không cần DB, Redis hay mạng: mọi phụ thuộc là mock. `ExpServiceTest` tự bật/tắt đồng bộ transaction của Spring để kiểm tra việc cập nhật bảng xếp hạng chỉ chạy sau commit.
+- Chạy test (PowerShell, ở thư mục gốc repo): `docker run --rm -v "${PWD}\backend:/app" -v lori-m2:/root/.m2 -w /app maven:3.9-eclipse-temurin-17 mvn -B test '-Dtest=AuthServiceTest,ExamServiceTest,ExpServiceTest,LeaderboardServiceTest,PaymentServiceTest,SubscriptionServiceTest,LearningContextServiceTest,AiContextPolicyTest'`. `AuthControllerIntegrationTest` và `LearningEngineIntegrationTest` dùng Testcontainers nên không nằm trong lệnh này.
+
+### Giới hạn đã biết (không sửa)
+
+- JaCoCo chưa nằm trong `pom.xml`: coverage của 8 lớp chỉ đo được bằng lệnh chạy tạm; cấu hình chính thức và báo cáo tổng hợp làm ở Tuần 16 – Ngày 7.
+- Test chấm điểm của `ExamService` dùng bảng quy đổi thật của `ToeicScoreUtil` / `IeltsScoreUtil`: đổi bảng quy đổi thì phải cập nhật điểm kỳ vọng.
+- Test đọc `learning-names.json` thật ở id 1 (ngữ pháp và từ vựng) nên file này phải còn id 1.
+- Chưa có unit test riêng cho `StreakService` và các lớp tiện ích (`ToeicScoreUtil`, `IeltsScoreUtil`, `InputSanitizerUtil`): chỉ được kiểm tra gián tiếp.
+- Chỉ kiểm tra nghiệp vụ ở tầng service với mock; truy vấn SQL/JPQL thật của các repository chưa được test ở đây (Ngày 3-4: integration test).
