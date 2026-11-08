@@ -1111,3 +1111,20 @@ Ghi chú về 8 lỗi 502: cả 8 đều là câu hỏi cặp từ (8/12 case c�
 - Test đọc `learning-names.json` thật ở id 1 (ngữ pháp và từ vựng) nên file này phải còn id 1.
 - Chưa có unit test riêng cho `StreakService` và các lớp tiện ích (`ToeicScoreUtil`, `IeltsScoreUtil`, `InputSanitizerUtil`): chỉ được kiểm tra gián tiếp.
 - Chỉ kiểm tra nghiệp vụ ở tầng service với mock; truy vấn SQL/JPQL thật của các repository chưa được test ở đây (Ngày 3-4: integration test).
+
+## 35. Integration test API và unit test AI Service (Tuần 16 – Ngày 3-4)
+
+- Integration test: `backend/src/test/java/com/example/lori/controller/MainFlowIntegrationTest.java` (`@SpringBootTest` + MockMvc + Testcontainers PostgreSQL 16 và Redis 7, cùng khuôn với `AuthControllerIntegrationTest`), 2 test:
+  - `luongChinh_dangKyMuaPremiumThiNopBaiBangXepHangVaGoiAi`: đăng ký → đăng nhập → user Free bị chặn ở `/api/exams` và `/api/ai/chat` (AI Service không bị gọi) → `mock-purchase` → danh sách/chi tiết/bắt đầu/nộp đề (nộp lại bằng token cũ bị từ chối) → lịch sử → bảng xếp hạng global/weekly/monthly → `/api/ai/chat` và `/api/ai/analyze-exam`.
+  - `moiEndpointAi_premiumCoDiemYeu_dungDuLieuVaChuKy`: `analyze-quiz`, `recommend`, `analyze-text` (grammar và vocabulary), `generate-exercise` (lưu `ai_generated_exercise`, lần sau gửi `avoidQuestions`), `conversation`, `identify-image`.
+- AI Service giả: `HttpServer` của JDK ngay trong JVM của test (cách của `AiServiceClientTest`), địa chỉ truyền qua `app.ai-service.base-url`. Mỗi request tới AI Service được kiểm tra chữ ký HMAC thật bằng `AiServiceSigner`, không chứa `userId`, và Learning Context đúng `AiContextPolicy` của từng loại tác vụ. Không gọi Vercel/Cloudflare, không dùng database Neon/Upstash nên không tốn hạn mức nào và không cần thẻ.
+- Đề thi dùng trong test được tạo ngay trong test (1 đề TOEIC nhỏ 4 câu) vì database của Testcontainers trống. Điểm (495/250/745) và EXP (183) kỳ vọng bám `ToeicScoreUtil` và `ExpService`: đổi công thức thì phải cập nhật test.
+- Unit test AI Service: 4 module `AiOrchestrator`, `ContextBuilder`, `AiInputSanitizer`, `AiOutputValidator` đã có test từ Tuần 11–15 (`test_ai_orchestrator.py`, `test_context_builder.py` cùng các test workflow, `test_ai_input_sanitizer.py`, `test_ai_output_validator.py`); Ngày 3-4 chạy lại để xác nhận: 4 file riêng `122` test đạt, cả bộ `480` test đạt.
+- Chạy test (PowerShell, ở thư mục gốc repo): Backend `docker run --rm -v "${PWD}\backend:/app" -v lori-m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock -e TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal -w /app maven:3.9-eclipse-temurin-17 mvn -B test '-Dtest=MainFlowIntegrationTest'` (3 integration test đều cần `-v /var/run/docker.sock` và `-e TESTCONTAINERS_HOST_OVERRIDE`; không có 2 tham số này thì Testcontainers không chạy trong container Maven). AI Service: lệnh ở mục 22.
+
+### Giới hạn đã biết (không sửa)
+- Integration test cần Docker Desktop đang chạy.
+- Chưa có báo cáo coverage (Ngày 7).
+- AI Service trong integration test là bản giả trả JSON dựng sẵn: test không kiểm tra nội dung/định dạng JSON mà AI Service thật sinh ra (phần đó do pytest của AI Service và bộ Evaluation ở mục 32 lo).
+- `identify-image` chỉ kiểm tra Backend chuyển nguyên byte ảnh và ký đúng; việc đọc/kiểm tra ảnh là của AI Service.
+- Bước kiểm tra bảng xếp hạng có thể sai nếu test chạy đúng khoảnh khắc job reset hằng tuần (00:00 thứ Hai giờ Việt Nam).
