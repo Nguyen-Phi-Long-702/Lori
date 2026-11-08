@@ -1128,3 +1128,19 @@ Ghi chú về 8 lỗi 502: cả 8 đều là câu hỏi cặp từ (8/12 case c�
 - AI Service trong integration test là bản giả trả JSON dựng sẵn: test không kiểm tra nội dung/định dạng JSON mà AI Service thật sinh ra (phần đó do pytest của AI Service và bộ Evaluation ở mục 32 lo).
 - `identify-image` chỉ kiểm tra Backend chuyển nguyên byte ảnh và ký đúng; việc đọc/kiểm tra ảnh là của AI Service.
 - Bước kiểm tra bảng xếp hạng có thể sai nếu test chạy đúng khoảnh khắc job reset hằng tuần (00:00 thứ Hai giờ Việt Nam).
+
+## 36. Unit test Android ViewModel và test Room DAO (Tuần 16 – Ngày 5-6)
+
+- Phạm vi: unit test (JUnit 4 + Mockito 5, chạy trên máy dev, không cần thiết bị) cho 6 ViewModel `HomeViewModel`, `FlashcardViewModel`, `QuizViewModel`, `ExamTakingViewModel`, `AiChatViewModel`, `PremiumPurchaseViewModel`: 83 test, nằm ở `app/src/test/java/com/example/lori/viewmodel/`. Không sửa code production.
+- Cách giả lập: ViewModel tự tạo Repository và lấy DB/`NetworkStateManager` qua hàm tĩnh nên test dùng `mockStatic` và `mockConstruction` của Mockito để thay chúng bằng đối tượng giả; `InstantTaskExecutorRule` (`androidx.arch.core:core-testing`) cho LiveData chạy ngay trên luồng test. `app/build.gradle.kts` thêm `mockito-core:5.14.2`, `core-testing:2.2.0` và `testOptions.unitTests.isReturnDefaultValues = true`.
+- Test Room DAO (`androidTest`, AndroidJUnit4, DB in-memory): bổ sung test cho các hàm DAO còn thiếu (`ProgressDao.update/observeProgress/getProgressByType/getAllStudyDates`, `TopicDao.getAllTopics`, `GrammarDao.updateExample/deleteExample`, `QuizDao.updateGrammarQuiz/deleteVocabQuiz`, `ChatMessageDao.updateMessage`) và thêm kiểm tra việc xóa trong `GrammarDaoTest.updateAndDeleteLesson`. Cả 8 file test DAO: 41 test.
+- Chạy unit test (PowerShell, ở thư mục gốc repo): `.\gradlew.bat :app:testDebugUnitTest`. Chạy test DAO: mở LDPlayer 9, trong Android Studio chuột phải thư mục `app/src/androidTest/java/com/example/lori/data/local/dao` → Run Tests (không chạy `NetworkLayerTest` cùng vì test đó gọi Backend Render thật).
+- Kết quả ngày 08/11/2026: unit test 83/83 đạt; test DAO 41/41 đạt trên LDPlayer 9.
+
+### Giới hạn đã biết (không sửa)
+
+- `CountDownTimer` của Android là bản rỗng trong unit test nên `ExamTakingViewModelTest` không kiểm tra được đồng hồ chạy từng giây và việc tự nộp khi hết giờ; chỉ kiểm tra giá trị đồng hồ lúc bắt đầu, cờ cảnh báo và hàm `submit()`.
+- `HomeViewModelTest` thay `WorkManager` và `Handler` bằng bản giả nên không kiểm tra việc đồng bộ nền chạy thật.
+- Test kiểm tra thông báo lỗi bằng mã `R.string`, không kiểm tra nội dung chuỗi hiển thị.
+- Chưa có báo cáo coverage cho Android (làm ở Ngày 7); chưa có unit test cho các ViewModel khác ngoài 6 ViewModel của kế hoạch.
+- Test DAO chỉ chạy trên LDPlayer 9, chưa chạy trên điện thoại thật.
