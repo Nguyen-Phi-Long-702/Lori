@@ -3,6 +3,7 @@ package com.example.lori.controller;
 import com.example.lori.entity.ExamPaper;
 import com.example.lori.entity.ExamQuestion;
 import com.example.lori.entity.ExamSection;
+import com.example.lori.repository.AiGeneratedExerciseRepository;
 import com.example.lori.repository.ExamPaperRepository;
 import com.example.lori.repository.ExamQuestionRepository;
 import com.example.lori.repository.ExamSectionRepository;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,6 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -70,8 +73,32 @@ class MainFlowIntegrationTest {
 
     private static final Map<String, String> AI_RESPONSES = Map.of(
             "/ai/chat", "{\"type\":\"chat\",\"answer\":\"Hello from fake AI\",\"truncated\":false}",
+            "/ai/grammar", "{\"type\":\"grammar_analysis\",\"correct\":false,"
+                    + "\"correctedSentence\":\"She doesn't like coffee.\","
+                    + "\"errors\":[{\"type\":\"Subject-verb agreement\",\"explanation\":\"Use doesn't.\"}],\"lessonId\":1}",
+            "/ai/vocabulary", "{\"type\":\"vocabulary_analysis\",\"words\":[{\"word\":\"affect\","
+                    + "\"inDictionary\":true,\"ipa\":\"/efekt/\",\"definitions\":[{\"pos\":\"V\","
+                    + "\"meaning\":\"Lam anh huong den.\",\"example\":null}],\"explanation\":\"To change something.\","
+                    + "\"synonyms\":[\"influence\"],\"antonyms\":[],\"collocations\":[\"affect health\"]}],"
+                    + "\"difference\":null}",
+            "/ai/analyze-quiz", "{\"type\":\"quiz_analysis\",\"summary\":\"You got 2 of 10.\","
+                    + "\"patterns\":[\"Mixes up moods.\"],"
+                    + "\"recommendations\":[{\"title\":\"Review\",\"reason\":\"Weak topic.\",\"lessonId\":26}]}",
             "/ai/analyze-exam", "{\"type\":\"exam_analysis\",\"summary\":\"Reading is weaker.\","
-                    + "\"patterns\":[],\"recommendations\":[]}");
+                    + "\"patterns\":[],\"recommendations\":[]}",
+            "/ai/generate-exercise", "{\"type\":\"exercise_set\",\"exercises\":["
+                    + "{\"type\":\"multiple_choice\",\"question\":\"She ___ here.\","
+                    + "\"options\":[\"is\",\"are\",\"am\",\"be\"],\"answerIndex\":0,\"explanation\":\"Use is.\"},"
+                    + "{\"type\":\"fill_blank\",\"question\":\"They ___ home.\",\"answers\":[\"went\"],"
+                    + "\"explanation\":\"Past.\"}]}",
+            "/ai/recommend", "{\"type\":\"recommendation\",\"summary\":\"Focus here.\",\"patterns\":[],"
+                    + "\"recommendations\":[{\"title\":\"Review\",\"reason\":\"Weak\",\"lessonId\":26}]}",
+            "/ai/conversation", "{\"type\":\"conversation_feedback\",\"summary\":\"Tot.\","
+                    + "\"grammar\":[],\"vocabulary\":[],\"naturalness\":[],\"usefulPhrases\":[]}",
+            "/ai/identify-image", "{\"type\":\"image_identification\",\"objects\":[{\"word\":\"cat\","
+                    + "\"ipa\":\"/kaet/\",\"meaning\":\"Con meo.\",\"confidence\":0.95,"
+                    + "\"box\":{\"x\":0.1,\"y\":0.2,\"width\":0.3,\"height\":0.4},"
+                    + "\"example\":\"The cat sleeps.\",\"exampleVi\":\"Con meo ngu.\"}]}");
 
     private static final FakeAiService AI = new FakeAiService(AI_RESPONSES);
 
@@ -107,6 +134,9 @@ class MainFlowIntegrationTest {
 
     @Autowired
     private ExamQuestionRepository examQuestionRepository;
+
+    @Autowired
+    private AiGeneratedExerciseRepository aiGeneratedExerciseRepository;
 
     @Value("${app.security.api-key}")
     private String apiKey;
@@ -237,7 +267,116 @@ class MainFlowIntegrationTest {
         assertThat(examSent.has("resultId")).isFalse();
     }
 
+    // ===== Cac endpoint AI con lai: user Premium co diem yeu tu quiz da dong bo =====
+
+    @Test
+    void moiEndpointAi_premiumCoDiemYeu_dungDuLieuVaChuKy() throws Exception {
+        String token = registerPremiumUser();
+        sync(token, item("grammar_quiz_lesson", 26, 2, 8, "2026-01-01T00:00:00Z"));
+        UUID userId = UUID.fromString(readJson(getWithToken("/api/users/me", token)
+                .andExpect(status().isOk()))
+                .get("id").asText());
+
+        // analyze-quiz: ket qua quiz do Backend doc tu user_progress, AI chi viet nhan xet
+        postJson("/api/ai/analyze-quiz", token, "{\"quizType\": \"grammar\", \"itemId\": 26}")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.type").value("quiz_analysis"))
+                .andExpect(jsonPath("$.title").value("Subjunctive Mood"))
+                .andExpect(jsonPath("$.accuracyPercent").value(20))
+                .andExpect(jsonPath("$.summary").value("You got 2 of 10."));
+        JsonNode quizSent = sentJson("/ai/analyze-quiz");
+        assertThat(quizSent.get("accuracyPercent").asInt()).isEqualTo(20);
+        assertThat(quizSent.get("learningContext").get("weakGrammar").get(0).get("name").asText())
+                .isEqualTo("Subjunctive Mood");
+
+        // recommend: Learning Engine chon chu de yeu, AI chi viet nhan xet va de xuat
+        postJson("/api/ai/recommend", token, "{}")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.type").value("recommendation"))
+                .andExpect(jsonPath("$.topics.length()").value(1))
+                .andExpect(jsonPath("$.topics[0].topicName").value("Subjunctive Mood"))
+                .andExpect(jsonPath("$.summary").value("Focus here."));
+        assertThat(sentJson("/ai/recommend").get("weakTopics").get(0).get("topicKey").asText()).isEqualTo("26");
+
+        // analyze-text nhanh grammar: Learning Context chi co diem yeu ngu phap (AiContextPolicy)
+        postJson("/api/ai/analyze-text", token, "{\"type\": \"grammar\", \"text\": \"She don't like coffee.\"}")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.type").value("grammar_analysis"))
+                .andExpect(jsonPath("$.correctedSentence").value("She doesn't like coffee."));
+        JsonNode grammarSent = sentJson("/ai/grammar");
+        assertThat(grammarSent.get("text").asText()).isEqualTo("She don't like coffee.");
+        assertThat(grammarSent.get("learningContext").has("weakGrammar")).isTrue();
+        assertThat(grammarSent.get("learningContext").has("weakVocabulary")).isFalse();
+
+        // analyze-text nhanh vocabulary
+        postJson("/api/ai/analyze-text", token, "{\"type\": \"vocabulary\", \"text\": \"affect\"}")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.type").value("vocabulary_analysis"))
+                .andExpect(jsonPath("$.words[0].word").value("affect"));
+        assertThat(sentJson("/ai/vocabulary").get("text").asText()).isEqualTo("affect");
+
+        // generate-exercise: luu 2 bai vao ai_generated_exercise (JSONB that); lan sau gui cac cau cu de AI khong lap lai
+        String generateJson = "{\"category\": \"grammar\", \"topicId\": 26}";
+        postJson("/api/ai/generate-exercise", token, generateJson)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.type").value("exercise_set"))
+                .andExpect(jsonPath("$.exercises.length()").value(2));
+        JsonNode firstGenerateSent = sentJson("/ai/generate-exercise");
+        assertThat(firstGenerateSent.get("topic").asText()).isEqualTo("Subjunctive Mood");
+        assertThat(firstGenerateSent.get("avoidQuestions").size()).isZero();
+        assertThat(aiGeneratedExerciseRepository
+                .findTop10ByUserIdAndSourceWeaknessOrderByCreatedAtDesc(userId, "grammar:26")).hasSize(2);
+        postJson("/api/ai/generate-exercise", token, generateJson).andExpect(status().isOk());
+        assertThat(sentJson("/ai/generate-exercise").get("avoidQuestions").size()).isEqualTo(2);
+
+        // conversation: ket thuc buoi thi moi co Learning Context
+        postJson("/api/ai/conversation", token, """
+                {"mode": "restaurant", "messages": [{"role": "user", "content": "I am agree."}], "finish": true}
+                """)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.type").value("conversation_feedback"))
+                .andExpect(jsonPath("$.summary").value("Tot."));
+        JsonNode conversationSent = sentJson("/ai/conversation");
+        assertThat(conversationSent.get("mode").asText()).isEqualTo("restaurant");
+        assertThat(conversationSent.get("finish").asBoolean()).isTrue();
+        assertThat(conversationSent.get("learningContext").has("weakGrammar")).isTrue();
+
+        // identify-image: Backend chuyen nguyen byte anh sang AI Service va ky tren dung cac byte do
+        byte[] image = {(byte) 0xFF, (byte) 0xD8, 1, 2, 3};
+        mockMvc.perform(multipart("/api/ai/identify-image")
+                        .file(new MockMultipartFile("image", "cat.jpg", MediaType.IMAGE_JPEG_VALUE, image))
+                        .header("X-API-Key", apiKey)
+                        .header("X-App-Signature", appSignature)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.type").value("image_identification"))
+                .andExpect(jsonPath("$.objects[0].word").value("cat"));
+        assertThat(signedRequest("/ai/identify-image").body()).isEqualTo(image);
+    }
+
     // ===== Ham ho tro =====
+
+    private String registerPremiumUser() throws Exception {
+        String token = readJson(postJson("/api/auth/register", null, registerJson(newEmail()))
+                .andExpect(status().isCreated()))
+                .get("accessToken").asText();
+        postJson("/api/payment/mock-purchase", token, "{\"planType\": \"MONTHLY\"}")
+                .andExpect(status().isCreated());
+        return token;
+    }
+
+    private void sync(String token, String... items) throws Exception {
+        postJson("/api/progress/sync", token, "{\"items\": [" + String.join(",", items) + "]}")
+                .andExpect(status().isOk());
+    }
+
+    // Ngay hoc dat o qua khu xa (hon 7 ngay) de ExpService khong cong EXP, khong lam doi bang xep hang
+    private static String item(String itemType, int itemId, int correct, int incorrect, String studiedAt) {
+        return """
+                {"itemType": "%s", "itemId": %d, "status": "completed",
+                 "correctCount": %d, "incorrectCount": %d, "lastStudiedAt": "%s"}
+                """.formatted(itemType, itemId, correct, incorrect, studiedAt);
+    }
 
     private ResultActions postJson(String path, String token, String json) throws Exception {
         MockHttpServletRequestBuilder request = post(path)
