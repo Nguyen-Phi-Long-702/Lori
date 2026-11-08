@@ -60,6 +60,9 @@ android {
     buildFeatures {
         buildConfig = true
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -68,6 +71,9 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     testImplementation(libs.junit)
+    // Unit test ViewModel: Mockito thay lớp tĩnh/lớp tạo trong ViewModel, InstantTaskExecutorRule cho LiveData
+    testImplementation("org.mockito:mockito-core:5.14.2")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
