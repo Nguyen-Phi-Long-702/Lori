@@ -1,6 +1,7 @@
 package com.example.lori.data.local.dao;
 
 import static org.junit.Assert.assertEquals;
+import static com.example.lori.data.local.LiveDataTestUtil.getOrAwaitValue;
 
 import android.content.Context;
 
@@ -17,7 +18,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class TopicDaoTest {
@@ -90,5 +93,24 @@ public class TopicDaoTest {
         //Đảm bảo topic không còn tồn tại sau khi xóa
         Topic afterDelete = topicDao.getTopicById(1);
         assertEquals(null, afterDelete);
+    }
+
+    @Test
+    public void getAllTopics_returnsEveryInsertedTopic() throws InterruptedException {
+        topicDao.insertAll(Arrays.asList(newTopic("Animals", "Động vật"), newTopic("Food", "Đồ ăn")));
+
+        List<Topic> result = getOrAwaitValue(topicDao.getAllTopics());
+
+        //Danh sách phải chứa đủ cả hai chủ đề vừa thêm
+        assertEquals(2, result.size());
+    }
+
+    private Topic newTopic(String name, String nameVi) {
+        Topic topic = new Topic();
+        topic.name = name;
+        topic.nameVi = nameVi;
+        topic.level = "beginner";
+        topic.wordCount = 10;
+        return topic;
     }
 }

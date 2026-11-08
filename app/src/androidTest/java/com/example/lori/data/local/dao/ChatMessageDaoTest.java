@@ -105,4 +105,23 @@ public class ChatMessageDaoTest {
         //Đảm bảo thao tác xóa toàn bộ đã loại bỏ tất cả tin nhắn
         assertEquals(0, result.size());
     }
+
+    @Test
+    public void updateMessage() throws InterruptedException {
+        ChatMessage msg = new ChatMessage();
+        msg.role = "bot";
+        msg.content = "Đang trả lời...";
+        msg.timestamp = new Date(6000L);
+        msg.isError = false;
+        chatMessageDao.insertMessage(msg);
+
+        ChatMessage saved = getOrAwaitValue(chatMessageDao.getAllMessages()).get(0);
+        saved.content = "Đã trả lời xong";
+        chatMessageDao.updateMessage(saved);
+
+        //Đảm bảo nội dung được cập nhật và không sinh thêm tin nhắn mới
+        List<ChatMessage> result = getOrAwaitValue(chatMessageDao.getAllMessages());
+        assertEquals(1, result.size());
+        assertEquals("Đã trả lời xong", result.get(0).content);
+    }
 }

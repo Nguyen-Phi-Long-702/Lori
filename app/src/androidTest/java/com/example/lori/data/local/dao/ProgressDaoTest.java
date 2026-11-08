@@ -1,10 +1,13 @@
 package com.example.lori.data.local.dao;
 
+import static com.example.lori.data.local.LiveDataTestUtil.getOrAwaitValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.List;
 
 import android.content.Context;
 
@@ -142,5 +145,75 @@ public class ProgressDaoTest {
 
         assertEquals(null, progressDao.getProgress("vocab_quiz_topic", 1));
         assertEquals(null, progressDao.getProgress("vocab_quiz_topic", 2));
+    }
+
+    @Test
+    public void update_changesTheExistingRow() {
+        progressDao.insertOrUpdate(newProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 7, new Date(1000L)));
+
+        UserProgressLocal saved = progressDao.getProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 7);
+        saved.correctCount = 4;
+        saved.isSynced = true;
+        progressDao.update(saved);
+
+        //Đảm bảo update ghi đè đúng bản ghi cũ, không tạo thêm bản ghi mới
+        UserProgressLocal updated = progressDao.getProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 7);
+        assertEquals(saved.id, updated.id);
+        assertEquals(4, updated.correctCount);
+        assertTrue(updated.isSynced);
+        assertTrue(progressDao.getUnsyncedProgress().isEmpty());
+    }
+
+    @Test
+    public void observeProgress_returnsOnlyTheRequestedItem() throws InterruptedException {
+        progressDao.insertOrUpdate(newProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 1, new Date(1000L)));
+        progressDao.insertOrUpdate(newProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 2, new Date(2000L)));
+
+        UserProgressLocal result = getOrAwaitValue(
+                progressDao.observeProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 2));
+        assertEquals(2, result.itemId);
+
+        //Nội dung chưa học thì LiveData phát null
+        assertNull(getOrAwaitValue(progressDao.observeProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 99)));
+    }
+
+    @Test
+    public void getProgressByType_returnsOnlyThatType() throws InterruptedException {
+        progressDao.insertOrUpdate(newProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 1, new Date(1000L)));
+        progressDao.insertOrUpdate(newProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 2, new Date(2000L)));
+        progressDao.insertOrUpdate(newProgress(UserProgressLocal.TYPE_VOCAB_QUIZ, 1, new Date(3000L)));
+
+        List<UserProgressLocal> result = getOrAwaitValue(
+                progressDao.getProgressByType(UserProgressLocal.TYPE_GRAMMAR_LESSON));
+
+        assertEquals(2, result.size());
+        for (UserProgressLocal progress : result) {
+            assertEquals(UserProgressLocal.TYPE_GRAMMAR_LESSON, progress.itemType);
+        }
+    }
+
+    @Test
+    public void getAllStudyDates_sortsNewestFirstAndSkipsRowsWithoutDate() throws InterruptedException {
+        progressDao.insertOrUpdate(newProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 1, new Date(1000L)));
+        progressDao.insertOrUpdate(newProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 2, new Date(3000L)));
+        progressDao.insertOrUpdate(newProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 3, null));
+        progressDao.insertOrUpdate(newProgress(UserProgressLocal.TYPE_GRAMMAR_LESSON, 4, new Date(2000L)));
+
+        List<UserProgressLocal> result = getOrAwaitValue(progressDao.getAllStudyDates());
+
+        assertEquals(3, result.size());
+        assertEquals(3000L, result.get(0).lastStudiedAt.getTime());
+        assertEquals(2000L, result.get(1).lastStudiedAt.getTime());
+        assertEquals(1000L, result.get(2).lastStudiedAt.getTime());
+    }
+
+    private UserProgressLocal newProgress(String itemType, int itemId, Date lastStudiedAt) {
+        UserProgressLocal progress = new UserProgressLocal();
+        progress.itemType = itemType;
+        progress.itemId = itemId;
+        progress.status = UserProgressLocal.STATUS_COMPLETED;
+        progress.lastStudiedAt = lastStudiedAt;
+        progress.isSynced = false;
+        return progress;
     }
 }

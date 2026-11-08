@@ -2,6 +2,7 @@ package com.example.lori.data.local.dao;
 
 import static com.example.lori.data.local.LiveDataTestUtil.getOrAwaitValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import android.content.Context;
 
@@ -118,5 +119,43 @@ public class GrammarDaoTest {
 
         grammarDao.deleteLesson(updated);
         //Room trả về null khi truy vấn một bản ghi đã bị xóa
+        assertNull(grammarDao.getLessonById(1));
+    }
+
+    @Test
+    public void updateExample_changesTheSentence() throws InterruptedException {
+        insertExample(1, "I go to school.");
+
+        GrammarExample saved = getOrAwaitValue(grammarDao.getExamplesByLesson(1)).get(0);
+        saved.sentenceEn = "I went to school.";
+        grammarDao.updateExample(saved);
+
+        //Đảm bảo câu ví dụ được cập nhật đúng trong database
+        GrammarExample updated = getOrAwaitValue(grammarDao.getExamplesByLesson(1)).get(0);
+        assertEquals("I went to school.", updated.sentenceEn);
+    }
+
+    @Test
+    public void deleteExample_removesOnlyThatExample() throws InterruptedException {
+        insertExample(1, "First sentence.");
+        insertExample(1, "Second sentence.");
+
+        List<GrammarExample> all = getOrAwaitValue(grammarDao.getExamplesByLesson(1));
+        GrammarExample first = "First sentence.".equals(all.get(0).sentenceEn) ? all.get(0) : all.get(1);
+        grammarDao.deleteExample(first);
+
+        //Chỉ câu bị xóa biến mất, câu còn lại vẫn nằm trong bài học
+        List<GrammarExample> remaining = getOrAwaitValue(grammarDao.getExamplesByLesson(1));
+        assertEquals(1, remaining.size());
+        assertEquals("Second sentence.", remaining.get(0).sentenceEn);
+    }
+
+    private void insertExample(int lessonId, String sentenceEn) {
+        GrammarExample example = new GrammarExample();
+        example.lessonId = lessonId;
+        example.sentenceEn = sentenceEn;
+        example.sentenceVi = "Câu ví dụ";
+        example.isCorrect = true;
+        grammarDao.insertExamples(Collections.singletonList(example));
     }
 }

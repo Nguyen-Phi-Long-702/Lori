@@ -121,4 +121,45 @@ public class QuizDaoTest {
         List<GrammarQuiz> result = quizDao.getGrammarQuizByLesson(3);
         assertEquals(0, result.size());
     }
+
+    @Test
+    public void updateGrammarQuiz() {
+        GrammarQuiz quiz = new GrammarQuiz();
+        quiz.lessonId = 4;
+        quiz.question = "Choose the correct form.";
+        quiz.optionA = "A";
+        quiz.optionB = "B";
+        quiz.optionC = "C";
+        quiz.optionD = "D";
+        quiz.correctAnswer = "A";
+        quizDao.insertGrammarQuizzes(Collections.singletonList(quiz));
+
+        GrammarQuiz saved = quizDao.getGrammarQuizByLesson(4).get(0);
+        saved.correctAnswer = "D";
+        quizDao.updateGrammarQuiz(saved);
+
+        //Đảm bảo đáp án đúng được cập nhật sau update
+        GrammarQuiz updated = quizDao.getGrammarQuizByLesson(4).get(0);
+        assertEquals("D", updated.correctAnswer);
+    }
+
+    @Test
+    public void deleteVocabQuiz() {
+        VocabQuiz quiz = new VocabQuiz();
+        quiz.topicId = 4;
+        quiz.question = "Temp question";
+        quiz.optionA = "A";
+        quiz.optionB = "B";
+        quiz.optionC = "C";
+        quiz.optionD = "D";
+        quiz.correctAnswer = "B";
+        quizDao.insertVocabQuizzes(Collections.singletonList(quiz));
+
+        VocabQuiz saved = quizDao.getVocabQuizByTopic(4).get(0);
+        quizDao.deleteVocabQuiz(saved);
+
+        //Đảm bảo quiz đã bị xóa và không còn kết quả khi truy vấn lại
+        List<VocabQuiz> result = quizDao.getVocabQuizByTopic(4);
+        assertEquals(0, result.size());
+    }
 }
