@@ -1106,10 +1106,10 @@ Ghi chú về 8 lỗi 502: cả 8 đều là câu hỏi cặp từ (8/12 case c�
 
 ### Giới hạn đã biết (không sửa)
 
-- JaCoCo chưa nằm trong `pom.xml`: coverage của 8 lớp chỉ đo được bằng lệnh chạy tạm; cấu hình chính thức và báo cáo tổng hợp làm ở Tuần 16 – Ngày 7.
+- JaCoCo nằm trong profile `coverage` của `backend/pom.xml`; cấu hình chính thức và báo cáo tổng hợp ở mục 37.
 - Test chấm điểm của `ExamService` dùng bảng quy đổi thật của `ToeicScoreUtil` / `IeltsScoreUtil`: đổi bảng quy đổi thì phải cập nhật điểm kỳ vọng.
 - Test đọc `learning-names.json` thật ở id 1 (ngữ pháp và từ vựng) nên file này phải còn id 1.
-- Chưa có unit test riêng cho `StreakService` và các lớp tiện ích (`ToeicScoreUtil`, `IeltsScoreUtil`, `InputSanitizerUtil`): chỉ được kiểm tra gián tiếp.
+- `StreakService`, `ToeicScoreUtil`, `IeltsScoreUtil`, `InputSanitizerUtil` đã có unit test riêng ở Tuần 16 – Ngày 7 (mục 37).
 - Chỉ kiểm tra nghiệp vụ ở tầng service với mock; truy vấn SQL/JPQL thật của các repository chưa được test ở đây (Ngày 3-4: integration test).
 
 ## 35. Integration test API và unit test AI Service (Tuần 16 – Ngày 3-4)
@@ -1124,7 +1124,7 @@ Ghi chú về 8 lỗi 502: cả 8 đều là câu hỏi cặp từ (8/12 case c�
 
 ### Giới hạn đã biết (không sửa)
 - Integration test cần Docker Desktop đang chạy.
-- Chưa có báo cáo coverage (Ngày 7).
+- Báo cáo coverage ở mục 37.
 - AI Service trong integration test là bản giả trả JSON dựng sẵn: test không kiểm tra nội dung/định dạng JSON mà AI Service thật sinh ra (phần đó do pytest của AI Service và bộ Evaluation ở mục 32 lo).
 - `identify-image` chỉ kiểm tra Backend chuyển nguyên byte ảnh và ký đúng; việc đọc/kiểm tra ảnh là của AI Service.
 - Bước kiểm tra bảng xếp hạng có thể sai nếu test chạy đúng khoảnh khắc job reset hằng tuần (00:00 thứ Hai giờ Việt Nam).
@@ -1142,5 +1142,35 @@ Ghi chú về 8 lỗi 502: cả 8 đều là câu hỏi cặp từ (8/12 case c�
 - `CountDownTimer` của Android là bản rỗng trong unit test nên `ExamTakingViewModelTest` không kiểm tra được đồng hồ chạy từng giây và việc tự nộp khi hết giờ; chỉ kiểm tra giá trị đồng hồ lúc bắt đầu, cờ cảnh báo và hàm `submit()`.
 - `HomeViewModelTest` thay `WorkManager` và `Handler` bằng bản giả nên không kiểm tra việc đồng bộ nền chạy thật.
 - Test kiểm tra thông báo lỗi bằng mã `R.string`, không kiểm tra nội dung chuỗi hiển thị.
-- Chưa có báo cáo coverage cho Android (làm ở Ngày 7); chưa có unit test cho các ViewModel khác ngoài 6 ViewModel của kế hoạch.
+- Báo cáo coverage Android ở mục 37; chưa có unit test cho các ViewModel khác ngoài 6 ViewModel của kế hoạch.
 - Test DAO chỉ chạy trên LDPlayer 9, chưa chạy trên điện thoại thật.
+
+## 37. Báo cáo coverage (Tuần 16 – Ngày 7)
+
+- Phạm vi: đo coverage Backend (JaCoCo), AI Service (pytest-cov) và Android (unit test ViewModel, JaCoCo của Android Gradle Plugin); bổ sung test cho các lớp chưa có test trực tiếp. Không sửa code production (nếu test mới phát hiện lỗi thật và có sửa code thì ghi thêm một dòng ở đây), không thêm thư viện cho app/backend khi chạy thật, không đổi biến môi trường hay migration.
+- Cách đo (PowerShell, ở thư mục gốc repo):
+  - Backend (cần Docker Desktop): `docker run --rm -v "${PWD}\backend:/app" -v lori-m2:/root/.m2 -v /var/run/docker.sock:/var/run/docker.sock -e TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal -w /app maven:3.9-eclipse-temurin-17 mvn -B test -Pcoverage`. Báo cáo ở `backend/target/site/jacoco/index.html` (không commit). Profile `coverage` nằm trong `backend/pom.xml` nên build Docker trên Render không đổi; `backend/lombok.config` để JaCoCo bỏ qua code do Lombok sinh ra. Số đo là coverage theo instruction của toàn bộ test (unit + integration).
+  - 8 lớp của Tuần 16 – Ngày 1-2, chỉ unit test (mục tiêu của Ngày 1-2: > 80%): cùng lệnh trên nhưng chỉ có `-Pcoverage '-Dtest=AuthServiceTest,ExamServiceTest,ExpServiceTest,LeaderboardServiceTest,PaymentServiceTest,SubscriptionServiceTest,LearningContextServiceTest,AiContextPolicyTest'` và không cần Docker socket.
+  - AI Service: `docker run --rm -v "${PWD}:/repo" -w /repo/ai-service python:3.12-slim sh -c "pip install -q -r requirements.txt -r requirements-dev.txt && python -m pytest -q --cov --cov-config=.coveragerc --cov-report=term-missing --cov-report=html"`. Báo cáo ở `ai-service/htmlcov/index.html` (không commit). `.coveragerc` không tính `tests/` và `evaluation/`. Số đo là coverage theo dòng lệnh.
+  - Android: `.\gradlew.bat :app:createDebugUnitTestCoverageReport`. Báo cáo nằm trong `app/build/reports/coverage/` (không commit).
+- Kết quả ngày 09/11/2026:
+
+| Thành phần | Số test | Coverage lần 1 (trước khi bổ sung test) | Coverage lần 2 (sau khi bổ sung test) | Mục tiêu kế hoạch |
+|---|---|---|---|---|
+| Backend (JaCoCo, instruction) | 221 → 333 | 85,0% | 94,1% | > 80% |
+| AI Service (pytest-cov, dòng lệnh) | 480 → 481 | 99,8% | 99,9% | > 80% |
+| Android, 6 ViewModel của kế hoạch (JaCoCo) | 83 | không đo | Home 99%, Flashcard 100%, Quiz 97%, ExamTaking 97%, AiChat 98%, PremiumPurchase 98% | không đặt ngưỡng |
+
+- 8 lớp của Tuần 16 – Ngày 1-2 (chỉ unit test, coverage theo instruction): AuthService 100%, ExamService 100%, ExpService 100%, LeaderboardService 100%, PaymentService 100%, SubscriptionService 100%, LearningContextService 100%, AiContextPolicy 100%; tổng 8 lớp 100,0% (mục tiêu của Ngày 1-2: > 80%).
+- Test đã bổ sung (lỗ hổng phát hiện qua việc đối chiếu lớp production với các file test): Backend — `StreakServiceTest`, `BruteForceProtectionServiceTest`, `JwtTokenProviderTest`, `IeltsScoreUtilTest`, `ToeicScoreUtilTest`, `InputSanitizerUtilTest`, `PasswordResetServiceTest`, `UserServiceTest`, `ProgressServiceTest`, `ContentServiceTest`, `TranslateServiceTest`; AI Service — 1 test cho nhánh bỏ mục feedback thiếu `original` ở `conversation_workflow.py`.
+
+### Giới hạn đã biết (không sửa)
+
+- Coverage chỉ cho biết dòng nào đã được chạy qua, không cho biết test có kiểm tra đúng hay không.
+- AI Service không tính `evaluation/` (công cụ chạy bộ 170 case vào AI Service thật, cần biến môi trường và mạng) và `tests/`.
+- `ai-service/orchestrator/reply_parsing.py` dòng 13 chưa được chạy: đó là nhánh phòng thủ không thể tới được vì hàm chỉ parse đoạn chuỗi nằm giữa `{` và `}`; không ép test bằng cách giả lập `json.loads`.
+- `EmailService` chưa có test vì địa chỉ API Brevo viết cứng trong code, test sẽ gọi dịch vụ thật. Hai scheduler chưa có test riêng (chỉ gọi `LeaderboardService` và `SubscriptionService` đã có test). Controller, filter và các câu SQL của repository chỉ được phủ qua 3 integration test.
+- `IeltsScoreUtilTest` và `ToeicScoreUtilTest` gắn với bảng quy đổi hiện tại (như `ExamServiceTest`): đổi bảng quy đổi thì phải cập nhật điểm kỳ vọng.
+- Số đo Backend gồm cả integration test nên cần Docker Desktop; chạy riêng unit test (`-Dtest='!*IntegrationTest'`) cho số thấp hơn.
+- Android: chỉ đo unit test ViewModel; coverage của Activity/Fragment/Adapter thấp vì UI test thuộc Tuần 17; test Room DAO (`androidTest`, chạy trên LDPlayer 9) không được đo coverage.
+- Android: số coverage của từng ViewModel là của lớp chính; lớp con ẩn danh `ExamTakingViewModel.new CountDownTimer() {...}` (bộ đếm giờ làm bài thi) chỉ đạt 14% và không nằm trong số 97% của `ExamTakingViewModel`.
