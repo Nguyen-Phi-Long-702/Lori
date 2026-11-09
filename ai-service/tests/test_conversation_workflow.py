@@ -138,6 +138,16 @@ def test_feedback_drops_bad_items_and_keeps_at_most_three():
     assert result["vocabulary"] == []
 
 
+def test_feedback_drops_item_without_original_where_original_is_required():
+    no_original = {"better": "b", "explanation": "c"}
+    data = {**FEEDBACK, "grammar": [no_original], "usefulPhrases": [no_original]}
+    result = conversation_workflow(
+        MockProvider(reply=json.dumps(data)), payload([turn("user", "Hi")], finish=True)
+    )
+    assert result["grammar"] == []
+    assert result["usefulPhrases"] == [{"original": None, "better": "b", "explanation": "c"}]
+
+
 @pytest.mark.parametrize("reply", ["not json", json.dumps({"grammar": []}), json.dumps({"summary": "  "})])
 def test_feedback_without_summary_or_json_is_an_error(reply):
     with pytest.raises(ProviderError):
