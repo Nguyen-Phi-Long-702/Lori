@@ -82,7 +82,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="@string/settings_premium_row_status"
+                        android:text="@string/premium_purchase_title"
                         android:textSize="12sp"
                         android:textColor="?attr/colorTertiary" />
 

@@ -1174,3 +1174,70 @@ Ghi chú về 8 lỗi 502: cả 8 đều là câu hỏi cặp từ (8/12 case c�
 - Số đo Backend gồm cả integration test nên cần Docker Desktop; chạy riêng unit test (`-Dtest='!*IntegrationTest'`) cho số thấp hơn.
 - Android: chỉ đo unit test ViewModel; coverage của Activity/Fragment/Adapter thấp vì UI test thuộc Tuần 17; test Room DAO (`androidTest`, chạy trên LDPlayer 9) không được đo coverage.
 - Android: số coverage của từng ViewModel là của lớp chính; lớp con ẩn danh `ExamTakingViewModel.new CountDownTimer() {...}` (bộ đếm giờ làm bài thi) chỉ đạt 14% và không nằm trong số 97% của `ExamTakingViewModel`.
+
+## 38. Kiểm thử giao diện đa kích thước màn hình, đa phiên bản Android, Dark Mode và Premium end-to-end (Tuần 17 – Ngày 1-2)
+
+- Phạm vi: test thủ công UI trên 4 kích thước màn hình (5", 6.1", 6.7", tablet 10") và 4 phiên bản Android (API 24, 28, 31, 34), Dark Mode toàn bộ màn hình, luồng Premium end-to-end (kế hoạch v5, Tuần 17 – Ngày 1-2). Không sửa code: lỗi chỉ được ghi nhận, việc sửa nằm ở Tuần 17 – Ngày 7.
+- Thiết bị: 4 AVD của Android Studio (x86_64, tăng tốc WHPX), mỗi AVD ghép một kích thước với một phiên bản Android để mỗi kích thước và mỗi phiên bản đều được chạy đủ toàn bộ màn hình. Mỗi AVD dùng một tài khoản test mới `test-<tên AVD>@test.com` (A: `test-Lori_A_5in_API24@test.com`, B: `test-Lori_B_61in_API28@test.com`, C: `test-Lori_C_67in_API31@test.com`, D: `test-Lori_D_tablet10_API34@test.com`); mỗi tài khoản sinh 1 dòng `subscriptions` loại `MOCK` trong Neon (tài khoản B thêm 1 dòng do P10; không tự xóa).
+- Bản app: `versionName = "1.4-alpha"` (`versionCode = 6`), APK debug chạy trực tiếp từ Android Studio, ký bằng debug keystore của máy build (khớp `APP_SIGNATURE` trên Render).
+- Quy trình mỗi AVD: 39 màn hình (S01–S39) qua 6 pha: Free sáng → Free tối → mua Premium (Gói Năm) → Premium sáng → Premium tối → đăng xuất tối. Màn cần gọi LLM mới (S29, S32, S34, S36, S38, S39) ở chế độ tối chỉ chạy trên AVD B. Dark Mode bật ở Cài đặt, không theo hệ thống.
+- Tiêu chí "Đạt" cho mỗi màn: không văng; không chữ bị cắt/chồng; không bị thanh hệ thống/bàn phím che; cuộn tới cuối và bấm được nút cuối; không tràn ngang; ảnh/icon không méo; khớp prototype v7 ở mức bố cục. Chế độ tối thêm: không mảng nền sáng chói không chủ ý, chữ và icon đọc rõ, hộp thoại/bottom sheet nền tối.
+
+### Thiết bị kiểm thử
+
+| AVD | Màn hình | `wm size` · `wm density` (sw ≈ dp) | Android | RAM |
+|---|---|---|---|---|
+| A `Lori_A_5in_API24` | 5.0" | 720x1280 · 320 (360 dp) | API 24 (7.0) | 2048 MB |
+| B `Lori_B_61in_API28` | 6.1" | 1080x2160 · 400 (432 dp) | API 28 (9) | 2048 MB |
+| C `Lori_C_67in_API31` | 6.7" | 1440x3120 · 560 (411 dp) | API 31 (12) | 2048 MB |
+| D `Lori_D_tablet10_API34` | 10.1" | 2560x1600 · 320 (800 dp) | API 34 (14) | 2048 MB |
+
+### Kết quả theo AVD (số màn đạt / số màn đã xem)
+
+| AVD | Pha 1 Free sáng (S01–S20) | Pha 2 Free tối (S01, S05–S20) | Pha 3 mua (S21) | Pha 4 Premium sáng (S22–S39) | Pha 5 Premium tối (S22–S39) | Pha 6 đăng xuất tối (S03, S04) | Lỗi |
+|---|---|---|---|---|---|---|---|
+| A | 20/20 | 17/17 | 1/1 | 18/18 | 12/12 (bỏ 6 màn ★) | 2/2 | L17-01 (quan sát S16) |
+| B | 20/20 | 17/17 | 1/1 | 18/18 | 18/18 | 2/2 | L17-01 (quan sát S16) |
+| C | 20/20 | 17/17 | 1/1 | 18/18 | 12/12 (bỏ 6 màn ★) | 2/2 | L17-01 (quan sát S16) |
+| D | 20/20 | 17/17 | 1/1 | 18/18 | 12/12 (bỏ 6 màn ★) | 2/2 | L17-01 (quan sát S16) |
+
+### Kết quả Premium end-to-end
+
+| Mã | Kịch bản | A | B | C | D |
+|---|---|---|---|---|---|
+| P1 | Sau đăng ký, Cài đặt ghi "Chưa kích hoạt" | Đạt | Đạt | Đạt | Đạt |
+| P2 | Free bấm thẻ AI Tutor → hộp thoại Premium | Đạt | Đạt | Đạt | Đạt |
+| P3 | Free bấm khung khóa Đề thi / thẻ phân tích AI sau Quiz → hộp thoại; "Để sau" | Đạt | Đạt | Đạt | Đạt |
+| P4 | Hộp thoại → màn chọn gói; 3 gói đổi viền và giá trên nút; banner Hồ sơ và dòng Cài đặt mở thẳng màn mua | Đạt | Đạt | Đạt | Đạt |
+| P5 | Mua Gói Năm: thanh tiến trình, màn "Chào mừng Premium!" | Đạt | Đạt | Đạt | Đạt |
+| P6 | Sau mua: Cài đặt "Đang hoạt động", Đề thi mở danh sách, thẻ AI Tutor vào được | Đạt | Đạt | Đạt | Đạt |
+| P7 | Quiz → phân tích AI không còn hộp thoại | — | Đạt | — | — |
+| P8 | Tắt app, mở lại: vẫn Premium | — | Đạt | — | — |
+| P9 | Đăng xuất, đăng nhập lại: Premium trở lại (ghi thời gian chờ) | — | Đạt | — | — |
+| P10 | Mua Vĩnh viễn, mua lần nữa báo "đã có Premium vĩnh viễn" (409) | — | Đạt | — | — |
+| P11 | Đăng nhập tài khoản Premium trên thiết bị thứ hai: Premium được đồng bộ | — | — | — | Đạt |
+
+P9 (AVD B): sau đăng nhập lại, "Đang hoạt động" xuất hiện sau khoảng 3 giây.
+P11 (AVD D, đăng nhập tài khoản Premium của AVD B `test-Lori_B_61in_API28@test.com`): "Đang hoạt động" xuất hiện sau khoảng 3 giây.
+
+### Lỗi phát hiện
+
+| Mã | Mức độ | AVD | Màn | Mô tả | Cách tái hiện |
+|---|---|---|---|---|---|
+| L17-01 | Low | A, B, C, D | S16 | Bấm "Chỉnh sửa hồ sơ" hoặc "Đổi mật khẩu" hiện thông báo "Cần đăng nhập tài khoản — tính năng này sẽ hoàn thiện ở Tuần 4-5" (chuỗi cũ còn trong code). Mức độ tạm thời, Ngày 7 quyết định. | Tab "Tôi" → "Cài đặt" → bấm "Chỉnh sửa hồ sơ" hoặc "Đổi mật khẩu" |
+
+Tổng: 1 lỗi (Critical 0, High 0, Medium 0, Low 1). Các lỗi này được chuyển sang Tuần 17 – Ngày 7 để phân loại lại và sửa Critical + High.
+
+### Giới hạn đã biết (không sửa)
+
+- Mỗi AVD bị xóa sau khi test xong để tiết kiệm dung lượng ổ cứng nên một lỗi chỉ được đối chiếu với các AVD chạy sau nó.
+- Test chỉ chạy trên AVD x86_64 của Android Studio, dùng mạng của máy tính; **chưa test bằng điện thoại thật và mạng 4G**.
+- Mỗi kích thước màn hình chỉ ghép với một phiên bản Android (4 tổ hợp, không chạy đủ 16 tổ hợp); lỗi chỉ xuất hiện ở một AVD chưa chắc do kích thước hay do phiên bản.
+- Tablet chỉ test chiều dọc; app chưa có layout riêng cho tablet (không có `layout-sw600dp`); chưa test xoay ngang.
+- Camera dùng camera ảo của AVD; ảnh chụp không phản ánh chất lượng camera thật.
+- Đăng nhập Google không được test hôm nay (cần tài khoản Google và Google Play trên AVD).
+- Dịch online ở màn Dịch thuật báo "chưa khả dụng" vì LibreTranslate đang chạy tạm trên máy Dev (mục 12); chỉ kiểm bố cục.
+- Kết quả LLM thay đổi giữa các lần gọi; chỉ kiểm tra bố cục các màn AI, không đánh giá chất lượng câu trả lời (việc đó thuộc Evaluation Dataset, Tuần 17 – Ngày 6).
+- Các màn cần gọi LLM mới (S29, S32, S34, S36, S38, S39) ở chế độ tối chỉ được chạy trên AVD B.
+- Việc Premium hết hạn (`SubscriptionExpiryScheduler`) không thuộc ngày này, kiểm ở Tuần 18 – Ngày 7.
+- Gói Tháng không được mua trong lúc test; giao diện mua Gói Tháng chỉ được kiểm ở mức chọn gói và giá trên nút (P4).
