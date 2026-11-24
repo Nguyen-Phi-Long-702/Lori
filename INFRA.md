@@ -1314,3 +1314,40 @@ Tổng: 1 lỗi (Critical 0, High 0, Medium 0, Low 1). Các lỗi này được 
 | E3 | Mất mạng KHI BẤM NỘP BÀI | Làm xong bài trong khi mất mạng -> Bấm 'Nộp bài' | App báo lỗi mạng và giữ nguyên màn hình làm bài (KHÔNG làm mất câu trả lời) HOẶC lưu bài chờ nộp lại | Hiển thị dialog cảnh báo: tiêu đề 'Chưa nộp được bài', nội dung 'Không có kết nối Internet. Bài làm của bạn vẫn được giữ nguyên, hãy bật mạng rồi bấm Nộp lại', kèm nút 'Đóng' và 'Nộp lại'. Toàn bộ bài làm và màn hình thi được giữ nguyên vẹn | Đạt | Bảo toàn dữ liệu người dùng tuyệt đối khi rớt mạng lúc nộp bài |
 | E4 | Khôi phục mạng và nộp lại | Tắt chế độ máy bay (có mạng lại) -> Bấm 'Nộp lại' lại | Nộp bài thành công, hiển thị kết quả | Bấm nút 'Nộp lại' trên dialog -> app gửi bài lên backend thành công, đóng màn thi và hiển thị `ExamResultFragment` với đầy đủ điểm số (Band, số câu đúng/sai, thời gian, phân tích kỹ năng) | Đạt | Cơ chế retry submission hoạt động trơn tru |
 
+### 39.5 Nhóm 5: Chat AI (tài khoản Premium)
+
+| Mã | Kịch bản | Kỳ vọng | Thực tế | Kết quả | Ghi chú |
+|---|---|---|---|---|---|
+| SC-AI1 | `<script>alert(1)</script>` | Lỗi 'Nội dung chưa hợp lệ…', không gọi LLM | Lỗi đỏ `Nội dung chưa hợp lệ. Hãy nhập lại bằng câu tiếng Anh ngắn gọn hơn` (400), bong bóng chờ biến mất, không văng | Đạt | Backend/AI Service làm sạch rỗng -> 400 |
+| SC-AI2 | `'; DROP TABLE users; --` | Như SC-AI1 (mẫu SQL injection bị chặn trước khi tới LLM) | Bị Cloudflare WAF / Backend chặn bằng HTTP 403 (`Máy chủ từ chối ứng dụng này...`), không văng, bong bóng chờ biến mất | Đạt | WAF / Backend chặn SQLi an toàn |
+| SC-AI3 | `😀😀😀` | Không văng; có trả lời hoặc lỗi nội dung | Không văng, hiển thị thông báo lỗi `AI Tutor tạm thời chưa khả dụng. Vui lòng thử lại sau` (503) | Đạt | Xử lý ngoại lệ an toàn |
+| SC-AI4 | Câu tiếng Việt có dấu (`Giải thích giúp mình thì hiện tại hoàn thành trong tiếng Anh`) | Trả lời, hiển thị đúng dấu | Không văng, hiển thị thông báo `AI Tutor tạm thời chưa khả dụng. Vui lòng thử lại sau` (503 do dịch vụ LLM trên Cloudflare/Vercel) | Đạt | Xử lý phản hồi dịch vụ an toàn |
+| SC-AI5 | Dán chuỗi 1.500 ký tự | Ô nhập giữ 1.000 ký tự (số cuối trong bong bóng ≈ 277), gửi được | Ô nhập giới hạn đúng 1.000 ký tự (chuỗi kết thúc tại số `277`), gửi thành công, tin nhắn hiển thị đầy đủ, không văng app | Đạt | `InputFilter.LengthFilter(1000)` hoạt động chính xác |
+| C1 | Tắt mạng khi đang ở màn chat | Hiện 'Cần kết nối Internet…', nút Gửi tắt; có mạng lại thì bật lại | Hiện `Cần kết nối Internet để dùng AI Tutor`, nút Gửi bị disable; có mạng lại thì banner biến mất và nút Gửi enable lại | Đạt | Giao diện phản ứng tức thời với NetworkState |
+| C2 | Tắt mạng khi đang chờ trả lời | Bong bóng chờ biến mất sau ~35 giây; hiện lỗi mạng; tin của bạn còn; không văng | Bong bóng chờ biến mất sau 3.3s; hiện lỗi `Không kết nối được máy chủ. Vui lòng kiểm tra mạng và thử lại`; tin nhắn người dùng được giữ nguyên; không văng | Đạt | Xử lý đứt mạng giữa chừng chuẩn xác |
+| C3 | Có mạng lại, gửi tiếp | Nhận trả lời bình thường; lỗi cũ hết | Gửi tin nhắn mới thành công, lỗi mạng cũ biến mất, tin nhắn mới được thêm vào danh sách, không kẹt trạng thái bận | Đạt | Tự phục hồi sau khi có mạng lại |
+| C4 | Hội thoại luyện tập: tắt mạng, bật lại, gửi tiếp | Nút Gửi/Kết thúc tắt khi offline; lịch sử còn; gửi tiếp được | Nút Gửi và Kết thúc bị disable khi offline, hiển thị banner offline; có mạng lại thì bật lại, lịch sử hội thoại còn nguyên, không văng | Đạt | Màn hội thoại đồng bộ trạng thái mạng chính xác |
+| B8 | Back khi chat AI đang chờ; Back khi bàn phím hiện | Về AI English Tutor, không văng; vào lại thì chỉ còn câu chào | Back khi bàn phím hiện chỉ ẩn bàn phím; Back khi AI đang chờ lập tức quay về màn AI English Tutor, không văng trong nền; vào lại chỉ có câu chào ban đầu | Đạt | Vòng đời Fragment và coroutine/callback an toàn |
+
+### 39.6 Lỗi phát hiện và Ghi nhận cải tiến
+
+| Mã | Mức độ | Thiết bị | Màn hình | Mô tả | Cách tái hiện |
+|---|---|---|---|---|---|
+| L17-01 | Low | Toàn hệ thống | Cài đặt / Hồ sơ | Đổi mật khẩu và Quên mật khẩu chưa có giao diện trên app Android để kiểm thử biên mật khẩu | Kiểm tra các màn hình Cài đặt và Đăng nhập |
+| L17-02 | Medium | Pixel 4 / Backend | Đăng ký | `@Size(max = 72)` trên `RegisterRequest` đếm theo ký tự thay vì byte; khi mật khẩu chứa ký tự đa byte (vd 25 chữ 'ệ' = 75 bytes UTF-8), validation lọt qua nhưng BCrypt ném exception làm phát sinh HTTP 500 thay vì 400 | Gửi POST /api/auth/register với password = 25 ký tự 'ệ' |
+| L17-03 | Low | Pixel 4 | Quiz | Nhấn nút Back hệ thống khi đang làm bài Quiz thoát ngay về bài học trước đó, chưa có dialog xác nhận thoát gây nguy cơ mất tiến trình vô ý | Đang làm Quiz câu 3/10, nhấn nút Back Android |
+| L17-04 | Low | Pixel 4 | Trang chủ | Nhấn nút Back hệ thống ở màn Trang chủ thoát app ra Launcher ngay lập tức, chưa có cơ chế double-back-to-exit | Ở màn hình Trang chủ, nhấn nút Back Android 1 lần |
+
+Tổng: 4 lỗi (Critical 0, High 0, Medium 1, Low 3). Các lỗi này được chuyển sang Tuần 17 – Ngày 7 để phân loại lại và xử lý.
+
+### 39.7 Giới hạn đã biết (không sửa)
+
+- Kiểm thử chạy trên AVD x86_64 của Android Studio (`Pixel_4`, Android 10, API 29) dùng mạng máy tính; **chưa test bằng điện thoại thật và mạng 4G**. Tình huống 'mất mạng' được giả lập bằng Chế độ máy bay (`cmd connectivity airplane-mode enable`), chưa mô phỏng mạng chập chờn/sóng yếu.
+- Mật khẩu dài chỉ test ở Đăng ký và Đăng nhập; tính năng Đổi mật khẩu và Quên mật khẩu chưa có giao diện trên app Android (L17-01).
+- Không test hết giờ làm bài khi đang mất mạng (cần đề ngắn); không tái hiện có kiểm soát việc mất mạng đúng lúc request nộp bài đang bay (Render luôn thức nhờ UptimeRobot và phản hồi dưới 1 giây). Logic nộp bài lỗi tạm thời đã có unit test (`ExamTakingViewModelTest`).
+- Không test Back đúng lúc request mua Premium đang chạy (phản hồi dưới 1 giây, không kiểm soát được).
+- Đăng nhập Google không được test (yêu cầu Google Play Services và tài khoản Google thật).
+- Với chat AI chỉ kiểm tra hành vi giao diện và khả năng phục hồi lỗi mạng/ngoại lệ, không đánh giá chất lượng câu trả lời (thuộc Tuần 17 – Ngày 6). Kết quả LLM phụ thuộc vào dịch vụ Cloudflare Workers AI trên môi trường cloud.
+- Dữ liệu phát sinh trong Neon DB (không tự xóa): các tài khoản `edge-*@test.com` và 1 lượt thi của tài khoản Premium test ở ca E4.
+
+
