@@ -1241,3 +1241,52 @@ Tổng: 1 lỗi (Critical 0, High 0, Medium 0, Low 1). Các lỗi này được 
 - Các màn cần gọi LLM mới (S29, S32, S34, S36, S38, S39) ở chế độ tối chỉ được chạy trên AVD B.
 - Việc Premium hết hạn (`SubscriptionExpiryScheduler`) không thuộc ngày này, kiểm ở Tuần 18 – Ngày 7.
 - Gói Tháng không được mua trong lúc test; giao diện mua Gói Tháng chỉ được kiểm ở mức chọn gói và giá trên nút (P4).
+
+
+## 39. Báo cáo kiểm thử ca biên (Edge Cases) — Tuần 17 Ngày 3
+
+**Ngày thực hiện:** 24/11/2026  
+**Môi trường:**
+- Backend: Render (`lori-25ej.onrender.com`), Spring Boot 3, PostgreSQL, Docker
+- Client: Android Emulator `Pixel_4` (Android 10.0, API 29, x86_64, `emulator-5554`) — thực hiện theo chỉ đạo của người dùng do AVD API 34 không có sẵn trên host
+- App version: `1.4-alpha` (versionCode 1)
+
+### 39.1 Nhóm 1: Mật khẩu dài & Giới hạn BCrypt
+
+| Mã ca | Mục tiêu test | Dữ liệu test | Màn hình | Kỳ vọng | Thực tế | Kết quả | Ghi chú |
+|---|---|---|---|---|---|---|---|
+| PW1 | Đăng ký + đăng nhập với mật khẩu 72 ký tự (chính xác giới hạn) | PW72 = `Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!` (72 chars), email `edge-pw72@test.com` | Đăng ký & Đăng nhập | Đăng ký thành công, đăng xuất, đăng nhập lại thành công vào MainActivity | Đăng ký thành công; đăng nhập lại thành công vào MainActivity. Thời gian phản hồi: 7.12s | Đạt | Biên trên chuẩn xác của client & backend |
+| PW2 | Đăng ký với mật khẩu 73 ký tự (vượt giới hạn 1 ký tự) | PW73 = `Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!Aa1!x` (73 chars), email `edge-pw73@test.com` | Đăng ký | App chặn ngay tại client với lỗi: 'Mật khẩu tối đa 72 ký tự' (auth_error_password_long), không gửi request | App chặn ngay tại client, hiển thị lỗi `Mật khẩu tối đa 72 ký tự` dưới layoutPassword, không gửi request lên backend | Đạt | Client validation hoạt động chính xác |
+| PW3 | Đăng nhập với mật khẩu 73 ký tự | Email `edge-pw72@test.com`, password PW73 (73 chars) | Đăng nhập | Không crash app; app hoặc backend báo lỗi | Không crash app; hiển thị lỗi `Thông tin chưa hợp lệ, vui lòng kiểm tra lại` (tvFormError) | Đạt | Xử lý lỗi an toàn, không văng app |
+| PW4 | Đăng ký qua Direct API với mật khẩu tiếng Việt có dấu (24 ký tự = 72 bytes UTF-8) | VN24 = 24 ký tự `ệ` (24 × 3 = 72 bytes), email `edge-b72@test.com` | Direct API (POST /api/auth/register & login) | Backend nhận và xử lý (201 Created), sau đó đăng nhập thành công (200 OK) | Register trả về HTTP 201 Created (kèm accessToken + refreshToken); Login trả về HTTP 200 OK (kèm tokens) | Đạt | BCrypt xử lý chính xác 72 bytes UTF-8 |
+| PW5 | Đăng ký qua Direct API với mật khẩu tiếng Việt có dấu (25 ký tự = 75 bytes UTF-8, vượt 72 bytes) | VN25 = 25 ký tự `ệ` (25 × 3 = 75 bytes), email `edge-b75@test.com` | Direct API (POST /api/auth/register) | Ghi nhận status code thực tế và phản ứng của BCrypt | Register trả về HTTP 500 Internal Server Error (`{"status":500,"message":"Internal server error"}`). BCrypt ném exception do mật khẩu vượt quá 72 bytes | Ghi nhận | Backend `@Size(max=72)` đếm ký tự (25 <= 72) nên lọt qua validation, sau đó BCrypt ném ngoại lệ khi encode |
+| PW6 | Đăng ký trên App với mật khẩu tiếng Việt có dấu 25 ký tự (75 bytes) | VN25 = 25 ký tự `ệ`, name `Edge App75`, email `edge-app75@test.com` | Đăng ký | App kiểm tra length (25 <= 72) -> gửi request lên backend; ghi nhận thông báo lỗi người dùng thấy | App cho phép bấm Đăng ký, backend trả về 500, App hiển thị lỗi: `Máy chủ đang gặp sự cố. Vui lòng thử lại sau` (tvFormError), không văng app | Ghi nhận | Thông báo thân thiện, app không crash |
+
+### 39.2 Nhóm 2: Ký tự đặc biệt (Special Characters)
+
+| Mã ca | Mục tiêu test | Dữ liệu test | Màn hình | Kỳ vọng | Thực tế | Kết quả | Ghi chú |
+|---|---|---|---|---|---|---|---|
+| SC1 | Tên có emoji | `Nguyễn Văn A 😀`, email `edge-sc1@test.com`, pass `Edge@12345` | Đăng ký & Bảng xếp hạng | Đăng ký thành công. Bảng xếp hạng hiển thị đúng emoji, không vỡ layout | Đăng ký thành công vào MainActivity. Bảng xếp hạng hiển thị đúng `Nguyễn Văn A 😀`, avatar chữ `N`, layout chuẩn | Đạt | Unicode UTF-8 hỗ trợ hoàn hảo |
+| SC2 | Tên có ký tự HTML | `<b>Long</b> & Co`, email `edge-sc2@test.com`, pass `Edge@12345` | Đăng ký & Bảng xếp hạng | Đăng ký thành công. Tên hiển thị stripped tags, KHÔNG render thành bold text | Đăng ký thành công. Bảng xếp hạng hiển thị `Long & Co` (toàn bộ tag `<b>`, `</b>` đã bị InputSanitizerUtil loại bỏ sạch sẽ) | Đạt | XSS prevention hoạt động tốt |
+| SC3 | Tên chỉ toàn ký tự đặc biệt | `<<>>`, email `edge-sc3@test.com`, pass `Edge@12345` | Đăng ký | Chặn (DisplayName sau sanitize rỗng) | Bị chặn, hiển thị thông báo: `Thông tin chưa hợp lệ, vui lòng kiểm tra lại` (tvFormError). Backend trả về HTTP 400 Bad Request | Đạt | InputSanitizerUtil làm sạch thành rỗng -> AuthService ném 400 |
+| SC4 | Tên cực dài (100 ký tự) | 100 chữ `A`, email `edge-sc4@test.com`, pass `Edge@12345` | Đăng ký & Bảng xếp hạng | Đăng ký thành công (giới hạn 100). Bảng xếp hạng hiển thị cắt bớt (ellipsize ...) | Đăng ký thành công vào MainActivity. Bảng xếp hạng hiển thị tên trong giới hạn view bounds `[297,1661][932,1716]`, không tràn viền, không vỡ layout | Đạt | Giới hạn 100 ký tự đúng chuẩn |
+| SC5 | Mật khẩu chứa toàn bộ ký tự đặc biệt | `P@ss w0rd!#$%^&*()_+-=[]{}|;:'",.<>?/\~` (39 chars), email `edge-sc5@test.com` | Đăng ký & Đăng nhập | Đăng ký thành công, hash đúng trong DB, đăng xuất và đăng nhập lại thành công | Đăng ký thành công; đăng xuất; đăng nhập lại thành công vào MainActivity | Đạt | Hỗ trợ đầy đủ các ký tự đặc biệt ASCII |
+| SC6 | Mật khẩu có khoảng trắng đầu/cuối | ` Edge@123 ` (có space đầu và cuối), email `edge-sc6@test.com` | Đăng ký & Đăng nhập | Kiểm tra space có bị trim không: nhập thiếu space thất bại, nhập đúng space thành công | Đăng ký thành công; đăng nhập với `Edge@123` (thiếu space) báo lỗi `Email hoặc mật khẩu không đúng`; đăng nhập với ` Edge@123 ` thành công vào MainActivity | Đạt | Mật khẩu bảo toàn nguyên vẹn khoảng trắng đầu/cuối, không bị trim ngoài ý muốn |
+| SC7 | Email viết hoa | `Edge+SC7@Test.com`, email đăng nhập lại `edge+sc7@test.com`, pass `Edge@12345` | Đăng ký & Đăng nhập | Đăng ký thành công -> Đăng nhập lại bằng email chữ thường thành công (case-insensitive) | Đăng ký thành công với `Edge+SC7@Test.com`; đăng xuất; đăng nhập lại bằng `edge+sc7@test.com` thành công vào MainActivity | Đạt | Backend chuẩn hoá email lowercase (`normalizeEmail`) |
+| SC8 | Tra cứu từ điển với ký tự đặc biệt | 11 chuỗi ký tự test đặc biệt (chi tiết bảng dưới) | Tra cứu (Dictionary) | Không crash, không bị SQL Injection, trả về kết quả rỗng hoặc phù hợp | Cả 11 trường hợp ở cả 2 trạng thái Online và Offline đều không crash, 0 items, không dính SQLi, không leak wildcard | Đạt | Room DB dùng parameterized query an toàn tuyệt đối |
+
+#### Chi tiết test SC8 (Từ điển — ô tìm kiếm)
+
+| Ký tự test | Mục đích | Kỳ vọng | Kết quả Online | Kết quả Offline (Airplane mode) | Đánh giá |
+|---|---|---|---|---|---|
+| `'` (single quote) | Test SQL Injection (Room/SQLite) | Không crash, hiện 'Không tìm thấy' hoặc rỗng | Không crash, Items count: 0 | Không crash, Items count: 0 | Đạt |
+| `"` (double quote) | Test SQL Injection | Không crash, hiện 'Không tìm thấy' | Không crash, hiện `Không tìm thấy kết quả cho """`, Items count: 0 | Không crash, hiện `Không tìm thấy kết quả cho """`, Items count: 0 | Đạt |
+| `a'b` | Nhập từ có dấu nháy (viết tắt tiếng Anh: don't, it's) | Không crash, tìm đúng từ nếu có | Không crash, hiện `Không tìm thấy kết quả cho "a'b"`, Items count: 0 | Không crash, hiện `Không tìm thấy kết quả cho "a'b"`, Items count: 0 | Đạt |
+| `--` (SQL comment) | Test SQL Injection | Không crash, hiện 'Không tìm thấy' | Không crash, hiện `Không tìm thấy kết quả cho "--"`, Items count: 0 | Không crash, hiện `Không tìm thấy kết quả cho "--"`, Items count: 0 | Đạt |
+| `;` (semicolon) | Test SQL Injection | Không crash, hiện 'Không tìm thấy' | Không crash, hiện `Không tìm thấy kết quả cho ";"`, Items count: 0 | Không crash, hiện `Không tìm thấy kết quả cho ";"`, Items count: 0 | Đạt |
+| `😀` (emoji) | Test UTF-8 Room DB | Không crash, hiện 'Không tìm thấy' | Không crash, hiện `Không tìm thấy kết quả cho "😀"`, Items count: 0 | Không crash, hiện `Không tìm thấy kết quả cho "😀"`, Items count: 0 | Đạt |
+| `ăn` (tiếng Việt có dấu) | Test Unicode search | Tìm từ bắt đầu bằng ăn (nếu có) hoặc không crash | Không crash, hiện `Không tìm thấy kết quả cho "ăn"`, Items count: 0 | Không crash, hiện `Không tìm thấy kết quả cho "ăn"`, Items count: 0 | Đạt |
+| `%` (SQL LIKE wildcard) | Test wildcard injection | Không crash, KHÔNG trả về toàn bộ DB | Không crash, Items count: 0 (không dump DB) | Không crash, Items count: 0 (không dump DB) | Đạt |
+| `_` (SQL LIKE wildcard 1 ký tự) | Test wildcard injection | Không crash, KHÔNG trả về từ ngẫu nhiên 1 ký tự | Không crash, Items count: 0 (không dump DB) | Không crash, Items count: 0 (không dump DB) | Đạt |
+| Chuỗi 200 ký tự `a` | Buffer overflow / UI freeze | Không đơ UI, không crash | Không crash, không đơ UI, hiện `Không tìm thấy kết quả cho "aaaa..."`, Items count: 0 | Không crash, không đơ UI, hiện `Không tìm thấy kết quả cho "aaaa..."`, Items count: 0 | Đạt |
+| Chuỗi rỗng / chỉ toàn space | Empty input | Hiện trạng thái ban đầu, không crash | Không crash, danh sách rỗng, giao diện ổn định | Không crash, danh sách rỗng, giao diện ổn định | Đạt |
