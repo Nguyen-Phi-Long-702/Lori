@@ -10,8 +10,8 @@ class ModelSettings:
 
 # context_window theo tai lieu Cloudflare (BENCHMARK.md muc 2)
 PRIMARY_MODEL = ModelSettings(
-    model_id="@cf/qwen/qwen3-30b-a3b-fp8",
-    context_window=32768,
+    model_id="@cf/google/gemma-4-26b-a4b-it",
+    context_window=256000,
     max_output_tokens=2048,
 )
 
