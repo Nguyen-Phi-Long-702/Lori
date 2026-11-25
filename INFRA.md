@@ -1365,3 +1365,28 @@ Tổng: 4 lỗi (Critical 0, High 0, Medium 1, Low 3). Các lỗi này được 
 - `dumpsys meminfo`: lúc mới mở TOTAL PSS `95635` KB, Java Heap `10684` KB, Native Heap `37580` KB, Views `128`, Activities `2`; sau kịch bản (và sau Heap Dump) TOTAL PSS `118081` KB, Java Heap `12312` KB, Native Heap `43652` KB, Views `115`, Activities `1` (ngay sau kịch bản trước Heap Dump: TOTAL PSS `118906` KB, Java Heap `12488` KB, Native Heap `43984` KB, Views `115`, Activities `1`).
 - Giới hạn của phép đo: số đo trên emulator (`Pixel_4`, Android 10, API 29) nên không đại diện cho mọi thiết bị; APK debug chậm hơn bản release; mỗi mốc chỉ đo 10 lần; trên API 29 `HomeMs` dùng mốc `am_on_top_resumed_gained_called` làm cận dưới do không có dòng `Displayed` cho `MainActivity`.
 
+### 40.2 Backend: cold start (ngày 25/11/2026)
+
+- Điều kiện: monitor UptimeRobot của Backend tạm dừng từ `14:39` đến `15:47` (đo cold start lúc `15:15`, tức `36 phút ≥ 30 phút` không có request nào; Render Free ngủ sau 15 phút rảnh); đã bật lại monitor `Lori Backend (Render)` trước Phần 9. (Monitor `Lori AI Service (Vercel)` vẫn giữ tạm dừng thêm để đo lại Phần 8 sau khi đổi model.)
+- Cold start Render (từ request đầu tiên đến `200` đầu tiên của `/actuator/health/ping`): `191,69` giây (`03:11.685`; `2` lần thử, lần 1 hết timeout 120 giây trả mã `000`, lần 2 trả `200`). Tách riêng khỏi các số đo CRUD theo kế hoạch.
+- `/actuator/health` (kiểm tra Postgres + Redis) ngay sau đó: lần 1 `3,124` giây (`3.124157s`, Neon đang thức dậy), lần 2-5: `0,462`, `0,543`, `0,407`, `0,454` giây (`0.461953s`, `0.542536s`, `0.407262s`, `0.454456s`).
+
+### 40.3 Backend: load test 100 người dùng ảo đồng thời (ngày 25/11/2026)
+
+- Script: `tools/load-test/load-test-concurrent.js`, chạy bằng Docker `grafana/k6`, từ máy Dev tới `https://lori-25ej.onrender.com` (số đo gồm cả độ trễ mạng từ máy chạy test tới Render). Lệnh chạy (PowerShell, ở thư mục gốc repo, sau khi đặt `BASE_URL`, `API_KEY`, `APP_SIGNATURE`):
+  `docker run --rm -e BASE_URL -e API_KEY -e APP_SIGNATURE -v "${PWD}\tools\load-test:/scripts" grafana/k6 run /scripts/load-test-concurrent.js`
+- Kịch bản: tăng lên 100 người dùng ảo trong 30 giây, giữ 100 người trong 2 phút, giảm về 0 trong 15 giây. Mỗi người mỗi vòng gọi 5 API CRUD (`GET /api/content/version`, `GET /api/users/me`, `GET /api/progress/pull`, `POST /api/progress/sync`, `GET /api/exams`), nghỉ 1 giây sau mỗi request. 10 tài khoản test (`k6c.<thời gian>.<i>@example.com`, Premium mock) dùng chung cho 100 người dùng ảo.
+- Mô phỏng 100 người ở 100 IP: `RateLimitFilter` giới hạn 60 request/phút/IP và lấy IP từ giá trị đầu tiên của `X-Forwarded-For`; mỗi người dùng ảo gửi `X-Forwarded-For` riêng (`10.<runId>.0.<số thứ tự>`). Thử nghiệm trước khi chạy (200 request `GET /api/users/me` không token): không gửi header → `127` lần 401, `73` lần 429; mỗi request một IP giả → `200` lần 401, `0` lần 429.
+- Ngưỡng (kế hoạch mục 20): avg < 300ms và p95 < 500ms cho từng API. Kết quả (Backend đã thức, Render Free + Neon Free + Upstash Free):
+
+| API | avg | p(95) | Đạt ngưỡng | Tuần 5 (tải thấp ~50 request/phút): avg / p(95) |
+|---|---|---|---|---|
+| `GET /api/content/version` | 2140ms (2.14s) | 4490ms (4.49s) | Chưa đạt | 239.92ms / 407.81ms |
+| `GET /api/users/me` | 6180ms (6.18s) | 15190ms (15.19s) | Chưa đạt | 255.74ms / 466.84ms |
+| `GET /api/progress/pull` | 6180ms (6.18s) | 14700ms (14.7s) | Chưa đạt | 258.65ms / 530.25ms |
+| `POST /api/progress/sync` | 7030ms (7.03s) | 16490ms (16.49s) | Chưa đạt | 313.74ms / 479.06ms |
+| `GET /api/exams` | 6300ms (6.3s) | 15590ms (15.59s) | Chưa đạt | 293.78ms / 556.9ms |
+
+- Tổng: `2310` request (`12,01/s`), `458` vòng lặp (iterations), tối đa 100 người dùng ảo; tỉ lệ request lỗi (`http_req_failed`) `0.12%` (`3 / 2310`); tỉ lệ check đạt `99.85%` (`4116 / 4122`); số response 429: `0`. (Chạy 1 lần duy nhất.)
+- Dữ liệu test đã dọn sau khi đo: xóa `10` user `k6c.%` trong Neon (cascade, `DELETE 10`, `count(*) = 0`) và xóa khỏi `leaderboard:global` (`10`), `leaderboard:weekly` (`10`), `leaderboard:monthly` (`10`) trong Upstash (`ZSCORE` trả `(nil)`). Mức hạn mức Upstash đã tiêu hao do lần đo hôm nay: `11.098` lệnh (`15.096` − `3.998`, dashboard hiển thị `4 K` → `15 K` / `500k` lệnh/tháng).
+
