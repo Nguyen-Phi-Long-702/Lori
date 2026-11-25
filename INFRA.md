@@ -1353,7 +1353,7 @@ Tổng: 4 lỗi (Critical 0, High 0, Medium 1, Low 3). Các lỗi này được 
 ## 40. Báo cáo hiệu năng (Performance) trên hạ tầng cloud thật (Tuần 17 – Ngày 4-5)
 
 - Phạm vi: đo hiệu năng Android (APK size, cold start, memory leak), Backend (cold start, load test 100 người dùng ảo đồng thời) và AI Service (latency dưới tải đồng thời) theo kế hoạch v5, Tuần 17 – Ngày 4-5. Không sửa code: số đo không đạt chỉ được ghi nhận.
-- Hạ tầng đo: Backend Render Free (`lori-25ej.onrender.com`) + Neon Free + Upstash Redis Free; AI Service Vercel Hobby (`lori-ai-service.vercel.app`) + Cloudflare Workers AI (`@cf/qwen/qwen3-30b-a3b-fp8`). Kế hoạch ghi Cloud Run / JMeter / VM Oracle Cloud; thực tế dự án dùng Render / k6 / Vercel nên số đo là trên hạ tầng thật này.
+- Hạ tầng đo: Backend Render Free (`lori-25ej.onrender.com`) + Neon Free + Upstash Redis Free; AI Service Vercel Hobby (`lori-ai-service.vercel.app`) + Cloudflare Workers AI (`@cf/google/gemma-4-26b-a4b-it`, đổi từ `@cf/qwen/qwen3-30b-a3b-fp8` do Cloudflare trả HTTP 410). Kế hoạch ghi Cloud Run / JMeter / VM Oracle Cloud; thực tế dự án dùng Render / k6 / Vercel nên số đo là trên hạ tầng thật này.
 
 ### 40.1 Android (ngày 25/11/2026)
 
@@ -1389,4 +1389,40 @@ Tổng: 4 lỗi (Critical 0, High 0, Medium 1, Low 3). Các lỗi này được 
 
 - Tổng: `2310` request (`12,01/s`), `458` vòng lặp (iterations), tối đa 100 người dùng ảo; tỉ lệ request lỗi (`http_req_failed`) `0.12%` (`3 / 2310`); tỉ lệ check đạt `99.85%` (`4116 / 4122`); số response 429: `0`. (Chạy 1 lần duy nhất.)
 - Dữ liệu test đã dọn sau khi đo: xóa `10` user `k6c.%` trong Neon (cascade, `DELETE 10`, `count(*) = 0`) và xóa khỏi `leaderboard:global` (`10`), `leaderboard:weekly` (`10`), `leaderboard:monthly` (`10`) trong Upstash (`ZSCORE` trả `(nil)`). Mức hạn mức Upstash đã tiêu hao do lần đo hôm nay: `11.098` lệnh (`15.096` − `3.998`, dashboard hiển thị `4 K` → `15 K` / `500k` lệnh/tháng).
+
+### 40.4 AI Service: latency dưới tải đồng thời (ngày 25/11/2026)
+
+- Sự cố phát hiện và xử lý trước khi đo (theo lựa chọn ngoại lệ được duyệt): lần chạy đầu lúc `08:22:10 UTC` (`15:22:10` giờ VN) với `PRIMARY_MODEL = @cf/qwen/qwen3-30b-a3b-fp8` trả `HTTP 502` (`2.88s`, Vercel `Start Type: Cold 1.19s`) do Cloudflare Workers AI trả `HTTP 410` (model đã bị Cloudflare gỡ khỏi catalog; 4/5 model ứng viên Tuần 10 không còn trên catalog, chỉ còn `@cf/google/gemma-4-26b-a4b-it`). Đã đổi `PRIMARY_MODEL` sang `@cf/google/gemma-4-26b-a4b-it` (commit `0942af0`, deploy Ready trên Vercel lúc `15:47`), giữ Pause monitor `Lori AI Service (Vercel)` đến `16:40` (53 phút ≥ 30 phút) rồi chạy đo lại, sau đó Resume lại monitor.
+- Script: `tools/perf-test/ai_load_test.py`, gọi `POST /ai/chat` thật trên AI Service (Vercel) qua `LiveClient` (ký HMAC như Backend), cùng prompt `chat`, cùng 3 mức đồng thời 2/5/10 (2 đợt mỗi mức) như `ai-service/BENCHMARK.md` mục 6. Chạy bằng Docker `python:3.12-slim`, từ máy Dev. Lệnh chạy (PowerShell, ở thư mục gốc repo, sau khi đặt `AI_SERVICE_BASE_URL`, `AI_SERVICE_SHARED_SECRET`):
+  `docker run --rm -e AI_SERVICE_BASE_URL -e AI_SERVICE_SHARED_SECRET -e PYTHONPATH=/repo/ai-service -v "${PWD}:/repo" -w /repo/tools/perf-test python:3.12-slim sh -c "pip install -q -r /repo/ai-service/requirements.txt && python -u ai_load_test.py"`
+- Ngày giờ chạy: `20261125-095148` (25/11/2026, hoàn tất lúc `09:51:48 UTC`, tức `16:51:48` giờ Việt Nam). Dữ liệu thô: `tools/perf-test/results/ai-load-20261125-095148.csv` và `tools/perf-test/results/ai-load-20261125-095148-summary.md`. Neurons đã dùng trong lần chạy (chênh lệch trên dashboard Cloudflare: `0` → `1.05k`/10k): `~1.050` Neurons (`1.05k`).
+- Model: `@cf/google/gemma-4-26b-a4b-it`. Độ trễ AI **báo cáo riêng, không gộp với CRUD** (kế hoạch mục 4.3b).
+
+Request đơn lẻ (cold = request đầu tiên sau ≥ 30 phút không có request; warm = 20 request tuần tự):
+
+| Nguồn | Cold start (s) | Warm thành công | p50 (s) | p95 (s) | Lỗi |
+|---|---|---|---|---|---|
+| Tuần 10: `@cf/google/gemma-4-26b-a4b-it` gọi thẳng Cloudflare từ máy Dev (`BENCHMARK.md` mục 6.3) | 17.533 | 20/20 | 18.08 | 34.85 | 0 |
+| Tuần 17: `@cf/google/gemma-4-26b-a4b-it` qua AI Service (Vercel) | 28.646 | 16/20 | 20.83 | 40.31 | 7 (4 warm, 3 ở mức 10) |
+
+Đồng thời (p50 và request lớn nhất):
+
+| Đồng thời | Tuần 10 (`gemma-4`): p50 / lớn nhất (s) | Tuần 17: thành công | Tuần 17: p50 (s) | Tuần 17: lớn nhất (s) |
+|---|---|---|---|---|
+| 2 | 14.92 / 24.72 | 4/4 | 18.69 | 24.35 |
+| 5 | 15.24 / 19.05 | 10/10 | 17.08 | 20.59 |
+| 10 | 17.36 / 23.72 | 17/20 | 20.19 | 23.79 |
+
+- Nhận xét (chỉ viết điều có trong số đo): p50 warm khác Tuần 10 (`gemma-4`) `+2.75` giây (tăng `15,2%`: `18.08 → 20.83` s); khi tăng từ `1` (`20.83` s) lên `10` request đồng thời (`20.19` s), p50 gần như không đổi (`20.83 → 20.19` giây), nhưng ở mức `10` có `3/20` request lỗi `HTTP 502` (và `4/20` lỗi `HTTP 502` ở pha warm) quanh `25.3s–27.4s` do vượt `TIMEOUT_SECONDS = 25` trong `SelfHostedLlmProvider`; cold start Vercel + Cloudflare `28.646` giây so với p50 warm `20.83` giây (cao hơn `7.82` giây).
+- Chênh lệch so với Tuần 10 có thể đến từ: đường đi thêm qua Vercel; system prompt, bộ lọc guardrails và `max_tokens` (`2048`) của AI Service khác với benchmark Tuần 10 (benchmark gọi thẳng Cloudflare, `max_tokens` 1024, `temperature` 0); độ dài câu trả lời khác nhau (trung bình `819` ký tự); Cloudflare là nền tảng dùng chung nên latency phụ thuộc tải tại thời điểm chạy (khi suy luận vượt 25 giây thì `SelfHostedLlmProvider` ngắt kết nối và trả `502`).
+- Chưa đo token/s: `/ai/chat` không trả số token ra, và không dùng streaming nên không có time-to-first-token.
+
+### 40.5 Kết luận và các giới hạn đã biết
+
+- **Android**: cold start HomeMs trung vị `7035` ms (< 3 s: **Chưa đạt**); memory leak: `0` mục bị báo leak; APK debug `50,94` MB (`53.411.115` byte; chưa tối ưu, tối ưu ở Tuần 19 – Ngày 1-2).
+- **Backend**: cold start Render `191,69` giây (ghi riêng); load test 100 người dùng ảo: `0/5` API đạt cả hai ngưỡng avg < 300ms và p95 < 500ms; tỉ lệ lỗi `0,12%` (`3 / 2310`).
+- **AI Service**: p50 warm `20,83` giây (`16/20` thành công), p50 ở 10 request đồng thời `20,19` giây (`17/20` thành công), cold start `28,646` giây (`@cf/google/gemma-4-26b-a4b-it`, tổng lỗi `7/55` đều `HTTP 502` quanh ngưỡng timeout 25 giây); so với Tuần 10 xem 40.4.
+- Phát hiện bảo mật (chưa sửa, chuyển sang Tuần 18 – Ngày 1-2, rà soát bảo mật): `RateLimitFilter` lấy IP từ giá trị đầu tiên của `X-Forwarded-For` do client gửi; thử nghiệm ở 40.3 cho thấy gửi header giả mỗi request một IP thì né được giới hạn 60 request/phút/IP.
+- Giới hạn của phép đo: đo từ một máy Dev qua Internet (có độ trễ mạng của máy này); chỉ một lần chạy ở một thời điểm trong ngày; k6 dùng 10 tài khoản chung cho 100 người dùng ảo và IP giả bằng `X-Forwarded-For`; cold start mỗi dịch vụ chỉ có 1 mẫu; Render Free, Neon Free, Upstash Free và Cloudflare Workers AI là nền tảng dùng chung nên số đo thay đổi theo thời điểm; model AI thực tế phải đổi sang `@cf/google/gemma-4-26b-a4b-it` do `@cf/qwen/qwen3-30b-a3b-fp8` trả `HTTP 410`.
+- Mỗi lần chạy k6 để lại dữ liệu test và EXP trong Neon/Upstash; đã dọn (xem 40.3). Script AI không ghi dữ liệu vào Backend.
 
