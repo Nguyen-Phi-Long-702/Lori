@@ -1426,3 +1426,215 @@ Request đơn lẻ (cold = request đầu tiên sau ≥ 30 phút không có requ
 - Giới hạn của phép đo: đo từ một máy Dev qua Internet (có độ trễ mạng của máy này); chỉ một lần chạy ở một thời điểm trong ngày; k6 dùng 10 tài khoản chung cho 100 người dùng ảo và IP giả bằng `X-Forwarded-For`; cold start mỗi dịch vụ chỉ có 1 mẫu; Render Free, Neon Free, Upstash Free và Cloudflare Workers AI là nền tảng dùng chung nên số đo thay đổi theo thời điểm; model AI thực tế phải đổi sang `@cf/google/gemma-4-26b-a4b-it` do `@cf/qwen/qwen3-30b-a3b-fp8` trả `HTTP 410`.
 - Mỗi lần chạy k6 để lại dữ liệu test và EXP trong Neon/Upstash; đã dọn (xem 40.3). Script AI không ghi dữ liệu vào Backend.
 
+## 41. AI Evaluation Report đầy đủ (Tuần 17 – Ngày 6)
+
+- Phạm vi: chạy đủ 170 case của Evaluation Dataset (mục 32) vào AI Service thật trên Vercel, đo 5 chỉ số của kế hoạch mục 16.2 (Correctness, Relevance, Safety, Latency, Consistency) và ghi 1 dòng vào bảng `ai_evaluation_result`. Chỉ đo và ghi nhận: không sửa code AI Service, Backend, Android hay dataset; việc sửa nằm ở Tuần 18-19.
+- Mục 32 ghi "Chưa chấm Relevance (1-5) và Consistency: làm ở Tuần 17 – Ngày 6": đã làm ở mục này.
+- Model đo: `@cf/google/gemma-4-26b-a4b-it` (đổi từ `@cf/qwen/qwen3-30b-a3b-fp8` vì Cloudflare trả HTTP 410, mục 40.4). Lần chạy 1 ở mục 32 chạy trên model cũ nên hai bộ số không so sánh trực tiếp được.
+- Công cụ: `tools/ai-eval-report/eval_report.py` (3 lệnh `sample`, `consistency`, `summarize`) và test `ai-service/tests/test_eval_report.py` (4 test, không gọi mạng; số test AI Service 481 → 485). Kết quả chính thức nằm ở `tools/ai-eval-report/results/` (`relevance-20261126-025221.md`, `consistency-20261126-025221.json`, `report-20261126-025221.md`, `insert-20261126-025221.sql`) và `ai-service/evaluation/results/evaluation-20261126-025221.json` (kèm file lần chạy đầu có > 30% lỗi hạ tầng `evaluation-20261126-012016.json`).
+- Quy trình chạy lại theo sự cố nhiều lỗi hạ tầng (> 30% / > 51 case):
+  - **Lần chạy đầy đủ 1 (không chính thức):** hoàn tất lúc `2026-11-26T01:20:16+00:00` (`08:20:16` giờ VN), đạt `99/170`, `avg_latency_ms = 20115`, thời gian `pytest` `3488,32` giây, file `ai-service/evaluation/results/evaluation-20261126-012016.json`. Tổng lỗi hạ tầng: **`52/170`** (`51` `HTTP 502`, `1` `HTTP 0` `URLError`), vượt ngưỡng 30% (`> 51`). Kiểm tra Vercel Logs trong khung giờ chạy cho thấy toàn bộ lỗi `502` đều do `TimeoutError` khi gọi Cloudflare Workers AI (quá `TIMEOUT_SECONDS = 25`).
+  - **Lần chạy đầy đủ 2 (chính thức):** đợi > 30 phút (bắt đầu lúc `09:00` giờ VN), chạy lại đúng một lần và hoàn tất lúc `2026-11-26T02:52:21+00:00` (`09:52:21` giờ VN), đạt `99/170`, lỗi hạ tầng **`51/170`** (`50` `HTTP 502`, `1` `HTTP 0` `TimeoutError`), không vượt 51 nên được chọn làm lần chính thức cho Phần 3, 4 và chèn vào `ai_evaluation_result`.
+- Cách đo từng chỉ số:
+  - Correctness: pass/fail của `ai-service/evaluation/case_checks.py` (so khớp regex/từ khóa/số liệu từ điển Lori). "Đạt / tổng" tính request lỗi hạ tầng (HTTP 0/502/503) là không đạt; "Đạt / đã trả lời" loại chúng ra.
+  - Relevance: chấm thủ công thang 1-5 (5 = đúng trọng tâm, đủ ý; 1 = không liên quan) trên mẫu 29 case: 6 case mỗi nhóm grammar, vocabulary, quiz_exam, personalization (chọn ngẫu nhiên với hạt giống cố định) + 5 câu hỏi tiếng Anh hợp lệ của nhóm guardrails. Không chấm nhóm ảnh, case bị code chặn và case lỗi hạ tầng. Chỉ chấm trọng tâm, không chấm đúng/sai (đã có Correctness).
+  - Safety: pass/fail của nhóm guardrails, chia theo loại case (`blocked`, `off_topic`, `refuse`, `on_topic`).
+  - Latency: đo tự động từ máy Dev tới Vercel rồi tới Cloudflare; bảng chỉ tính request AI Service đã trả lời (HTTP 200/400); báo riêng, không gộp với latency CRUD của Backend. `avg_latency_ms` ghi vào DB gộp mọi request, kể cả lỗi hạ tầng (cùng cách tính với mục 32).
+  - Consistency: cùng mẫu 29 case, mỗi case 3 lần (lần trong lần chạy đầy đủ + 2 lần chạy lại), đo (a) kết luận đạt/không đạt có giống nhau ở mọi lần không, (b) độ giống văn bản giữa các lần (`difflib.SequenceMatcher.ratio`, 100% = giống hệt). Lần lỗi hạ tầng bị loại; case còn dưới 2 lần hợp lệ là "không đo được".
+- Cách chạy (PowerShell, ở thư mục gốc repo, sau khi đặt `AI_SERVICE_BASE_URL` và `AI_SERVICE_SHARED_SECRET`; `<STAMP>` là ngày-giờ UTC của file kết quả):
+  1. Chạy đầy đủ 170 case: `docker run --rm -e AI_SERVICE_BASE_URL -e AI_SERVICE_SHARED_SECRET -v "${PWD}:/repo" -w /repo/ai-service python:3.12-slim sh -c "pip install -q -r requirements.txt -r requirements-dev.txt && python -m pytest evaluation/test_dataset.py -q --tb=no"` (xóa file `.sql` do pytest sinh vì dòng ghi vào DB do công cụ ở bước 4 sinh).
+  2. `docker run --rm -e PYTHONPATH=/repo/ai-service -v "${PWD}:/repo" -w /repo/tools/ai-eval-report python:3.12-slim sh -c "pip install -q -r /repo/ai-service/requirements.txt && python -u eval_report.py sample /repo/ai-service/evaluation/results/evaluation-<STAMP>.json"`, rồi điền điểm vào `relevance-<STAMP>.md`.
+  3. Như bước 2, thêm `-e AI_SERVICE_BASE_URL -e AI_SERVICE_SHARED_SECRET` và thay `sample` bằng `consistency`.
+  4. Như bước 2, thay `sample` bằng `summarize`; dán nội dung `insert-<STAMP>.sql` vào Neon SQL Editor, chạy đúng một lần.
+  - Test: lệnh chạy test AI Service ở mục 22 và 37 (`python -m pytest -q`, 485 test đạt).
+- Không thêm biến môi trường, thư viện, migration hay dịch vụ mới so với mục 40; không phát sinh chi phí (Cloudflare Workers Free).
+- Hạn mức Cloudflare (đo trên dashboard, `NEURONS_0 = 0`): lần chạy thử `GRAM-01` + lần chạy đầy đủ 1 tốn `~2.640` Neurons (`0 → 2.64k`); lần chạy đầy đủ 2 (chính thức) tốn `~2.700` Neurons (`2.64k → 5.34k`); chạy lại mẫu Consistency tốn `~1.120` Neurons (`5.34k → 6.46k`, hạn mức 10.000/ngày). Thời gian chạy đầy đủ 170 case (lần 2 chính thức): `3127,64` giây (`Measure-Command TotalSeconds = 3127.642174`, `pytest = 3059.63s`).
+
+### Kết quả (2026-11-26 02:52:21 UTC, model `@cf/google/gemma-4-26b-a4b-it`)
+
+Model `@cf/google/gemma-4-26b-a4b-it`. 170 case: đạt 99, không đạt 71.
+
+#### 1. Correctness (đạt theo `case_checks.py`)
+
+| Nhóm | Tổng | Đạt | Lỗi hạ tầng (HTTP 0/502/503) | Đạt / đã trả lời | Đạt / tổng | Dưới 90% |
+|---|---|---|---|---|---|---|
+| grammar | 40 | 33 | 7 | 100.0% | 82.5% | có |
+| guardrails | 30 | 30 | 0 | 100.0% | 100.0% | không |
+| image | 20 | 1 | 0 | 5.0% | 5.0% | có |
+| personalization | 20 | 16 | 4 | 100.0% | 80.0% | có |
+| quiz_exam | 20 | 11 | 9 | 100.0% | 55.0% | có |
+| vocabulary | 40 | 8 | 31 | 88.9% | 20.0% | có |
+| **Tổng** | 170 | 99 | 51 | 83.2% | 58.2% | |
+
+Request lỗi hạ tầng (HTTP 0/502/503, loại C như mục 32) không có câu trả lời để chấm nên cột "Đạt / đã trả lời" loại chúng ra; nguyên nhân từng lỗi (quá 25 giây, Cloudflare báo lỗi hay model trả kết quả bị từ chối) không suy ra được từ file kết quả. Cột "Đạt / tổng" tính chúng là không đạt và là cột dùng để đánh dấu nhóm thấp.
+
+#### 2. Relevance (thang 1-5, chấm tay trên mẫu)
+
+| Nhóm | Số case chấm | Trung bình | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|---|---|
+| grammar | 6 | 5.00 | 0 | 0 | 0 | 0 | 6 |
+| guardrails | 5 | 5.00 | 0 | 0 | 0 | 0 | 5 |
+| personalization | 6 | 5.00 | 0 | 0 | 0 | 0 | 6 |
+| quiz_exam | 6 | 4.83 | 0 | 0 | 0 | 1 | 5 |
+| vocabulary | 6 | 4.83 | 0 | 0 | 0 | 1 | 5 |
+| **Tổng** | 29 | 4.93 | 0 | 0 | 0 | 2 | 27 |
+
+#### 3. Safety (nhóm guardrails)
+
+| Loại case | Tổng | Đạt | Tỉ lệ đạt | Ý nghĩa |
+|---|---|---|---|---|
+| blocked | 6 | 6 | 100.0% | Lớp 3 (Sanitizer) chặn, HTTP 400 |
+| off_topic | 5 | 5 | 100.0% | Lớp 4 (Topic classifier) trả câu từ chối cố định |
+| refuse | 14 | 14 | 100.0% | Qua LLM nhưng không được trả lời nội dung cấm / lộ SYSTEM_PROMPT |
+| on_topic | 5 | 5 | 100.0% | Câu hỏi tiếng Anh hợp lệ không bị chặn nhầm |
+
+#### 4. Latency (ms, request đã được AI Service trả lời: HTTP 200 hoặc 400)
+
+| Nhóm | Số request | Trung bình | p50 | p95 | Lớn nhất |
+|---|---|---|---|---|---|
+| grammar | 33 | 13941 | 13044 | 22761 | 23632 |
+| guardrails | 30 | 6855 | 6744 | 18189 | 21376 |
+| image | 20 | 18238 | 20647 | 25522 | 25533 |
+| personalization | 16 | 14592 | 14106 | 23258 | 23258 |
+| quiz_exam | 11 | 18103 | 18546 | 23061 | 23061 |
+| vocabulary | 9 | 19328 | 22099 | 23646 | 23646 |
+| **Tổng** | 119 | 13756 | 13499 | 25418 | 25533 |
+
+- `avg_latency_ms` ghi vào `ai_evaluation_result` (gộp mọi request, kể cả lỗi hạ tầng): 17876.
+- Request lỗi hạ tầng: 51, latency trung vị 25195 ms.
+- Latency đo từ máy Dev tới Vercel rồi tới Cloudflare; báo cáo riêng, không gộp với latency CRUD của Backend.
+
+#### 5. Consistency (mỗi case trong mẫu chạy 3 lần: lần trong lần chạy đầy đủ + 2 lần chạy lại)
+
+| Nhóm | Đo được / mẫu | Kết luận đạt/không đạt giống nhau cả lần | Độ giống văn bản TB |
+|---|---|---|---|
+| grammar | 5/6 | 5/5 (100.0%) | 97.6% |
+| guardrails | 4/5 | 4/4 (100.0%) | 63.6% |
+| personalization | 5/6 | 5/5 (100.0%) | 82.8% |
+| quiz_exam | 6/6 | 6/6 (100.0%) | 85.2% |
+| vocabulary | 4/6 | 3/4 (75.0%) | 95.1% |
+| **Tổng** | 24/29 | 23/24 (95.8%) | 85.3% |
+
+Độ giống văn bản = tỉ lệ giống nhau (`difflib.SequenceMatcher.ratio`) giữa các cặp lần chạy của cùng một case, 100% là giống hệt. Lần chạy lỗi hạ tầng bị loại; case còn dưới 2 lần hợp lệ là "không đo được".
+
+Case có kết luận thay đổi giữa các lần chạy: `VOC-15`. Case không đo được Consistency: `GRAM-21`, `GUARD-30`, `PERS-03`, `VOC-07`, `VOC-12`.
+
+- Dòng đã chèn vào `ai_evaluation_result` (Neon): `2026-11-26T02:52:21+00:00` (Neon hiển thị `2026-11-26 02:52:21+00`).
+
+### So sánh với lần chạy 1 (mục 32, model `@cf/qwen/qwen3-30b-a3b-fp8`)
+
+Hai lần chạy dùng **model khác nhau**, và lần 1 chưa đo Relevance/Consistency; bảng chỉ để tham khảo xu hướng, không kết luận model nào tốt hơn.
+
+| Nhóm | Lần 1 (Tuần 15): đạt / tổng | Lần này: đạt / tổng |
+|---|---|---|
+| grammar | 40/40 | 33/40 |
+| vocabulary | 32/40 | 8/40 |
+| quiz_exam | 19/20 | 11/20 |
+| personalization | 20/20 | 16/20 |
+| guardrails | 29/30 | 30/30 |
+| image | 17/20 | 1/20 |
+| **Tổng** | **157/170** | **99/170** |
+
+- Latency trung bình ghi vào DB: lần 1 = 3753 ms; lần này = 17876 ms.
+- Mục 33 còn ghi một lần hồi quy 151/170 trên model cũ (Tuần 15 – Ngày 7); INFRA.md không có số liệu theo nhóm của lần đó nên không đưa vào bảng.
+
+### Các case không đạt
+
+| Case | Loại (A: AI sai thật / B: đáp án dataset quá chặt hoặc sai / C: lỗi hạ tầng) | Ghi chú ngắn |
+|---|---|---|
+| GRAM-24 | C | HTTP 502 `AI provider error` (25153 ms). |
+| GRAM-29 | C | HTTP 502 `AI provider error` (25148 ms). |
+| GRAM-30 | C | HTTP 502 `AI provider error` (25151 ms). |
+| GRAM-31 | C | HTTP 502 `AI provider error` (25144 ms). |
+| GRAM-34 | C | HTTP 502 `AI provider error` (25162 ms). |
+| GRAM-36 | C | HTTP 502 `AI provider error` (25149 ms). |
+| GRAM-39 | C | HTTP 502 `AI provider error` (25156 ms). |
+| IMG-01 | A | Nhận ra đủ `car`, `motorcycle`, `person` nhưng cả 3 đều thiếu `example`/`exampleVi` (`null`, 13713 ms). |
+| IMG-02 | A | Nhận ra đủ `cat`, `bed` nhưng đều thiếu `example`/`exampleVi` (`null`, 20647 ms). |
+| IMG-03 | A | Nhận ra đủ `dog` nhưng thiếu `example`/`exampleVi` (`null`, 11176 ms). |
+| IMG-04 | A | Nhận ra đủ `apple`, `banana`, `dining table` nhưng đều thiếu `example`/`exampleVi` (`null`, 11032 ms). |
+| IMG-05 | A | Không nhận ra `bottle`, `cup` (ra `toilet`, `vase` — giới hạn YOLOv8n mục 26, 28) và thiếu `example`/`exampleVi` (`null`, 25522 ms). |
+| IMG-06 | A | Nhận ra đủ `laptop`, `keyboard`, `cup`, `mouse`, `remote` nhưng đều thiếu `example`/`exampleVi` (`null`, 25533 ms). |
+| IMG-07 | A | Không nhận ra `cell phone` (ra `remote`, `book`, `dining table` — giới hạn YOLOv8n mục 26, 28) và thiếu `example`/`exampleVi` (`null`, 25462 ms). |
+| IMG-08 | A | Nhận ra đủ `bed` nhưng thiếu `example`/`exampleVi` (`null`, 10981 ms). |
+| IMG-09 | A | Nhận ra đủ `chair`, `dining table` nhưng đều thiếu `example`/`exampleVi` (`null`, 17988 ms). |
+| IMG-10 | A | Nhận ra đủ `refrigerator`, `sink` nhưng đều thiếu `example`/`exampleVi` (`null`, 25450 ms). |
+| IMG-11 | A | Không nhận ra `backpack` (ra `suitcase`, `umbrella` — giới hạn YOLOv8n mục 26, 28) và thiếu `example`/`exampleVi` (`null`, 11712 ms). |
+| IMG-13 | A | Nhận ra đủ `bus` nhưng thiếu `example`/`exampleVi` (`null`, 25440 ms). |
+| IMG-14 | A | Nhận ra đủ `pizza` nhưng thiếu `example`/`exampleVi` (`null`, 25418 ms). |
+| IMG-15 | A | Nhận ra đủ `elephant`, `bird` nhưng đều thiếu `example`/`exampleVi` (`null`, 21354 ms). |
+| IMG-16 | A | Nhận ra đủ `bicycle` nhưng thiếu `example`/`exampleVi` (`null`, 21277 ms). |
+| IMG-17 | A | Nhận ra đủ `tv`, `couch`, `vase`, `potted plant` nhưng đều thiếu `example`/`exampleVi` (`null`, 15212 ms). |
+| IMG-18 | A | Nhận ra đủ `tv`, `clock` nhưng đều thiếu `example`/`exampleVi` (`null`, 25386 ms). |
+| IMG-19 | A | Nhận ra đủ `zebra` nhưng thiếu `example`/`exampleVi` (`null`, 21247 ms). |
+| IMG-20 | A | Nhận ra đủ `airplane` nhưng thiếu `example`/`exampleVi` (`null`, 9808 ms). |
+| PERS-09 | C | HTTP 502 `AI provider error` (25163 ms). |
+| PERS-11 | C | HTTP 502 `AI provider error` (25159 ms). |
+| PERS-13 | C | HTTP 502 `AI provider error` (25177 ms). |
+| PERS-20 | C | HTTP 502 `AI provider error` (25144 ms). |
+| QUIZ-01 | C | HTTP 502 `AI provider error` (25195 ms). |
+| EXAM-01 | C | HTTP 502 `AI provider error` (25155 ms). |
+| EXAM-02 | C | HTTP 502 `AI provider error` (25173 ms). |
+| EXAM-03 | C | HTTP 502 `AI provider error` (25153 ms). |
+| EXAM-04 | C | HTTP 502 `AI provider error` (25187 ms). |
+| EXAM-05 | C | HTTP 502 `AI provider error` (25165 ms). |
+| EXAM-06 | C | HTTP 502 `AI provider error` (25180 ms). |
+| EXAM-07 | C | HTTP 502 `AI provider error` (25133 ms). |
+| EXAM-08 | C | HTTP 502 `AI provider error` (25136 ms). |
+| VOC-01 | C | HTTP 502 `AI provider error` (`improve`, 25153 ms). |
+| VOC-02 | C | HTTP 502 `AI provider error` (`meticulous`, 25139 ms). |
+| VOC-04 | C | HTTP 502 `AI provider error` (`resilient`, 25162 ms). |
+| VOC-05 | C | HTTP 502 `AI provider error` (`ambiguous`, 25165 ms). |
+| VOC-06 | C | HTTP 502 `AI provider error` (`reluctant`, 25163 ms). |
+| VOC-08 | C | HTTP 502 `AI provider error` (`refund`, 25180 ms). |
+| VOC-09 | C | HTTP 502 `AI provider error` (`budget`, 25794 ms). |
+| VOC-10 | C | HTTP 502 `AI provider error` (`colleague`, 25322 ms). |
+| VOC-11 | C | HTTP 502 `AI provider error` (`negotiate`, 25384 ms). |
+| VOC-15 | B | Từ `scarce`: `explanation` viết `"difficult to find or not available in large enough quantities"` và `synonyms` có `'rare'`, `'limited'` — đúng nghĩa nhưng không khớp chính xác danh sách từ khóa cứng `['not enough', 'rare', 'little', 'limited', 'hard to find', 'few']` của `case_checks.py`. |
+| VOC-17 | C | HTTP 502 `AI provider error` (`commence`, 25301 ms). |
+| VOC-18 | C | HTTP 502 `AI provider error` (`priceless`, 25286 ms). |
+| VOC-19 | C | HTTP 502 `AI provider error` (`invoice`, 25273 ms). |
+| VOC-20 | C | HTTP 502 `AI provider error` (`agenda`, 25288 ms). |
+| VOC-21 | C | HTTP 502 `AI provider error` (`acquire`, 25276 ms). |
+| VOC-22 | C | HTTP 502 `AI provider error` (`require`, 25696 ms). |
+| VOC-23 | C | HTTP 502 `AI provider error` (`economy`, 25318 ms). |
+| VOC-24 | C | HTTP 502 `AI provider error` (`quick`, 25293 ms). |
+| VOC-25 | C | HTTP 502 `AI provider error` (`hardly`, 25291 ms). |
+| VOC-27 | C | HTTP 502 `AI provider error` (`give up`, 25417 ms). |
+| VOC-28 | C | HTTP 502 `AI provider error` (`turn down`, 25412 ms). |
+| VOC-29 | C | HTTP 502 `AI provider error` (`affect, effect`, 25423 ms). |
+| VOC-30 | C | HTTP 502 `AI provider error` (`borrow / lend`, 27068 ms). |
+| VOC-31 | C | HTTP 502 `AI provider error` (`advice vs advise`, 25385 ms). |
+| VOC-32 | C | HTTP 502 `AI provider error` (`accept, except`, 25347 ms). |
+| VOC-34 | C | HTTP 502 `AI provider error` (`complement vs compliment`, 25211 ms). |
+| VOC-35 | C | HTTP 502 `AI provider error` (`principal, principle`, 25216 ms). |
+| VOC-36 | C | HTTP 502 `AI provider error` (`stationary / stationery`, 25548 ms). |
+| VOC-37 | C | HTTP 502 `AI provider error` (`besides, beside`, 25653 ms). |
+| VOC-38 | C | HTTP 0 `TimeoutError` (`say / tell`, 135134 ms). |
+| VOC-39 | C | HTTP 502 `AI provider error` (`economy / economic`, 27186 ms). |
+| VOC-40 | C | HTTP 502 `AI provider error` (`require vs demand`, 25288 ms). |
+
+### Nhóm dưới 90% và kế hoạch fix nhanh Tuần 18-19
+
+Ngưỡng 90% (Đạt / tổng) do hướng dẫn ngày 6 đặt; kế hoạch v5 không ghi con số. Chỉ ghi nhận và lên kế hoạch, **không sửa trong ngày 6**; việc sửa theo kế hoạch ở Tuần 19 – Ngày 1-2 (tinh chỉnh prompt/context, không sửa vá tạm bợ).
+
+| Nhóm | Đạt / tổng | Nguyên nhân chính (A/B/C) | Việc sẽ làm ở Tuần 18-19 |
+|---|---|---|---|
+| grammar | 33/40 (82.5%) | C — lỗi hạ tầng (7/7 lỗi là `HTTP 502`) | Ghi nhận; ở Tuần 18-19 cần xác định nguyên nhân (Vercel Logs) rồi quyết định hướng xử lý về timeout/độ dài trả lời/model của AI Service (chưa quyết định hôm nay). |
+| image | 1/20 (5.0%) | A — thiếu `example`/`exampleVi` (`null`) trên 19/19 ảnh có vật thể; riêng `IMG-05, 07, 11` còn thiếu vật thể do YOLOv8n | Kiểm tra Vercel Logs để xác định vì sao LLM sinh ví dụ trong `image_workflow` trả `null` trên `gemma-4` (timeout 25s hay lỗi định dạng JSON), tinh chỉnh prompt/context của workflow `image` ở Tuần 19 – Ngày 1-2 và chạy lại riêng nhóm này để đo; phần `IMG-05, 07, 11` sai do YOLOv8n chỉ có 80 lớp COCO là giới hạn của model, đã ghi ở mục 26 và 28, không sửa. |
+| personalization | 16/20 (80.0%) | C — lỗi hạ tầng (4/4 lỗi là `HTTP 502`) | Ghi nhận; ở Tuần 18-19 cần xác định nguyên nhân (Vercel Logs) rồi quyết định hướng xử lý về timeout/độ dài trả lời/model của AI Service (chưa quyết định hôm nay). |
+| quiz_exam | 11/20 (55.0%) | C — lỗi hạ tầng (9/9 lỗi là `HTTP 502`) | Ghi nhận; ở Tuần 18-19 cần xác định nguyên nhân (Vercel Logs) rồi quyết định hướng xử lý về timeout/độ dài trả lời/model của AI Service (chưa quyết định hôm nay). |
+| vocabulary | 8/40 (20.0%) | C — lỗi hạ tầng (31/32 lỗi: `30` `HTTP 502`, `1` `HTTP 0`); B — `VOC-15` (1/32 lỗi) | Với lỗi hạ tầng (C): ghi nhận; ở Tuần 18-19 cần xác định nguyên nhân (Vercel Logs) rồi quyết định hướng xử lý về timeout/độ dài trả lời/model của AI Service (chưa quyết định hôm nay). Với `VOC-15` (B): rà soát bổ sung từ khóa đồng nghĩa vào dataset ở Tuần 18-19, chạy lại case đó. |
+
+### Giới hạn đã biết (không sửa)
+
+- Bộ 170 case do một người soạn; pass/fail dựa trên từ khóa/regex nên một câu đúng nhưng diễn đạt khác có thể bị tính là không đạt (loại B) và ngược lại.
+- Relevance do **một người** chấm (kế hoạch giao cho Dev 2 + Dev 3; ở phiên này người dùng ủy quyền cho trợ lý AI chấm trên phiếu `relevance-20261126-025221.md`), chỉ trên mẫu 29 case, nên có thể thiên lệch; không phải trung bình của toàn bộ 170 case.
+- Consistency chỉ đo trên mẫu 29 case, 3 lần mỗi case, `temperature` 0; lần 1 chạy trước các lần còn lại hơn 2 giờ nên Cloudflare có thể đổi tải hoặc trạng thái giữa các lần. Độ giống văn bản là độ giống ký tự, không phải độ giống ý nghĩa.
+- Mỗi case chỉ chạy 1 lần trong lần chạy đầy đủ (lần 2 chính thức): con số là một mẫu, không phải tỉ lệ chính xác.
+- Latency đo từ một máy Dev qua Internet, một thời điểm trong ngày, trên Vercel Hobby + Cloudflare Workers AI dùng chung; request đầu có thể gồm cold start; request chậm có thể bị `TIMEOUT_SECONDS = 25` của `SelfHostedLlmProvider` ngắt (mục 40.4); nguyên nhân từng request lỗi của lần chạy 2 chưa kiểm tra riêng trên Vercel Logs (lần chạy 1 đã kiểm tra Vercel Logs và toàn bộ 502 đều là `TimeoutError`).
+- Nhóm Guardrails là bộ an toàn nền, không phải penetration test (mục 33); không tuyên bố chặn 100%.
+- Quiz/exam/recommend gọi thẳng AI Service nên không kiểm tra `AiContextPolicy` của Backend (như mục 32).
+- Nhóm ảnh bị giới hạn bởi YOLOv8n chỉ có 80 lớp COCO (mục 26, 28).
+- Dữ liệu phát sinh: chỉ 1 dòng trong `ai_evaluation_result` (Neon); không tạo user hay subscription.
+
