@@ -1675,3 +1675,36 @@ Tổng: 10 lỗi (Critical 0, High 3, Medium 3, Low 4).
 - Vật không nhận ra (`bottle`, `cup`, `cell phone`, `backpack` ở IMG-05, 07, 11) là giới hạn 80 lớp COCO của YOLOv8n (mục 26, 28).
 - Ca B2 (Back ở Onboarding thoát app thay vì lùi slide) là ghi nhận cải tiến ở mục 39.3, không nằm trong bảng lỗi Ngày 3 nên không xử lý.
 
+### Kết quả sửa lỗi (ngày 26/11/2026)
+
+| Mã | Cách sửa | Kiểm tra |
+|---|---|---|
+| L17-02 | Ràng buộc mới `@MaxUtf8Bytes(72)` (`backend/.../validation/`) thay `@Size(max = 72)` ở `RegisterRequest`, `LoginRequest`, `ResetPasswordRequest`, `ChangePasswordRequest` | `MaxUtf8BytesValidatorTest` (5 test) + 2 integration test ở `AuthControllerIntegrationTest`; toàn bộ test Backend `340` đạt. Trên Render sau deploy: đăng ký 75 byte → `400`, 72 byte → `201`, đăng nhập 72 byte → `200`, đăng nhập 75 byte → `400` |
+| L17-01 | Chuỗi `settings_feature_unavailable_message` thay `settings_account_locked_message` | T1, T2 đạt |
+| L17-03 | `OnBackPressedCallback` + `AlertDialog` ở `QuizFragment`, tắt khi đã ra kết quả | T3–T8 đạt |
+| L17-04 | `OnBackPressedCallback` ở `HomeFragment`, cửa sổ 2 giây | T9–T12 đạt |
+
+- Đồng bộ chú thích `AuthViewModel` (không đổi logic): giới hạn mật khẩu của app là theo ký tự, Backend theo byte UTF-8.
+
+- Test thủ công 12 ca (T1–T12) trên AVD `Pixel_4` (API 29): `12/12`.
+
+### APK v1.4-rc1
+
+- `app/build.gradle.kts`: `versionCode = 7`, `versionName = "1.4-rc1"`. APK debug build trên máy Dev, **không commit** (`*.apk` nằm trong `.gitignore`); màn Cài đặt → Về ứng dụng hiện "Phiên bản 1.4-rc1".
+- APK debug ký bằng debug keystore của máy build, khớp `APP_SIGNATURE` trên Render; build trên máy khác thì chữ ký khác và Backend trả 403.
+- Kích thước: `53.413.171` byte (`50,94` MB). Chưa tối ưu (không R8); tối ưu ở Tuần 19 – Ngày 1-2.
+- Test đơn vị Android (`:app:testDebugUnitTest`): đạt. Kiểm tra nhanh trên AVD `Pixel_4` (API 29): S1–S9 `9/9` (không bỏ ca nào).
+- Bản rc1 chứa các lỗi đã biết còn mở: L17-05, L17-06, L17-07, L17-08, L17-09, L17-10 (bảng trên).
+
+### Dấu vết để lại sau hôm nay
+
+- Trong Neon (không tự xóa): user `rc1-b72-20261126193335@test.com` (Phần 2.7) và các user `rc1-man-1952@test.com`, `rc1-smoke-2024@test.com` đăng ký ở test thủ công / smoke test, kèm 1 subscription `MOCK` cho tài khoản `rc1-smoke-2024@test.com` đã mua ở S5.
+- Không đụng Upstash; AI Service chỉ tốn tối đa 1 lần gọi LLM (S7) trong hạn mức Cloudflare.
+
+### Giới hạn đã biết (không sửa)
+
+- Android chỉ kiểm tra mật khẩu 72 **ký tự**; mật khẩu ≤ 72 ký tự nhưng > 72 byte được Backend chặn (400), app hiện thông báo chung "Thông tin chưa hợp lệ…" chứ chưa có thông báo riêng.
+- Test thủ công chỉ chạy trên AVD/LDPlayer dùng mạng máy tính, chưa test bằng điện thoại thật và mạng 4G.
+- Bản rc1 là APK debug (chưa R8, chưa ký release); số đo cold start và dung lượng của mục 40 vẫn là số của bản chưa tối ưu.
+- Chưa chạy lại pytest AI Service vì hôm nay không sửa `ai-service/`.
+
