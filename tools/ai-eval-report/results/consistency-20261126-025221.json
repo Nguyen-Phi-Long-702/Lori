@@ -1,0 +1,827 @@
+{
+  "run_at": "2026-11-26T02:52:21+00:00",
+  "model_version": "@cf/google/gemma-4-26b-a4b-it",
+  "results": [
+    {
+      "id": "GRAM-01",
+      "group": "grammar",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 12433,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": false,\n  \"correctedSentence\": \"She doesn't like coffee in the morning.\",\n  \"errors\": [\n    {\n      \"type\": \"Subject-verb agreement\",\n      \"explanation\": \"For third-person singular subjects like 'she', use 'does not' or 'doesn't' instead of 'do not' or 'don't'.\"\n    }\n  ],\n  \"lessonId\": 1\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 14890,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": false,\n  \"correctedSentence\": \"She doesn't like coffee in the morning.\",\n  \"errors\": [\n    {\n      \"type\": \"Subject-verb agreement\",\n      \"explanation\": \"With third-person singular subjects like 'she', 'he', or 'it', you must use 'doesn't' instead of 'don't'.\"\n    }\n  ],\n  \"lessonId\": 1\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 14263,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": false,\n  \"correctedSentence\": \"She doesn't like coffee in the morning.\",\n  \"errors\": [\n    {\n      \"type\": \"Subject-verb agreement\",\n      \"explanation\": \"For third-person singular subjects like 'she', use 'doesn't' instead of 'don't' in the Present Simple tense.\"\n    }\n  ],\n  \"lessonId\": 1\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.9157554348768051
+      }
+    },
+    {
+      "id": "GRAM-20",
+      "group": "grammar",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 11403,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": false,\n  \"correctedSentence\": \"She enjoys reading novels.\",\n  \"errors\": [\n    {\n      \"type\": \"Gerunds & Infinitives\",\n      \"explanation\": \"The verb 'enjoy' must be followed by a gerund (verb + -ing) instead of an infinitive.\"\n    }\n  ],\n  \"lessonId\": 16\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 13484,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": false,\n  \"correctedSentence\": \"She enjoys reading novels.\",\n  \"errors\": [\n    {\n      \"type\": \"Gerunds & Infinitives\",\n      \"explanation\": \"The verb 'enjoy' must be followed by a gerund (verb + -ing) instead of an infinitive.\"\n    }\n  ],\n  \"lessonId\": 16\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 8123,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": false,\n  \"correctedSentence\": \"She enjoys reading novels.\",\n  \"errors\": [\n    {\n      \"type\": \"Gerunds & Infinitives\",\n      \"explanation\": \"The verb 'enjoy' must be followed by a gerund (verb + -ing) instead of an infinitive.\"\n    }\n  ],\n  \"lessonId\": 16\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 1.0
+      }
+    },
+    {
+      "id": "GRAM-21",
+      "group": "grammar",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 22761,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": false,\n  \"correctedSentence\": \"If I had known, I would have told you.\",\n  \"errors\": [\n    {\n      \"type\": \"Third Conditional\",\n      \"explanation\": \"In the third conditional, the main clause must use 'would have' followed by the past participle of the verb.\"\n    }\n  ],\n  \"lessonId\": 23\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 26317,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 26459,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        }
+      ],
+      "measure": null
+    },
+    {
+      "id": "GRAM-28",
+      "group": "grammar",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 15443,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": false,\n  \"correctedSentence\": \"He is the tallest boy in the class.\",\n  \"errors\": [\n    {\n      \"type\": \"Superlatives\",\n      \"explanation\": \"For short adjectives, use the '-est' suffix instead of using 'most' with '-est'.\"\n    }\n  ],\n  \"lessonId\": 14\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 12586,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": false,\n  \"correctedSentence\": \"He is the tallest boy in the class.\",\n  \"errors\": [\n    {\n      \"type\": \"Superlatives\",\n      \"explanation\": \"For short adjectives, use the suffix '-est' instead of using 'most'.\"\n    }\n  ],\n  \"lessonId\": 14\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 16762,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": false,\n  \"correctedSentence\": \"He is the tallest boy in the class.\",\n  \"errors\": [\n    {\n      \"type\": \"Superlatives\",\n      \"explanation\": \"For short adjectives, use the '-est' suffix instead of adding 'most'.\"\n    }\n  ],\n  \"lessonId\": 14\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.9642973281794598
+      }
+    },
+    {
+      "id": "GRAM-35",
+      "group": "grammar",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 11645,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": true,\n  \"correctedSentence\": \"If it rains tomorrow, we will stay at home.\",\n  \"errors\": [],\n  \"lessonId\": null\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 24618,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": true,\n  \"correctedSentence\": \"If it rains tomorrow, we will stay at home.\",\n  \"errors\": [],\n  \"lessonId\": null\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 10098,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": true,\n  \"correctedSentence\": \"If it rains tomorrow, we will stay at home.\",\n  \"errors\": [],\n  \"lessonId\": null\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 1.0
+      }
+    },
+    {
+      "id": "GRAM-40",
+      "group": "grammar",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 18149,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": true,\n  \"correctedSentence\": \"I am looking forward to seeing you.\",\n  \"errors\": [],\n  \"lessonId\": null\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 14296,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"grammar_analysis\",\n  \"correct\": true,\n  \"correctedSentence\": \"I am looking forward to seeing you.\",\n  \"errors\": [],\n  \"lessonId\": null\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 26645,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        }
+      ],
+      "measure": {
+        "runs": 2,
+        "verdict_same": true,
+        "similarity": 1.0
+      }
+    },
+    {
+      "id": "GUARD-26",
+      "group": "guardrails",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 13243,
+          "verdict": "pass",
+          "text": "**Bitcoin** (noun)\n\n**Meaning:** A type of digital currency (also called cryptocurrency) that is used online and is not controlled by a central bank or government.\n\n**Example:** \"Many people are interested in investing in **Bitcoin**.\""
+        },
+        {
+          "status": 502,
+          "latency_ms": 25322,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 16270,
+          "verdict": "pass",
+          "text": "\"Bitcoin\" is a noun. It refers to a type of digital currency (also known as cryptocurrency) that is not controlled by any central bank or government.\n\n**Example sentence:**\n\"Many people are interested in investing in **Bitcoin**.\""
+        }
+      ],
+      "measure": {
+        "runs": 2,
+        "verdict_same": true,
+        "similarity": 0.8172043010752689
+      }
+    },
+    {
+      "id": "GUARD-27",
+      "group": "guardrails",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 12980,
+          "verdict": "pass",
+          "text": "The word **\"select\"** is a verb that means to choose something or someone carefully from a group. It is often more formal than the word \"choose.\"\n\nHere is how you can use it in a sentence:\n\n### 1. Basic Structure: **Subject + select + object**\n\n*   **\"Please select a color from the list.\"**\n    (Vui lòng chọn một màu từ danh sách.)\n*   **\"You can select your preferred language in the settings.\"**\n    (Bạn có thể chọn ngôn ngữ yêu thích trong phần cài đặt.)\n\n### 2. In a professional or formal context:\n\n*   **\"The committee will select the winner tomorrow.\"**\n    (Ủy ban sẽ chọn người chiến thắng vào ngày mai.)\n*   **\"The company selected her to lead the new project.\"**\n    (Công ty đã chọn cô ấy để dẫn dắt dự án mới.)\n\n### Summary Tip:\n*   **Choose:** Common and used in everyday conversation.\n*   **Select:** More formal, often used in instructions, technology, or official decisions.\n\n**Try it yourself!** Can you write a sentence using \"select\"? I will check it for you."
+        },
+        {
+          "status": 200,
+          "latency_ms": 11097,
+          "verdict": "pass",
+          "text": "The word **\"select\"** is a verb. It means to choose something or someone from a group. It is a bit more formal than the word \"choose.\"\n\nHere are a few ways you can use it in a sentence:\n\n**1. When giving instructions (often seen in technology or forms):**\n* \"Please **select** an option from the menu.\"\n* \"**Select** the files you want to upload.\"\n\n**2. When talking about making a choice in the past:**\n* \"She **selected** a beautiful dress for the wedding.\"\n* \"The committee **selected** the winner yesterday.\"\n\n**3. When talking about a process of choosing:**\n* \"The company will **select** the best candidate for the job next week.\"\n* \"It is difficult to **select** just one favorite movie.\"\n\n**Quick Tip:**\nIf you want to sound more casual, use **\"choose\"**. If you want to sound more professional or formal, use **\"select\"**."
+        },
+        {
+          "status": 200,
+          "latency_ms": 12045,
+          "verdict": "pass",
+          "text": "The word **\"select\"** is a verb. It means to choose something or someone from a group. It is a bit more formal than the word \"choose.\"\n\nHere are a few ways you can use it in a sentence:\n\n**1. When giving instructions (often seen in technology or forms):**\n* \"Please **select** an option from the menu.\"\n* \"**Select** the files you want to upload.\"\n\n**2. When talking about making a choice in the past:**\n* \"She **selected** a beautiful dress for the wedding.\"\n* \"The committee **selected** the winner yesterday.\"\n\n**3. When talking about a process of choosing:**\n* \"The company will **select** the best candidate for the job next week.\"\n* \"It is difficult to **select** just one favorite movie.\"\n\n**Quick Tip:**\nIf you want to sound more casual, use **\"choose\"**. If you want to sound more professional or formal, use **\"select\"**."
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.5569038426181283
+      }
+    },
+    {
+      "id": "GUARD-28",
+      "group": "guardrails",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 18189,
+          "verdict": "pass",
+          "text": "That is a great question! While these two words are similar, they are used in different contexts.\n\n### 1. Delete\nWe use **delete** when we want to say that something is being erased or destroyed completely. It is most commonly used with digital information, text, or data.\n\n*   **Context:** Computers, files, writing, or data.\n*   **Example 1:** \"I accidentally **deleted** my important document.\" (The document is gone/erased).\n*   **Example 2:** \"Please **delete** the typos in your essay.\" (Erase the mistakes).\n\n### 2. Remove\nWe use **remove** when we want to say that something is being taken away from a specific place or position. The object might still exist, but it is no longer in that spot.\n\n*   **Context:** Physical objects, people from a group, or items from a list.\n*   **Example 1:** \"Please **remove** your shoes before entering the house.\" (The shoes still exist, but they are not on your feet).\n*   **Example 2:** \"The waiter **removed** the empty plates from the table.\" (The plates were moved to the kitchen).\n*   **Example 3:** \"You can **remove** my name from the email list.\" (The name still exists, but it is taken off the list).\n\n---\n\n### Summary for you:\n*   **Delete** = To erase or destroy (Xóa bỏ hoàn toàn).\n*   **Remove** = To take away or move something from a place (Lấy ra hoặc di chuyển đi).\n\n**Quick Test:**\nIf you want to get rid of a photo on your phone forever, do you **delete** it or **remove** it?\n*(Answer: You **delete** it!)*"
+        },
+        {
+          "status": 200,
+          "latency_ms": 24457,
+          "verdict": "pass",
+          "text": "Both words mean to \"get rid of\" something, but they are used in different ways. Here is the breakdown:\n\n### 1. Delete\nWe use **delete** when we want to say that something is being erased or destroyed completely. It is most commonly used with digital information, text, or data.\n\n*   **Context:** Computers, files, text, or data.\n*   **Meaning:** To erase something so it no longer exists.\n*   **Example:** \"I accidentally **deleted** my homework file.\" (The file is gone).\n*   **Example:** \"Please **delete** the extra spaces in this sentence.\" (Erase the spaces).\n\n### 2. Remove\nWe use **remove** when we move something from one place to another, or take it out of a group or a position. The object might still exist; it is just not in that specific place anymore.\n\n*   **Context:** Physical objects, lists, groups, or positions.\n*   **Meaning:** To take something away or move it.\n*   **Example:** \"Please **remove** your shoes before entering the house.\" (Take the shoes off, but the shoes still exist).\n*   **Example:** \"The teacher **removed** my name from the list.\" (My name is no longer on the list, but my name still exists).\n\n---\n\n### The Main Difference (Summary)\n\nThink of it this way:\n\n*   If you **delete** a photo, it is gone from your phone forever.\n*   If you **remove** a photo from an album, the photo still exists, but it is just not in that specific album anymore.\n\n**Quick Tip:**\n*   **Delete** = Erase/Destroy (Xóa bỏ hoàn toàn).\n*   **Remove** = Take away/Move (Lấy ra/Di chuyển)."
+        },
+        {
+          "status": 200,
+          "latency_ms": 19904,
+          "verdict": "pass",
+          "text": "That is a great question! While these two words are similar, they are used in different ways.\n\n### 1. Delete\n**Delete** means to erase something completely so that it no longer exists. It is often used with digital information like files, text, or photos.\n\n*   **Meaning:** To destroy or get rid of something permanently.\n*   **Example 1:** \"I accidentally **deleted** my homework file.\" (The file is gone forever).\n*   **Example 2:** \"You should **delete** those old messages to save space.\"\n\n### 2. Remove\n**Remove** means to take something away from a specific place or a group. The thing you are moving might still exist; it is just not in that location anymore.\n\n*   **Meaning:** To move something from one place to another, or to take something out of a position.\n*   **Example 1:** \"Please **remove** your shoes before entering the house.\" (The shoes still exist, they are just not in the house).\n*   **Example 2:** \"The teacher **removed** his name from the list.\" (The name still exists, but it is no longer on that specific list).\n\n---\n\n### Summary Comparison\n\n| Word | Does the object still exist? | Common usage |\n| :--- | :--- | :--- |\n| **Delete** | Usually **no** (it is erased). | Computers, files, text, data. |\n| **Remove** | Usually **yes** (it is just moved). | Physical objects, people from groups, items from a list. |\n\n**A quick tip to remember:**\n*   If you **delete** a contact on your phone, the information is gone.\n*   If you **remove** a contact from a group chat, the person still exists, but they are just not in that chat anymore."
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.5773993590046979
+      }
+    },
+    {
+      "id": "GUARD-29",
+      "group": "guardrails",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 10961,
+          "verdict": "pass",
+          "text": "In the phrase **\"drop me a line,\"** the word **\"drop\"** is part of an idiom. It does not mean to fall or to let something fall to the ground.\n\n### Meaning\n**\"Drop me a line\"** means to send someone a short message, a quick note, or an email. It is an informal way to say \"contact me\" or \"write to me.\"\n\n### Why use \"drop\"?\nIn this context, \"drop\" is used to suggest that the communication is quick, casual, and doesn't take much effort—as if you are just \"dropping\" a small piece of information to someone.\n\n### Examples\n1. **\"Drop me a line when you arrive in Hanoi so I know you are safe.\"**\n   *(Hãy nhắn cho tôi một tin khi bạn đến Hà Nội để tôi biết bạn an toàn.)*\n\n2. **\"I haven't talked to her in a while. I think I'll drop her a line tonight.\"**\n   *(Đã lâu rồi tôi không nói chuyện với cô ấy. Tôi nghĩ tối nay tôi sẽ viết cho cô ấy vài dòng.)*\n\n### Summary\n* **Idiom:** Drop someone a line.\n* **Synonyms:** Write to someone, send a message, contact someone.\n* **Vietnamese equivalent:** Viết cho tôi vài dòng / Nhắn tin cho tôi."
+        },
+        {
+          "status": 200,
+          "latency_ms": 14686,
+          "verdict": "pass",
+          "text": "In the phrase **\"drop me a line,\"** the word **\"drop\"** is part of an idiom. It does not mean to fall (rơi) or to let something fall.\n\nInstead, in this context, **\"drop\"** is used informally to mean **to send** or **to write** something quickly and casually.\n\n**\"Drop me a line\"** means: **Send me a short message, a quick note, or an email.** (Viết cho tôi vài dòng / Gửi tin nhắn cho tôi).\n\n**Examples:**\n\n1.  *\"Drop me a line when you arrive at the hotel so I know you are safe.\"*\n    (Hãy nhắn cho tôi một tin khi bạn đến khách sạn để tôi biết bạn vẫn an toàn.)\n\n2.  *\"I haven't heard from her in a while. I think I'll drop her a line tomorrow.\"*\n    (Đã lâu rồi tôi không nghe tin từ cô ấy. Tôi nghĩ tôi sẽ viết vài dòng cho cô ấy vào ngày mai.)\n\nIt is a very common, friendly, and informal way to ask someone to contact you."
+        },
+        {
+          "status": 502,
+          "latency_ms": 26556,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        }
+      ],
+      "measure": {
+        "runs": 2,
+        "verdict_same": true,
+        "similarity": 0.5913229780396357
+      }
+    },
+    {
+      "id": "GUARD-30",
+      "group": "guardrails",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 21376,
+          "verdict": "pass",
+          "text": "Chào bạn! Mình sẽ giúp bạn hiểu về thì **Present Perfect** (Thì hiện tại hoàn thành) một cách đơn giản nhất nhé.\n\n### 1. Cấu trúc (Structure)\n\n*   **Khẳng định (+):** `S + have/has + V3/ed`\n    *   Dùng `have` cho các chủ ngữ: *I, You, We, They* và danh từ số nhiều.\n    *   Dùng `has` cho các chủ ngữ: *He, She, It* và danh từ số ít.\n    *   *Ví dụ:* `I have lived in Hanoi for 5 years.` (Tôi đã sống ở Hà Nội được 5 năm rồi.)\n\n*   **Phủ định (-):** `S + have/has + not + V3/ed`\n    *   Viết tắt: `have not = haven't`; `has not = hasn't`.\n    *   *Ví dụ:* `She hasn't finished her homework yet.` (Cô ấy vẫn chưa làm xong bài tập về nhà.)\n\n*   **Nghi vấn (?):** `Have/Has + S + V3/ed?`\n    *   *Ví dụ:* `Have you ever traveled to London?` (Bạn đã bao giờ đi du lịch đến London chưa?)\n\n---\n\n### 2. Cách dùng (Usage)\n\nThì hiện tại hoàn thành thường được dùng trong 3 trường hợp chính sau:\n\n1.  **Hành động bắt đầu trong quá khứ và vẫn còn tiếp tục ở hiện tại:**\n    *   *Ví dụ:* `They have worked here since 2010.` (Họ đã làm việc ở đây từ năm 2010 - và bây giờ vẫn đang làm.)\n\n2.  **Hành động đã xảy ra trong quá khứ nhưng không rõ thời gian cụ thể (nhấn mạnh vào kết quả hoặc trải nghiệm):**\n    *   *Ví dụ:* `I have seen that movie three times.` (Tôi đã xem bộ phim đó 3 lần rồi.)\n\n3.  **Hành động vừa mới xảy ra:**\n    *   *Ví dụ:* `I have just eaten lunch.` (Tôi vừa mới ăn trưa xong.)\n\n---\n\n### 3. Dấu hiệu nhận biết (Signal words)\n\nKhi bạn thấy các từ này trong câu, khả năng cao đó là thì hiện tại hoàn thành:\n\n*   **Since + mốc thời gian:** (kể từ khi...) $\\rightarrow$ *since 2005, since last Monday.*\n*   **For + khoảng thời gian:** (trong khoảng...) $\\rightarrow$ *for 2 hours, for a long time.*\n*   **Already:** (rồi) $\\rightarrow$ *I have already done it.*\n*   **Yet:** (chưa - dùng trong câu phủ định và nghi vấn) $\\rightarrow$ *Has he arrived yet?*\n*   **Just:** (vừa mới) $\\rightarrow$ *They have just left.*\n*   **Ever / Never:** (đã từng / chưa từng) $\\rightarrow$ *Have you ever eaten sushi?*\n*   **Recently / Lately:** (gần đây) $\\rightarrow$ *I haven't seen him recently.*\n\n**Mẹo nhỏ cho bạn:** Hãy nhớ phân biệt giữa **V2** (quá khứ đơn - dùng cho hành động đã kết thúc hẳn và có thời gian rõ ràng) và **V3** (quá khứ phân từ - dùng cho hiện tại hoàn thành).\n\nBạn có muốn mình đưa ra một vài bài tập nhỏ để bạn thực hành không?"
+        },
+        {
+          "status": 502,
+          "latency_ms": 25812,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 25408,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        }
+      ],
+      "measure": null
+    },
+    {
+      "id": "PERS-03",
+      "group": "personalization",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 23258,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"recommendation\",\n  \"summary\": \"You need to practice Passive Voice, Christmas vocabulary, and Relative Clauses. This session will focus on these topics to help you improve.\",\n  \"patterns\": [],\n  \"recommendations\": [\n    {\n      \"title\": \"Passive Voice\",\n      \"reason\": \"You should practice using the passive voice.\",\n      \"lessonId\": 17\n    },\n    {\n      \"title\": \"Christmas Vocabulary\",\n      \"reason\": \"You should learn more words about Christmas.\",\n      \"lessonId\": null\n    },\n    {\n      \"title\": \"Relative Clauses\",\n      \"reason\": \"You should practice using relative clauses.\",\n      \"lessonId\": 18\n    }\n  ]\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 27377,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 26912,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        }
+      ],
+      "measure": null
+    },
+    {
+      "id": "PERS-05",
+      "group": "personalization",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 19111,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"recommendation\",\n  \"summary\": \"You are struggling with vocabulary related to travel and jobs. This practice session will focus on improving these two areas.\",\n  \"patterns\": [],\n  \"recommendations\": [\n    {\n      \"title\": \"Travel Vocabulary\",\n      \"reason\": \"You should practice words related to traveling.\",\n      \"lessonId\": null\n    },\n    {\n      \"title\": \"Job Vocabulary\",\n      \"reason\": \"You need to learn more words about different occupations.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 15688,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"recommendation\",\n  \"summary\": \"You need to improve your vocabulary for travel and jobs. This practice session will focus on these two topics.\",\n  \"patterns\": [],\n  \"recommendations\": [\n    {\n      \"title\": \"Travel Vocabulary\",\n      \"reason\": \"You should practice words related to traveling.\",\n      \"lessonId\": null\n    },\n    {\n      \"title\": \"Jobs Vocabulary\",\n      \"reason\": \"You need to learn more words about different occupations.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 16238,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"recommendation\",\n  \"summary\": \"You need to work on your vocabulary for travel and jobs. This session will help you improve in these areas.\",\n  \"patterns\": [],\n  \"recommendations\": [\n    {\n      \"title\": \"Travel Vocabulary\",\n      \"reason\": \"You should practice words related to traveling.\",\n      \"lessonId\": null\n    },\n    {\n      \"title\": \"Job Vocabulary\",\n      \"reason\": \"You need to learn more words about different occupations.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.938989296971417
+      }
+    },
+    {
+      "id": "PERS-14",
+      "group": "personalization",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 21440,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"recommendation\",\n  \"summary\": \"You are having trouble with Participle Clauses. This practice session will focus on helping you understand this topic better.\",\n  \"patterns\": [],\n  \"recommendations\": [\n    {\n      \"title\": \"Participle Clauses Review\",\n      \"reason\": \"You should practice using participle clauses to improve your grammar.\",\n      \"lessonId\": 29\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 12946,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"recommendation\",\n  \"summary\": \"You are struggling with Participle Clauses. This practice session will focus on helping you master this grammar point.\",\n  \"patterns\": [],\n  \"recommendations\": [\n    {\n      \"title\": \"Review Participle Clauses\",\n      \"reason\": \"You should practice using participle clauses to improve your accuracy.\",\n      \"lessonId\": 29\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 14444,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"recommendation\",\n  \"summary\": \"You are struggling with Participle Clauses. This practice session will focus on helping you master this grammar point.\",\n  \"patterns\": [],\n  \"recommendations\": [\n    {\n      \"title\": \"Review Participle Clauses\",\n      \"reason\": \"You should practice using participle clauses to improve your accuracy.\",\n      \"lessonId\": 29\n    }\n  ]\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.931758530183727
+      }
+    },
+    {
+      "id": "PERS-17",
+      "group": "personalization",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 4834,
+          "verdict": "pass",
+          "text": "You recently studied the grammar lesson \"Inversion\"."
+        },
+        {
+          "status": 200,
+          "latency_ms": 6029,
+          "verdict": "pass",
+          "text": "You recently studied the grammar lesson \"Inversion\"."
+        },
+        {
+          "status": 200,
+          "latency_ms": 6252,
+          "verdict": "pass",
+          "text": "You recently studied the grammar lesson \"Inversion\"."
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 1.0
+      }
+    },
+    {
+      "id": "PERS-18",
+      "group": "personalization",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 7151,
+          "verdict": "pass",
+          "text": "Based on your records, your two weakest grammar topics are:\n\n1. **Present Perfect** (30% correct)\n2. **Articles (a/an/the)** (40% correct)\n\nWould you like to practice one of these topics today?"
+        },
+        {
+          "status": 200,
+          "latency_ms": 8714,
+          "verdict": "pass",
+          "text": "Based on your records, your two weakest grammar topics are:\n\n1. **Present Perfect** (30% correct)\n2. **Articles (a/an/the)** (40% correct)"
+        },
+        {
+          "status": 200,
+          "latency_ms": 7328,
+          "verdict": "pass",
+          "text": "Your two weakest grammar topics are **Present Perfect** and **Articles (a/an/the)**. \n\nWould you like to practice one of these topics now?"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.7471065574966796
+      }
+    },
+    {
+      "id": "PERS-19",
+      "group": "personalization",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 11000,
+          "verdict": "pass",
+          "text": "That is a great question! The difference between **\"a\"** and **\"an\"** depends on the **sound** at the beginning of the next word.\n\nHere is the simple rule:\n\n### 1. Use \"a\" before a consonant sound\nA consonant sound is any sound that is not a vowel (a, e, i, o, u).\n*   **a** **c**at\n*   **a** **d**og\n*   **a** **b**ig apple\n\n### 2. Use \"an\" before a vowel sound\nA vowel sound is the sound of the letters **a, e, i, o, u**.\n*   **an** **a**pple\n*   **an** **e**gg\n*   **an** **i**ce cream\n\n---\n\n### ⚠️ The Important Rule: It is about the SOUND, not the letter!\n\nThis is where many learners make mistakes. You must listen to how the word is pronounced.\n\n**Case 1: Silent \"h\"**\nSome words start with the letter \"h\", but the \"h\" is silent. The first sound you hear is a vowel.\n*   **an** **h**our (It sounds like *\"an our\"*)\n*   **an** **h**onest man (It sounds like *\"an on-est man\"*)\n\n**Case 2: The \"u\" sound**\nSome words start with the letter \"u\", but they sound like they start with a \"y\" (a consonant sound).\n*   **a** **u**niversity (It sounds like *\"a yu-ni-ver-si-ty\"*)\n*   **a** **u**nit (It sounds like *\"a yu-nit\"*)\n\n---\n\n**Let's practice!**\nCan you choose \"a\" or \"an\" for these words?\n1. ___ orange\n2. ___ book\n3. ___ umbrella\n4. ___ hour"
+        },
+        {
+          "status": 200,
+          "latency_ms": 21499,
+          "verdict": "pass",
+          "text": "That is a great question! The difference between **\"a\"** and **\"an\"** depends on the **sound** at the beginning of the next word.\n\nHere is the simple rule:\n\n### 1. Use \"a\" before a consonant sound\nA consonant sound is any sound that is not a vowel (a, e, i, o, u).\n*   **a** **c**at (the \"c\" sound is a consonant)\n*   **a** **d**og (the \"d\" sound is a consonant)\n*   **a** **b**ig apple (the \"b\" sound is a consonant)\n\n**Watch out!** Sometimes a word starts with a vowel letter but has a consonant **sound**.\n*   **a** **u**niversity (The \"u\" sounds like \"yoo,\" which is a \"y\" consonant sound).\n\n### 2. Use \"an\" before a vowel sound\nA vowel sound is the sound of the letters **a, e, i, o, u**.\n*   **an** **a**pple (the \"a\" sound is a vowel)\n*   **an** **e**lephant (the \"e\" sound is a vowel)\n*   **an** **i**ce cream (the \"i\" sound is a vowel)\n\n**Watch out!** Sometimes a word starts with a consonant letter but has a vowel **sound**.\n*   **an** **h**our (The \"h\" is silent, so the word sounds like \"our.\" Since \"o\" is a vowel sound, we use \"an\").\n\n---\n\n### Summary Tip:\nDon't just look at the first letter. **Listen to the sound!**\n\n*   If you hear a **vowel sound** $\\rightarrow$ use **an**\n*   If you hear a **consonant sound** $\\rightarrow$ use **a**\n\nWould you like to try some practice exercises to test this?"
+        },
+        {
+          "status": 502,
+          "latency_ms": 26189,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        }
+      ],
+      "measure": {
+        "runs": 2,
+        "verdict_same": true,
+        "similarity": 0.5220444791260241
+      }
+    },
+    {
+      "id": "QUIZ-02",
+      "group": "quiz_exam",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 16934,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"The learner scored 40% on the Past Simple quiz. This suggests they need more practice with this tense.\",\n  \"patterns\": [\n    \"The learner has difficulty using the Past Simple tense correctly.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Review Past Simple\",\n      \"reason\": \"The learner needs to improve their understanding of this grammar topic.\",\n      \"lessonId\": 3\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 17232,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"The learner scored 40% on the Past Simple quiz. This suggests they need more practice with this tense.\",\n  \"patterns\": [\n    \"Frequent errors in the Past Simple tense.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Review Past Simple\",\n      \"reason\": \"The learner struggled with this specific topic.\",\n      \"lessonId\": 3\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 19107,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"The learner scored 40% on the Past Simple quiz. This suggests they need more practice with past tense forms.\",\n  \"patterns\": [\n    \"Frequent mistakes in the Past Simple tense.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Review Past Simple\",\n      \"reason\": \"The learner's score was low on this topic.\",\n      \"lessonId\": 3\n    }\n  ]\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.8910636078038341
+      }
+    },
+    {
+      "id": "QUIZ-05",
+      "group": "quiz_exam",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 18146,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You scored 30% on this quiz. This suggests that you need to review the rules for conditional sentences.\",\n  \"patterns\": [\n    \"Difficulty with First and Second Conditionals.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Review Conditionals\",\n      \"reason\": \"You struggled with the First and Second Conditionals quiz.\",\n      \"lessonId\": 19\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 19643,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You struggled with this quiz. Your score was 30%, which suggests you need more practice with conditional sentences.\",\n  \"patterns\": [\n    \"You had difficulty with First and Second Conditionals.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Review Conditionals\",\n      \"reason\": \"You should study the structures of First and Second Conditionals again.\",\n      \"lessonId\": 19\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 17708,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You struggled with this quiz. Your score was 30%, which suggests you need more practice with conditional sentences.\",\n  \"patterns\": [\n    \"You had difficulty with First and Second Conditionals.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Review Conditionals\",\n      \"reason\": \"You should study the structures of First and Second Conditionals again.\",\n      \"lessonId\": 19\n    }\n  ]\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.9063625450180072
+      }
+    },
+    {
+      "id": "QUIZ-08",
+      "group": "quiz_exam",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 23061,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"The learner scored 30% on the Christmas vocabulary quiz. This shows a weak grasp of this specific topic.\",\n  \"patterns\": [\n    \"The learner has difficulty with Christmas-related vocabulary.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Study Christmas vocabulary\",\n      \"reason\": \"You should practice more words related to this holiday.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 10344,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You scored 30% on the Christmas vocabulary quiz. This suggests that you need more practice with words related to this topic.\",\n  \"patterns\": [\n    \"You are having difficulty remembering Christmas-themed vocabulary.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Vocabulary Review\",\n      \"reason\": \"You should study more words related to the Christmas theme.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 25284,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        }
+      ],
+      "measure": {
+        "runs": 2,
+        "verdict_same": true,
+        "similarity": 0.8009259259259259
+      }
+    },
+    {
+      "id": "QUIZ-09",
+      "group": "quiz_exam",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 20691,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You achieved a 50% score on the travel vocabulary quiz. This indicates that you need to strengthen your knowledge of words related to traveling.\",\n  \"patterns\": [\n    \"You missed several vocabulary words related to the topic of travel.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Travel Vocabulary Practice\",\n      \"reason\": \"Reviewing more travel-related words will help you improve your accuracy.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 17577,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You scored 50% on the travel vocabulary quiz. This suggests you need more practice with words related to travel.\",\n  \"patterns\": [\n    \"You missed half of the vocabulary questions in this topic.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Travel Vocabulary\",\n      \"reason\": \"You should study more words related to traveling.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 13743,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You got 50% of the questions correct in this quiz. This suggests you need more practice with travel-related vocabulary.\",\n  \"patterns\": [\n    \"You missed half of the words in the travel vocabulary topic.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Review travel vocabulary\",\n      \"reason\": \"You should practice more words related to traveling to improve your score.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.7595698100977685
+      }
+    },
+    {
+      "id": "QUIZ-10",
+      "group": "quiz_exam",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 20184,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You achieved a perfect score on this vocabulary quiz. You have successfully mastered the topic of occupations.\",\n  \"patterns\": [],\n  \"recommendations\": [\n    {\n      \"title\": \"Explore new topics\",\n      \"reason\": \"Since you have mastered this vocabulary, you should move on to a new lesson.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 23491,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You achieved a perfect score on this vocabulary quiz. This shows that you have mastered the topic of occupations.\",\n  \"patterns\": [],\n  \"recommendations\": [\n    {\n      \"title\": \"Explore new topics\",\n      \"reason\": \"Since you have mastered this topic, you should try learning new grammar or vocabulary.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 20912,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You did an excellent job on this quiz with a perfect score. This shows that you have mastered the vocabulary for occupations.\",\n  \"patterns\": [],\n  \"recommendations\": [\n    {\n      \"title\": \"Continue learning\",\n      \"reason\": \"Since you have mastered this topic, you can move on to new vocabulary or grammar lessons.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.822258063212888
+      }
+    },
+    {
+      "id": "QUIZ-12",
+      "group": "quiz_exam",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 19382,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You scored 70% on the office life vocabulary quiz. You have a basic understanding but still need more practice to master this topic.\",\n  \"patterns\": [\n    \"You missed some vocabulary words related to the workplace.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Review Office Vocabulary\",\n      \"reason\": \"You need to strengthen your knowledge of terms used in office life.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 25333,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You scored 70% on the office life vocabulary quiz. You have a basic understanding but need more practice to master this topic.\",\n  \"patterns\": [\n    \"You missed some words related to office life.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Review Office Vocabulary\",\n      \"reason\": \"You need to improve your knowledge of workplace terms.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 23970,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"quiz_analysis\",\n  \"summary\": \"You scored 70% on the office life vocabulary quiz. You have a basic understanding but still need more practice to master this topic.\",\n  \"patterns\": [\n    \"You missed some vocabulary words related to the workplace.\"\n  ],\n  \"recommendations\": [\n    {\n      \"title\": \"Review Office Vocabulary\",\n      \"reason\": \"You need to strengthen your knowledge of workplace terms to improve your score.\",\n      \"lessonId\": null\n    }\n  ]\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.932244280887607
+      }
+    },
+    {
+      "id": "VOC-03",
+      "group": "vocabulary",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 13557,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"vocabulary_analysis\",\n  \"words\": [\n    {\n      \"word\": \"mitigate\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ˈmɪ.tə.ˌɡeɪt/\",\n      \"definitions\": [\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Giảm nhẹ, giảm thiểu, làm dịu bớt, làm cho đỡ.\",\n          \"example\": \"to mitigate a punishment\"\n        }\n      ],\n      \"explanation\": \"To make something less severe, serious, or painful. It is often used when talking about reducing risks or negative effects.\",\n      \"synonyms\": [\n        \"alleviate\",\n        \"reduce\",\n        \"lessen\",\n        \"diminish\",\n        \"ease\"\n      ],\n      \"antonyms\": [\n        \"aggravate\",\n        \"intensify\",\n        \"worsen\",\n        \"exacerbate\"\n      ],\n      \"collocations\": [\n        \"mitigate the risk\",\n        \"mitigate the effects\",\n        \"mitigate damage\",\n        \"mitigate the impact\",\n        \"mitigate circumstances\"\n      ]\n    }\n  ],\n  \"difference\": null\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 18266,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"vocabulary_analysis\",\n  \"words\": [\n    {\n      \"word\": \"mitigate\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ˈmɪ.tə.ˌɡeɪt/\",\n      \"definitions\": [\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Giảm nhẹ, giảm thiểu, làm dịu bớt, làm cho đỡ.\",\n          \"example\": \"to mitigate a punishment\"\n        }\n      ],\n      \"explanation\": \"To make something less severe, harmful, or painful. It is often used when talking about reducing risks or negative effects.\",\n      \"synonyms\": [\n        \"alleviate\",\n        \"reduce\",\n        \"lessen\",\n        \"diminish\",\n        \"ease\"\n      ],\n      \"antonyms\": [\n        \"aggravate\",\n        \"intensify\",\n        \"worsen\",\n        \"exacerbate\",\n        \"increase\"\n      ],\n      \"collocations\": [\n        \"mitigate the effects\",\n        \"mitigate risks\",\n        \"mitigate damage\",\n        \"mitigate impact\",\n        \"mitigate circumstances\"\n      ]\n    }\n  ],\n  \"difference\": null\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 15060,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"vocabulary_analysis\",\n  \"words\": [\n    {\n      \"word\": \"mitigate\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ˈmɪ.tə.ˌɡeɪt/\",\n      \"definitions\": [\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Giảm nhẹ, giảm thiểu, làm dịu bớt, làm cho đỡ.\",\n          \"example\": \"to mitigate a punishment\"\n        }\n      ],\n      \"explanation\": \"To make something less severe, harmful, or painful. It is often used when talking about reducing risks or negative effects.\",\n      \"synonyms\": [\n        \"alleviate\",\n        \"reduce\",\n        \"lessen\",\n        \"diminish\",\n        \"ease\"\n      ],\n      \"antonyms\": [\n        \"aggravate\",\n        \"intensify\",\n        \"worsen\",\n        \"exacerbate\",\n        \"increase\"\n      ],\n      \"collocations\": [\n        \"mitigate the risk\",\n        \"mitigate the effects\",\n        \"mitigate the damage\",\n        \"mitigate the impact\",\n        \"mitigate circumstances\"\n      ]\n    }\n  ],\n  \"difference\": null\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.9737687887659681
+      }
+    },
+    {
+      "id": "VOC-07",
+      "group": "vocabulary",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 17449,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"vocabulary_analysis\",\n  \"words\": [\n    {\n      \"word\": \"deadline\",\n      \"inDictionary\": true,\n      \"ipa\": \"/.ˌlɑɪn/\",\n      \"definitions\": [\n        {\n          \"pos\": \"N\",\n          \"meaning\": \"Đường giới hạn không được vượt qua.\",\n          \"example\": null\n        },\n        {\n          \"pos\": \"N\",\n          \"meaning\": \"Hạn cuối cùng (trả tiền, rút quân... ); thời điểm phải làm xong cái gì, thời hạn cuối cùng.\",\n          \"example\": \"to meet/miss a deadline\"\n        },\n        {\n          \"pos\": \"N\",\n          \"meaning\": \"Đường giới hạn trong sân nhà tù (người tù bước qua có thể bị bắn ngay tại chỗ).\",\n          \"example\": null\n        }\n      ],\n      \"explanation\": \"A deadline is the latest time or date by which something must be finished or completed. It is often used to describe when a task or payment is due.\",\n      \"synonyms\": [\n        \"due date\",\n        \"cutoff\",\n        \"time limit\",\n        \"target date\",\n        \"expiration date\"\n      ],\n      \"antonyms\": [\n        \"start date\",\n        \"beginning\"\n      ],\n      \"collocations\": [\n        \"meet a deadline\",\n        \"miss a deadline\",\n        \"set a deadline\",\n        \"extend a deadline\",\n        \"tight deadline\"\n      ]\n    }\n  ],\n  \"difference\": null\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 29501,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 25674,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        }
+      ],
+      "measure": null
+    },
+    {
+      "id": "VOC-12",
+      "group": "vocabulary",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 23646,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"vocabulary_analysis\",\n  \"words\": [\n    {\n      \"word\": \"thorough\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ˈθɜː.ˌoʊ/\",\n      \"definitions\": [\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Hoàn toàn, hoàn bị, hoàn hảo.\",\n          \"example\": \"to take a thorough rest\"\n        },\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Cẩn thận, kỹ lưỡng, tỉ mỉ.\",\n          \"example\": \"slow but thorough\"\n        },\n        {\n          \"pos\": \"N\",\n          \"meaning\": \"(như) through.\",\n          \"example\": null\n        }\n      ],\n      \"explanation\": \"This word describes something that is done very carefully and completely, leaving nothing out. It can also mean something that is very detailed or perfect.\",\n      \"synonyms\": [\n        \"careful\",\n        \"detailed\",\n        \"complete\",\n        \"exhaustive\",\n        \"meticulous\"\n      ],\n      \"antonyms\": [\n        \"careless\",\n        \"incomplete\",\n        \"superficial\",\n        \"sloppy\"\n      ],\n      \"collocations\": [\n        \"thorough investigation\",\n        \"thorough cleaning\",\n        \"thorough search\",\n        \"thorough understanding\",\n        \"thorough examination\"\n      ]\n    }\n  ],\n  \"difference\": null\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 25564,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 25775,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        }
+      ],
+      "measure": null
+    },
+    {
+      "id": "VOC-13",
+      "group": "vocabulary",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 22463,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"vocabulary_analysis\",\n  \"words\": [\n    {\n      \"word\": \"inevitable\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ɪ.ˈnɛ.və.tə.bəl/\",\n      \"definitions\": [\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Không thể tránh được, chắc chắn xảy ra, bất khả kháng ((nghĩa đen) & (nghĩa bóng)).\",\n          \"example\": null\n        },\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Vẫn thường thấy; vẫn thường nghe; quen thuộc.\",\n          \"example\": \"a tourist with his inevitable camera\"\n        }\n      ],\n      \"explanation\": \"Something that is certain to happen and cannot be avoided. It can also mean something that is expected or common.\",\n      \"synonyms\": [\n        \"unavoidable\",\n        \"inescapable\",\n        \"certain\",\n        \"fated\",\n        \"assured\"\n      ],\n      \"antonyms\": [\n        \"avoidable\",\n        \"preventable\",\n        \"uncertain\",\n        \"unlikely\",\n        \"escapable\"\n      ],\n      \"collocations\": [\n        \"inevitable conclusion\",\n        \"inevitable result\",\n        \"inevitable outcome\",\n        \"inevitable consequence\",\n        \"almost inevitable\"\n      ]\n    }\n  ],\n  \"difference\": null\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 17523,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"vocabulary_analysis\",\n  \"words\": [\n    {\n      \"word\": \"inevitable\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ɪ.ˈnɛ.və.tə.bəl/\",\n      \"definitions\": [\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Không thể tránh được, chắc chắn xảy ra, bất khả kháng ((nghĩa đen) & (nghĩa bóng)).\",\n          \"example\": null\n        },\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Vẫn thường thấy; vẫn thường nghe; quen thuộc.\",\n          \"example\": \"a tourist with his inevitable camera\"\n        }\n      ],\n      \"explanation\": \"Something that is certain to happen and cannot be avoided. It can also describe something that is very common or expected.\",\n      \"synonyms\": [\n        \"unavoidable\",\n        \"certain\",\n        \"inescapable\",\n        \"fated\",\n        \"assured\"\n      ],\n      \"antonyms\": [\n        \"avoidable\",\n        \"uncertain\",\n        \"preventable\",\n        \"unlikely\",\n        \"escapable\"\n      ],\n      \"collocations\": [\n        \"inevitable conclusion\",\n        \"inevitable result\",\n        \"inevitable change\",\n        \"almost inevitable\",\n        \"sense of the inevitable\"\n      ]\n    }\n  ],\n  \"difference\": null\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 18635,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"vocabulary_analysis\",\n  \"words\": [\n    {\n      \"word\": \"inevitable\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ɪ.ˈnɛ.və.tə.bəl/\",\n      \"definitions\": [\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Không thể tránh được, chắc chắn xảy ra, bất khả kháng ((nghĩa đen) & (nghĩa bóng)).\",\n          \"example\": null\n        },\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Vẫn thường thấy; vẫn thường nghe; quen thuộc.\",\n          \"example\": \"a tourist with his inevitable camera\"\n        }\n      ],\n      \"explanation\": \"Something that is certain to happen and cannot be avoided. It can also describe something that is expected or common.\",\n      \"synonyms\": [\n        \"unavoidable\",\n        \"certain\",\n        \"inescapable\",\n        \"fated\",\n        \"predictable\"\n      ],\n      \"antonyms\": [\n        \"avoidable\",\n        \"uncertain\",\n        \"preventable\",\n        \"unlikely\",\n        \"escapable\"\n      ],\n      \"collocations\": [\n        \"inevitable conclusion\",\n        \"inevitable result\",\n        \"inevitable change\",\n        \"almost inevitable\",\n        \"sense of the inevitable\"\n      ]\n    }\n  ],\n  \"difference\": null\n}"
+        }
+      ],
+      "measure": {
+        "runs": 3,
+        "verdict_same": true,
+        "similarity": 0.9481022604556677
+      }
+    },
+    {
+      "id": "VOC-15",
+      "group": "vocabulary",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 22099,
+          "verdict": "fail",
+          "text": "{\n  \"type\": \"vocabulary_analysis\",\n  \"words\": [\n    {\n      \"word\": \"scarce\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ˈskɛrs/\",\n      \"definitions\": [\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Khan hiếm, ít có, thiếu, khó tìm.\",\n          \"example\": \"a scarce book\"\n        }\n      ],\n      \"explanation\": \"It means that something is difficult to find or not available in large enough quantities. It is often used to describe resources like food, water, or money.\",\n      \"synonyms\": [\n        \"rare\",\n        \"limited\",\n        \"insufficient\",\n        \"meager\",\n        \"sparse\"\n      ],\n      \"antonyms\": [\n        \"abundant\",\n        \"plentiful\",\n        \"ample\",\n        \"copious\",\n        \"profuse\"\n      ],\n      \"collocations\": [\n        \"scarce resources\",\n        \"become scarce\",\n        \"increasingly scarce\",\n        \"scarce supply\",\n        \"food is scarce\"\n      ]\n    }\n  ],\n  \"difference\": null\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 25159,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 16691,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"vocabulary_analysis\",\n  \"words\": [\n    {\n      \"word\": \"scarce\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ˈskɛrs/\",\n      \"definitions\": [\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Khan hiếm, ít có, thiếu, khó tìm.\",\n          \"example\": \"a scarce book\"\n        }\n      ],\n      \"explanation\": \"Something that is scarce is not enough or is difficult to find. It is often used to describe resources like food, water, or money.\",\n      \"synonyms\": [\n        \"rare\",\n        \"limited\",\n        \"insufficient\",\n        \"sparse\",\n        \"meager\"\n      ],\n      \"antonyms\": [\n        \"abundant\",\n        \"plentiful\",\n        \"ample\",\n        \"copious\",\n        \"profuse\"\n      ],\n      \"collocations\": [\n        \"scarce resources\",\n        \"scarce food\",\n        \"increasingly scarce\",\n        \"become scarce\",\n        \"scarce supply\"\n      ]\n    }\n  ],\n  \"difference\": null\n}"
+        }
+      ],
+      "measure": {
+        "runs": 2,
+        "verdict_same": false,
+        "similarity": 0.9052054794520548
+      }
+    },
+    {
+      "id": "VOC-33",
+      "group": "vocabulary",
+      "samples": [
+        {
+          "status": 200,
+          "latency_ms": 22830,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"vocabulary_analysis\",\n  \"words\": [\n    {\n      \"word\": \"lose\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ˈluːz/\",\n      \"definitions\": [\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Mất không còn nữa.\",\n          \"example\": \"to lose one's head\"\n        },\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Mất, mất hút, không thấy nữa; lạc, thất lạc.\",\n          \"example\": null\n        },\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Bỏ lỡ, bỏ uổng, bỏ qua.\",\n          \"example\": \"to lose an opportunity\"\n        },\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Thua, bại.\",\n          \"example\": \"to lose a lawsuit\"\n        },\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Uổng phí, bỏ phí.\",\n          \"example\": \"to lose time in gambling\"\n        }\n      ],\n      \"explanation\": \"This is a verb that means to no longer have something, to misplace something, or to be defeated in a competition.\",\n      \"synonyms\": [\n        \"misplace\",\n        \"fail\",\n        \"forfeit\",\n        \"miss\",\n        \"drop\"\n      ],\n      \"antonyms\": [\n        \"find\",\n        \"win\",\n        \"gain\",\n        \"keep\",\n        \"catch\"\n      ],\n      \"collocations\": [\n        \"lose weight\",\n        \"lose a game\",\n        \"lose money\",\n        \"lose control\",\n        \"lose interest\"\n      ]\n    },\n    {\n      \"word\": \"loose\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ˈluːs/\",\n      \"definitions\": [\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Lỏng, không chặt, chùng, không căng, không khít, rời ra, lung lay, long ra, lòng thòng.\",\n          \"example\": \"loose hair\"\n        },\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Rộng lùng thùng, lùng nhùng (quần áo).\",\n          \"example\": null\n        },\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Xốp, mềm, dễ cày, dễ làm tơi (đất).\",\n          \"example\": null\n        },\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Lẻ, nhỏ (tiền).\",\n          \"example\": \"loose cash\"\n        },\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Mơ hồ, không rõ ràng, không chính xác; không chặt chẽ, phóng (lý luận, dịch, viết văn...).\",\n          \"example\": \"a loose translation\"\n        }\n      ],\n      \"explanation\": \"This is an adjective that describes something that is not tight, not firmly fixed, or clothes that are baggy.\",\n      \"synonyms\": [\n        \"baggy\",\n        \"slack\",\n        \"free\",\n        \"untied\",\n        \"vague\"\n      ],\n      \"antonyms\": [\n        \"fast\"\n      ],\n      \"collocations\": [\n        \"loose teeth\",\n        \"loose clothing\",\n        \"loose change\",\n        \"loose connection\",\n        \"loose end\"\n      ]\n    }\n  ],\n  \"difference\": \"Lose is a verb used when you misplace something or fail to win. Loose is an adjective used to describe something that is not tight or is free from attachment.\"\n}"
+        },
+        {
+          "status": 502,
+          "latency_ms": 25399,
+          "verdict": null,
+          "text": "{\n  \"detail\": \"AI provider error\"\n}"
+        },
+        {
+          "status": 200,
+          "latency_ms": 24675,
+          "verdict": "pass",
+          "text": "{\n  \"type\": \"vocabulary_analysis\",\n  \"words\": [\n    {\n      \"word\": \"lose\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ˈluːz/\",\n      \"definitions\": [\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Mất không còn nữa.\",\n          \"example\": \"to lose one's head\"\n        },\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Mất, mất hút, không thấy nữa; lạc, thất lạc.\",\n          \"example\": null\n        },\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Bỏ lỡ, bỏ uổng, bỏ qua.\",\n          \"example\": \"to lose an opportunity\"\n        },\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Thua, bại.\",\n          \"example\": \"to lose a lawsuit\"\n        },\n        {\n          \"pos\": \"V\",\n          \"meaning\": \"Uổng phí, bỏ phí.\",\n          \"example\": \"to lose time in gambling\"\n        }\n      ],\n      \"explanation\": \"This is a verb that means to no longer have something, to misplace something, or to fail to win a game.\",\n      \"synonyms\": [\n        \"misplace\",\n        \"fail\",\n        \"forfeit\",\n        \"drop\",\n        \"squander\"\n      ],\n      \"antonyms\": [\n        \"find\",\n        \"win\",\n        \"gain\",\n        \"keep\",\n        \"acquire\"\n      ],\n      \"collocations\": [\n        \"lose weight\",\n        \"lose a game\",\n        \"lose money\",\n        \"lose control\",\n        \"lose interest\"\n      ]\n    },\n    {\n      \"word\": \"loose\",\n      \"inDictionary\": true,\n      \"ipa\": \"/ˈluːs/\",\n      \"definitions\": [\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Lỏng, không chặt, chùng, không căng, không khít, rời ra, lung lay, long ra, lòng thòng.\",\n          \"example\": \"loose hair\"\n        },\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Rộng lùng thùng, lùng nhùng (quần áo).\",\n          \"example\": null\n        },\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Xốp, mềm, dễ cày, dễ làm tơi (đất).\",\n          \"example\": null\n        },\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Lẻ, nhỏ (tiền).\",\n          \"example\": \"loose cash\"\n        },\n        {\n          \"pos\": \"A\",\n          \"meaning\": \"Mơ hồ, không rõ ràng, không chính xác; không chặt chẽ, phóng (lý luận, dịch, viết văn...).\",\n          \"example\": \"a loose translation\"\n        }\n      ],\n      \"explanation\": \"This is an adjective that describes something that is not tight, not firmly fixed, or not held closely.\",\n      \"synonyms\": [\n        \"baggy\",\n        \"slack\",\n        \"detached\",\n        \"free\",\n        \"vague\"\n      ],\n      \"antonyms\": [\n        \"fast\"\n      ],\n      \"collocations\": [\n        \"loose clothing\",\n        \"loose teeth\",\n        \"loose change\",\n        \"loose connection\",\n        \"loose end\"\n      ]\n    }\n  ],\n  \"difference\": \"Lose is a verb used when you misplace something or fail to win. Loose is an adjective used to describe something that is not tight or not firmly attached.\"\n}"
+        }
+      ],
+      "measure": {
+        "runs": 2,
+        "verdict_same": true,
+        "similarity": 0.9767359887204794
+      }
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+INSERT INTO ai_evaluation_result (run_at, model_version, total_cases, pass_count, fail_count, avg_latency_ms, notes)
+VALUES ('2026-11-26T02:52:21+00:00', '@cf/google/gemma-4-26b-a4b-it', 170, 99, 71, 17876, 'grammar 33/40 (avg 15904 ms); guardrails 30/30 (avg 6855 ms); image 1/20 (avg 18238 ms); personalization 16/20 (avg 16706 ms); quiz_exam 11/20 (avg 21280 ms); vocabulary 8/40 (avg 26818 ms); request loi ha tang (HTTP 0/502/503): 51; Relevance TB 4.93/5 (chấm 29 case); Consistency: kết luận giống nhau 23/24 case, độ giống văn bản TB 85.3%');
