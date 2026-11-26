@@ -138,6 +138,20 @@ class AuthControllerIntegrationTest {
     }
 
     @Test
+    void register_matKhauVuot72Byte_tra400() throws Exception {
+        // 25 chu co dau = 75 byte UTF-8: du 72 ky tu nhung vuot gioi han cua BCrypt
+        postJson("/api/auth/register", registerJson(newEmail(), "ệ".repeat(25)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+    }
+
+    @Test
+    void register_matKhauDung72Byte_tra201() throws Exception {
+        postJson("/api/auth/register", registerJson(newEmail(), "ệ".repeat(24)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
     void login_saiMatKhau_tra401() throws Exception {
         String email = newEmail();
         postJson("/api/auth/register", registerJson(email)).andExpect(status().isCreated());
@@ -190,9 +204,13 @@ class AuthControllerIntegrationTest {
     }
 
     private static String registerJson(String email) {
+        return registerJson(email, PASSWORD);
+    }
+
+    private static String registerJson(String email, String password) {
         return """
                 {"displayName": "Test User", "email": "%s", "password": "%s"}
-                """.formatted(email, PASSWORD);
+                """.formatted(email, password);
     }
 
     private static String loginJson(String email, String password) {
