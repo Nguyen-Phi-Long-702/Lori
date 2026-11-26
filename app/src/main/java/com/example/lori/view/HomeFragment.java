@@ -5,12 +5,15 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -32,6 +35,10 @@ public class HomeFragment extends Fragment {
     private static final long EXP_LEAVE_DURATION_MS = 500;
     private static final float EXP_FLOAT_DISTANCE_DP = 20;
 
+    //Nhấn Back lần thứ hai trong khoảng này thì thoát app
+    private static final long BACK_EXIT_WINDOW_MS = 2000;
+    private long lastBackPressedAt;
+
     private HomeViewModel viewModel;
     private TextView tvExpGain;
     @Nullable
@@ -49,6 +56,20 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        long now = SystemClock.elapsedRealtime();
+                        if (now - lastBackPressedAt <= BACK_EXIT_WINDOW_MS) {
+                            requireActivity().finish();
+                        } else {
+                            lastBackPressedAt = now;
+                            Toast.makeText(requireContext(), R.string.home_back_exit_hint, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
 
         TextView tvTopicCount = view.findViewById(R.id.tvTopicCount);
         TextView tvWordCount = view.findViewById(R.id.tvWordCount);

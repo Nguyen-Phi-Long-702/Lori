@@ -9,8 +9,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.graphics.Color;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -48,6 +50,7 @@ public class QuizFragment extends Fragment {
     private TextView tvQuizIncorrectCount;
     private ColorStateList defaultOptionTextColor;
     private int defaultOptionStrokeWidth;
+    private OnBackPressedCallback confirmExitCallback;
 
     @Nullable
     @Override
@@ -92,7 +95,23 @@ public class QuizFragment extends Fragment {
         tvHeaderTitle.setText(QuizViewModel.TYPE_VOCAB.equals(quizType)
                 ? R.string.quiz_title_vocab : R.string.quiz_title_grammar);
 
-        btnBack.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
+        //Đang làm bài thì Back (nút trên header hoặc nút hệ thống) hỏi xác nhận để không mất kết quả do bấm nhầm
+        confirmExitCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                new AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.quiz_exit_title)
+                        .setMessage(R.string.quiz_exit_message)
+                        .setNegativeButton(R.string.quiz_exit_continue, null)
+                        .setPositiveButton(R.string.quiz_exit_confirm, (dialog, which) -> {
+                            setEnabled(false);
+                            Navigation.findNavController(requireView()).navigateUp();
+                        })
+                        .show();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), confirmExitCallback);
+        btnBack.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
         btnQuizFinish.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
 
         String[] letters = {"A", "B", "C", "D"};
@@ -202,6 +221,8 @@ public class QuizFragment extends Fragment {
 
     //Chuyển sang màn hình kết quả sau khi hoàn tất bài kiểm tra
     private void showResult() {
+        //Đã xong bài thì Back đi thẳng, không hỏi xác nhận
+        confirmExitCallback.setEnabled(false);
         groupPlaying.setVisibility(View.GONE);
         groupResult.setVisibility(View.VISIBLE);
 

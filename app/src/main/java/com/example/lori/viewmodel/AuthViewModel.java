@@ -34,7 +34,7 @@ import retrofit2.Response;
 //Giao diện chỉ quan sát các LiveData bên dưới; mọi thông báo lỗi (từng ô nhập và lỗi chung) đều là mã chuỗi R.string (null = không lỗi)
 public class AuthViewModel extends AndroidViewModel {
 
-    //Giới hạn khớp với Backend (RegisterRequest: displayName tối đa 100, password 8-72 ký tự)
+    //Giới hạn theo Backend (RegisterRequest: displayName tối đa 100, password từ 8 ký tự; tối đa 72 byte UTF-8 nên app chỉ chặn sớm theo ký tự, mật khẩu có dấu vượt 72 byte do Backend trả 400)
     private static final int MAX_DISPLAY_NAME_LENGTH = 100;
     private static final int MIN_PASSWORD_LENGTH = 8;
     private static final int MAX_PASSWORD_LENGTH = 72;

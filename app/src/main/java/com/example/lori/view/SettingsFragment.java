@@ -46,11 +46,11 @@ public class SettingsFragment extends Fragment {
         view.findViewById(R.id.rowPremium).setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), PremiumPurchaseActivity.class)));
 
-        //Các mục cần tài khoản đăng nhập - app chưa có hệ thống tài khoản nên chỉ thông báo rõ ràng
-        View.OnClickListener showAccountLockedMessage = v ->
-                Toast.makeText(requireContext(), R.string.settings_account_locked_message, Toast.LENGTH_SHORT).show();
-        view.findViewById(R.id.rowEditProfile).setOnClickListener(showAccountLockedMessage);
-        view.findViewById(R.id.rowChangePassword).setOnClickListener(showAccountLockedMessage);
+        //Chưa có màn hình Chỉnh sửa hồ sơ và Đổi mật khẩu trong phiên bản này nên chỉ thông báo rõ ràng
+        View.OnClickListener showFeatureUnavailableMessage = v ->
+                Toast.makeText(requireContext(), R.string.settings_feature_unavailable_message, Toast.LENGTH_SHORT).show();
+        view.findViewById(R.id.rowEditProfile).setOnClickListener(showFeatureUnavailableMessage);
+        view.findViewById(R.id.rowChangePassword).setOnClickListener(showFeatureUnavailableMessage);
 
         //Đăng xuất: xóa phiên (và báo Backend thu hồi token) rồi về màn Đăng nhập, xóa hết các màn trước
         AuthViewModel authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);

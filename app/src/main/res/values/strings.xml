@@ -18,6 +18,7 @@
     <string name="home_exp_format">⭐ %1$s</string>
     <string name="home_exp_placeholder">⭐ –</string>
     <string name="home_exp_gain_format">+%1$s EXP</string>
+    <string name="home_back_exit_hint">Nhấn Back lần nữa để thoát</string>
     <string name="home_level_format">Lv %1$d</string>
     <string name="home_level_placeholder">Lv –</string>
     <string name="home_streak_format">🔥 %1$d ngày</string>
@@ -93,7 +94,7 @@
     <string name="settings_edit_profile_desc">Tên, avatar</string>
     <string name="settings_change_password_title">Đổi mật khẩu</string>
     <string name="settings_change_password_desc">Cập nhật mật khẩu mới</string>
-    <string name="settings_account_locked_message">Cần đăng nhập tài khoản — tính năng này sẽ hoàn thiện ở Tuần 4-5</string>
+    <string name="settings_feature_unavailable_message">Tính năng này chưa có trong phiên bản hiện tại</string>
     <string name="settings_notification_title">Thông báo học tập</string>
     <string name="settings_notification_desc">Nhắc nhở học mỗi ngày</string>
     <string name="settings_sound_title">Âm thanh &amp; phát âm</string>
@@ -129,6 +130,10 @@
     <string name="quiz_finish_button">Quay lại</string>
     <string name="quiz_start_button">Làm bài kiểm tra →</string>
     <string name="quiz_explanation_format">Giải thích: %1$s</string>
+    <string name="quiz_exit_title">Thoát bài kiểm tra?</string>
+    <string name="quiz_exit_message">Kết quả chưa được lưu.</string>
+    <string name="quiz_exit_continue">Tiếp tục làm</string>
+    <string name="quiz_exit_confirm">Thoát</string>
     <string name="dictionary_subtab_dictionary">Từ điển</string>
     <string name="dictionary_subtab_translate">Dịch thuật</string>
     <string name="translate_input_hint_vi">Nhập câu hoặc đoạn văn tiếng Việt cần dịch…</string>
