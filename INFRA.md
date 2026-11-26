@@ -1638,3 +1638,40 @@ Ngưỡng 90% (Đạt / tổng) do hướng dẫn ngày 6 đặt; kế hoạch v
 - Nhóm ảnh bị giới hạn bởi YOLOv8n chỉ có 80 lớp COCO (mục 26, 28).
 - Dữ liệu phát sinh: chỉ 1 dòng trong `ai_evaluation_result` (Neon); không tạo user hay subscription.
 
+## 42. Tổng hợp bug và APK v1.4-rc1 (Tuần 17 – Ngày 7)
+
+- Phạm vi: gom mọi lỗi/số đo không đạt của Tuần 17 Ngày 1-6 (mục 38 → 41), phân loại Critical/High/Medium/Low, sửa theo kế hoạch v5 ("fix Critical+High") và build APK v1.4-rc1. Không thêm thư viện, biến môi trường, migration hay dịch vụ mới; không phát sinh chi phí.
+- Quy tắc xử lý: lỗi đã có ngày sửa riêng trong kế hoạch / INFRA thì giữ ở ngày đó, không sửa hôm nay. Lỗi Medium/Low chưa có ngày nào sửa: sửa hôm nay những lỗi có nguyên nhân gốc đã biết và sửa nhỏ (L17-01, L17-02, L17-03, L17-04) theo lựa chọn của người dùng.
+- Mã L17-01 xuất hiện ở cả mục 38 (chuỗi "Tuần 4-5" ở Cài đặt) và mục 39.6 (chưa có giao diện đổi/quên mật khẩu); hai mô tả cùng một gốc (dòng Cài đặt chưa có màn hình đi kèm) nên gộp thành một lỗi L17-01.
+
+### Tiêu chí mức độ
+
+| Mức | Tiêu chí |
+|---|---|
+| Critical | App văng / mất dữ liệu người dùng / lộ dữ liệu, hoặc luồng chính (đăng ký, đăng nhập, học, thi, mua Premium) không dùng được và không có cách tránh |
+| High | Một tính năng chính hỏng hoặc không đáng tin cậy với nhiều người dùng, hoặc lỗ hổng bảo mật có thể khai thác |
+| Medium | Sai/chậm ở tình huống ít gặp, hoặc số đo không đạt ngưỡng kế hoạch nhưng app vẫn dùng được; có cách tránh dễ |
+| Low | Giao diện / thông báo / trải nghiệm nhỏ, không ảnh hưởng chức năng |
+
+### Bảng tổng hợp bug
+
+| Mã | Mức | Nguồn | Mô tả | Xử lý |
+|---|---|---|---|---|
+| L17-01 | Low | Mục 38 (S16, cả 4 AVD), mục 39.6 | "Chỉnh sửa hồ sơ" và "Đổi mật khẩu" ở Cài đặt hiện chuỗi cũ "…sẽ hoàn thiện ở Tuần 4-5"; app chưa có giao diện Chỉnh sửa hồ sơ / Đổi mật khẩu / Quên mật khẩu | Sửa hôm nay (chỉ đổi chuỗi thông báo). Các màn hình đó không nằm trong kế hoạch v5 nên không làm |
+| L17-02 | Medium | Mục 39 (PW5, PW6) | `@Size(max = 72)` đếm ký tự, BCrypt giới hạn 72 byte: mật khẩu 25 chữ `ệ` (75 byte) qua validation rồi BCrypt ném lỗi → HTTP 500 thay vì 400 | Sửa hôm nay: ràng buộc theo byte UTF-8 ở mọi DTO có mật khẩu |
+| L17-03 | Low | Mục 39 (B4) | Đang làm Quiz, bấm Back thoát ngay, không hỏi xác nhận → mất tiến trình do bấm nhầm | Sửa hôm nay: hộp thoại xác nhận (như Đề thi) |
+| L17-04 | Low | Mục 39 (B8) | Ở Trang chủ, bấm Back thoát app ngay | Sửa hôm nay: nhấn Back lần hai trong 2 giây mới thoát |
+| L17-05 | Medium | Mục 40.1 | Cold start Android `HomeMs` trung vị 7035 ms, chưa đạt ngưỡng < 3 s (đo trên APK debug, emulator API 29) | Không sửa hôm nay: chưa xác định nguyên nhân, số đo là của bản debug chưa tối ưu. Bản R8 làm ở Tuần 18 Ngày 3 / Tuần 19 Ngày 1-2; nên đo lại cold start sau đó (đề xuất, kế hoạch v5 chưa ghi việc đo lại) |
+| L17-06 | Medium | Mục 40.3 | Load test 100 người dùng ảo: 0/5 API đạt avg < 300 ms và p95 < 500 ms (avg 2,14–7,03 s); lỗi 0,12% | Không sửa: chưa xác định nguyên nhân (chưa profile; đo trên Render Free + Neon Free + Upstash Free), đoán là trái YAGNI. Giữ làm giới hạn đã biết cho báo cáo cuối |
+| L17-07 | High | Mục 40.4, 41 | AI Service trả 502 do vượt `TIMEOUT_SECONDS = 25` khi gọi Cloudflare: 7/55 request ở benchmark tải, 51/170 case ở Evaluation (30%); app hiện "AI Tutor tạm thời chưa khả dụng" | Đã có lịch: Tuần 19 Ngày 1-2 (xác định nguyên nhân qua Vercel Logs rồi tinh chỉnh) |
+| L17-08 | High | Mục 41 | Image Learning: 19/19 ảnh có vật thể thiếu `example`/`exampleVi` (null) trên model `gemma-4`; nhóm ảnh đạt 1/20 | Đã có lịch: Tuần 19 Ngày 1-2 (tinh chỉnh prompt/context, chạy lại riêng nhóm ảnh) |
+| L17-09 | High | Mục 40.5 | `RateLimitFilter` lấy IP từ `X-Forwarded-For` do client gửi: giả header mỗi request một IP thì né được giới hạn 60 request/phút/IP | Đã có lịch: Tuần 18 Ngày 1-2 (Security audit) |
+| L17-10 | Low | Mục 41 (VOC-15) | Dataset: từ khóa cứng của `case_checks.py` không khớp câu trả lời đúng nghĩa của `scarce` (loại B) | Đã có lịch: bổ sung từ khóa dataset ở Tuần 18-19 (mục 41) |
+
+Tổng: 10 lỗi (Critical 0, High 3, Medium 3, Low 4).
+
+### Ghi nhận khác (không phải lỗi, không sửa)
+
+- Vật không nhận ra (`bottle`, `cup`, `cell phone`, `backpack` ở IMG-05, 07, 11) là giới hạn 80 lớp COCO của YOLOv8n (mục 26, 28).
+- Ca B2 (Back ở Onboarding thoát app thay vì lùi slide) là ghi nhận cải tiến ở mục 39.3, không nằm trong bảng lỗi Ngày 3 nên không xử lý.
+
