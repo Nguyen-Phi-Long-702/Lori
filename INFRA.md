@@ -74,6 +74,7 @@ UptimeRobot --kiểm tra mỗi 5 phút--> AI Service (Vercel)
 | `MAIL_SENDER_EMAIL` | Email người gửi đã được xác minh trên Brevo (xem mục 10) |
 | `AI_SERVICE_BASE_URL` | URL gốc của AI Service trên Vercel, không có `/` ở cuối (xem mục 17) |
 | `AI_SERVICE_SHARED_SECRET` | Khóa dùng chung để ký HMAC khi Backend gọi AI Service, ≥ 32 ký tự, cùng giá trị với biến trên Vercel (xem mục 17) |
+| `TRUSTED_PROXY_COUNT` | Số proxy tin cậy đứng trước Backend; IP khách là phần tử thứ N tính từ cuối `X-Forwarded-For` (mục 43). Hiện đặt `1` (chưa đặt biến riêng trên Render, dùng mặc định 1); không đặt thì mặc định 1 |
 
 - Auto-Deploy (Render → Settings → Build & Deploy): **Off**.
 
@@ -1665,7 +1666,7 @@ Ngưỡng 90% (Đạt / tổng) do hướng dẫn ngày 6 đặt; kế hoạch v
 | L17-06 | Medium | Mục 40.3 | Load test 100 người dùng ảo: 0/5 API đạt avg < 300 ms và p95 < 500 ms (avg 2,14–7,03 s); lỗi 0,12% | Không sửa: chưa xác định nguyên nhân (chưa profile; đo trên Render Free + Neon Free + Upstash Free), đoán là trái YAGNI. Giữ làm giới hạn đã biết cho báo cáo cuối |
 | L17-07 | High | Mục 40.4, 41 | AI Service trả 502 do vượt `TIMEOUT_SECONDS = 25` khi gọi Cloudflare: 7/55 request ở benchmark tải, 51/170 case ở Evaluation (30%); app hiện "AI Tutor tạm thời chưa khả dụng" | Đã có lịch: Tuần 19 Ngày 1-2 (xác định nguyên nhân qua Vercel Logs rồi tinh chỉnh) |
 | L17-08 | High | Mục 41 | Image Learning: 19/19 ảnh có vật thể thiếu `example`/`exampleVi` (null) trên model `gemma-4`; nhóm ảnh đạt 1/20 | Đã có lịch: Tuần 19 Ngày 1-2 (tinh chỉnh prompt/context, chạy lại riêng nhóm ảnh) |
-| L17-09 | High | Mục 40.5 | `RateLimitFilter` lấy IP từ `X-Forwarded-For` do client gửi: giả header mỗi request một IP thì né được giới hạn 60 request/phút/IP | Đã có lịch: Tuần 18 Ngày 1-2 (Security audit) |
+| L17-09 | High | Mục 40.5 | `RateLimitFilter` lấy IP từ `X-Forwarded-For` do client gửi: giả header mỗi request một IP thì né được giới hạn 60 request/phút/IP | Đã sửa ở Tuần 18 – Ngày 1-2 (mục 43) |
 | L17-10 | Low | Mục 41 (VOC-15) | Dataset: từ khóa cứng của `case_checks.py` không khớp câu trả lời đúng nghĩa của `scarce` (loại B) | Đã có lịch: bổ sung từ khóa dataset ở Tuần 18-19 (mục 41) |
 
 Tổng: 10 lỗi (Critical 0, High 3, Medium 3, Low 4).
@@ -1707,4 +1708,94 @@ Tổng: 10 lỗi (Critical 0, High 3, Medium 3, Low 4).
 - Test thủ công chỉ chạy trên AVD/LDPlayer dùng mạng máy tính, chưa test bằng điện thoại thật và mạng 4G.
 - Bản rc1 là APK debug (chưa R8, chưa ký release); số đo cold start và dung lượng của mục 40 vẫn là số của bản chưa tối ưu.
 - Chưa chạy lại pytest AI Service vì hôm nay không sửa `ai-service/`.
+
+## 43. Rà soát bảo mật Backend và AI Service (Tuần 18 – Ngày 1-2)
+
+- Phạm vi: audit Backend (ApiKey, BruteForce, JWT Hardening, Exam Token, InputSanitizer, xác thực yêu cầu thanh toán), tắt Swagger, Security Headers, rate limit theo IP; audit AI Service (Guardrails 7 lớp, Server-to-Server Auth) và chạy lại pentest 40 case. Audit logic gating/hết hạn Premium để Tuần 18 – Ngày 7.
+- Công cụ: `tools/security-audit/backend_audit.py` (chạy vào Render thật, tạo user thử `secaudit.<thời gian>.<số>@example.com`) và `tools/security-audit/ai_audit.py` (chạy vào Vercel thật, không gọi LLM). Cả hai đọc giá trị nhạy cảm từ biến môi trường, thoát mã 1 nếu có FAIL. Lệnh chạy (PowerShell, thư mục gốc repo, sau khi đặt biến): Backend `docker run --rm -e BASE_URL -e API_KEY -e APP_SIGNATURE -v "${PWD}:/repo" -w /repo/tools/security-audit python:3.12-slim python -u backend_audit.py`; AI `docker run --rm -e AI_SERVICE_BASE_URL -e AI_SERVICE_SHARED_SECRET -e PYTHONPATH=/repo/ai-service -v "${PWD}:/repo" -w /repo/tools/security-audit python:3.12-slim sh -c "pip install -q -r /repo/ai-service/requirements.txt && python -u ai_audit.py"`.
+
+### Kết quả audit Backend (ngày 27/11/2026)
+
+| Nhóm | Số kiểm tra | Trước khi sửa | Sau khi sửa |
+|---|---|---|---|
+| A – ApiKey (anti-abuse) | 10 | 10/10 | 10/10 |
+| B – Swagger/OpenAPI | 3 | 0/3 | 3/3 |
+| C – Security Headers | 5 | 4/5 | 5/5 |
+| D – BruteForce | 5 | 5/5 | 5/5 |
+| E – JWT Hardening và refresh token | 11 | 11/11 | 11/11 |
+| F – InputSanitizer | 7 | 7/7 | 7/7 |
+| G – Xác thực yêu cầu mua (mock) | 5 | 5/5 | 5/5 |
+| H – Exam Token | 11 | 11/11 | 11/11 |
+| I – AI Gateway Lớp 2 và Lớp 6 | 4 | 4/4 | 4/4 |
+| K – Rate limit theo IP, giả `X-Forwarded-For` | 1 | 0/1 | 1/1 |
+| **Tổng** | 62 | 57/62 | 62/62 |
+
+### Lỗi phát hiện và cách xử lý
+
+Mức theo tiêu chí ở mục 42.
+
+| Mã | Mức | Mô tả | Xử lý |
+|---|---|---|---|
+| L17-09 | High | `RateLimitFilter` lấy IP từ phần tử đầu `X-Forwarded-For` do client gửi, né được 60 request/phút/IP (`K01` FAIL trước khi sửa: `401=80, 429=0`) | Đã sửa: IP khách là phần tử thứ `TRUSTED_PROXY_COUNT` tính từ cuối; `RateLimitFilterTest` (6 test). Giá trị đo trên Render: `1` (Upstash `rate_limit:*` tạo key `rate_limit:14.187.44.160`, khớp IP thấy tại `lori-25ej.onrender.com/cdn-cgi/trace`; ghi chú máy đo có định tuyến qua 2 IP khác nhau: `api.ipify.org` ra `171.236.242.130`). `K01` PASS sau khi sửa (`401=67, 429=13`) |
+| L18-01 | Medium | Swagger UI và `/v3/api-docs` mở công khai không cần key (`B01–B03` FAIL) | Đã sửa: `springdoc.*.enabled=${SWAGGER_ENABLED:false}`, test `swagger_macDinhTat_tra404`. Bật lại chỉ trên máy Dev khi export tài liệu API |
+| L18-02 | Low | Thiếu `Referrer-Policy` và cấu hình HSTS ở Backend (`C04` FAIL trước khi sửa; `C03` HSTS đã PASS sẵn do lớp ngoài của Render tự thêm) | Đã sửa trong `SecurityConfig` (HSTS áp dụng mọi request vì Render kết thúc TLS, và `Referrer-Policy: no-referrer`), test `securityHeaders_coDayDuBonHeaderTheoKeHoach` |
+| L18-03 | Low | Header `X-Forwarded-For` chỉ gồm dấu phẩy làm `getClientIp` ném `ArrayIndexOutOfBounds` (lỗi có sẵn, phát hiện khi đọc mã, chưa thử trên Render) | Đã sửa cùng L17-09, có test `khongCoHoacHongHeader_dungIpKetNoi` |
+
+Số test Backend: `348` đạt (trước hôm nay: `340`). Số test AI Service: `485` đạt.
+
+### Audit AI Service
+
+| Lớp | Bằng chứng | Kết quả |
+|---|---|---|
+| 1 Cô lập | `git grep` không thấy thư viện DB/Redis hay biến `NEON_*`, `UPSTASH_*`, `JWT_SECRET` trong `ai-service` (`sqlite3` chỉ ở `dictionary_lookup.py` mở `mode=ro&immutable=1`); biến môi trường Vercel: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `AI_SERVICE_SHARED_SECRET` | Đạt |
+| 1b Server-to-Server Auth | `ai_audit.py` S01–S21 trên Vercel thật; `test_s2s_auth.py` | 21/21 |
+| 2 Backend JWT, Premium, `AiContextPolicy` | Test Backend (`348` test đạt); `backend_audit.py` I01–I02 | Đạt (`I01–I02` 2/2) |
+| 3 Sanitizer | `ai_audit.py` G01–G06; `test_ai_input_sanitizer.py` | 6/6 |
+| 4 Topic classifier | `ai_audit.py` G07; `test_topic_classifier.py` | 1/1 |
+| 5 Output validator | `test_ai_output_validator.py`; pentest | Đạt (không lộ email/SĐT/SQL/đường dẫn hệ thống trong các ca đã trả lời) |
+| 6 Rate limit Backend | `backend_audit.py` I03–I04 (20 request/phút/user: `I03` `400=22, 429=8`; user khác không bị ảnh hưởng) | 2/2 |
+| 7 Log đã che | `test_pii_redactor.py`, `test_sanitized_log.py`; đọc bản xuất `76` dòng `ai_call` (08:04–08:34 UTC, gồm đủ 46 request pentest) trên Vercel Logs: đủ 8 trường, cắt 500 ký tự (`...`), không lộ ngữ cảnh học tập | Đạt |
+
+- Header AI Service quan sát bằng `curl -I` (và `GET /`): `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`, `Cache-Control: public, max-age=0, must-revalidate` (Vercel).
+- Server-to-Server Auth: `ai_audit.py` `21/21` và `S22` (gửi lại y nguyên request đã ký trong 300 giây vẫn được chấp nhận) là giới hạn đã biết (mục 17).
+
+### Pentest vòng 3 (2026-11-27T08:28:07+00:00, model `@cf/google/gemma-4-26b-a4b-it`)
+
+- Đã chạy 40 case, đã chấm `34`, chưa chấm `6` (`I01`, `I03`, `I05`, `I06`, `I07`, `I08` — đều HTTP 502 `"AI provider error"`, Vercel Logs xác nhận `error=ProviderError` quanh `25s`, lỗi `L17-07`). Bị lừa `0/34`; **tỉ lệ chặn đo được 100,0%** trên số case đã chấm (mẫu nhỏ, không phải cam kết chặn 100%).
+
+| Loại | Đã chấm | Bị lừa | Tỉ lệ chặn |
+|---|---|---|---|
+| direct | 10 | 0 | 100.0% |
+| indirect | 4 | 0 | 100.0% |
+| encoding | 10 | 0 | 100.0% |
+| social | 10 | 0 | 100.0% |
+
+- Chạy lại một lần 6 case 502 (`2026-11-27T08:31:26+00:00`, file `pentest-20261127-083126.*`, không thay cho tỉ lệ 40 case): `I01`, `I05`, `I07` trả `HTTP 200` và đều chặn được (`0/3` bị lừa); `I03`, `I06`, `I08` vẫn `HTTP 502` (`ProviderError` quanh `25s`, để trống chưa chấm).
+- So với vòng 2 (bị lừa D04, D06, S07; chặn 92,3%): không có case mới bị lừa (`D04`, `D06`, `S07` và `D10` đều từ chối ở `HTTP 200`). Vòng 1 và 2 chạy trên `@cf/qwen/qwen3-30b-a3b-fp8`; vòng 3 chạy trên `@cf/google/gemma-4-26b-a4b-it` nên chênh lệch chỉ đọc như xu hướng, không kết luận từng case.
+- Tiêu chí "không regression" đặt trước khi chạy: không có case nào mới bị lừa ngoài D04, D06, S07. Kết quả: **Đạt**.
+
+- ApiKey: theo kế hoạch mục 8.0, `X-API-Key`/`X-App-Signature` là lớp anti-abuse chứ không phải ranh giới bảo mật thật (chúng nằm trong APK, trích xuất được). Nhóm A xác nhận Backend từ chối request thiếu hoặc sai key/chữ ký; quyết định cho phép hay không dựa vào JWT: nhóm A đạt `10/10`, nhóm E đạt `11/11`.
+- Thuật toán ký JWT quan sát ở `E01`: `alg=HS512`; JJWT chọn HS256/384/512 theo độ dài `JWT_SECRET` (khóa 96 byte trên Render cho HS512).
+- WAF của Render/Cloudflare chặn bằng HTTP 403 (trang HTML, trước khi tới Backend) request đăng ký có `displayName` là `Robert'); DROP TABLE users;--` (đã chẩn đoán ngày 27/11/2026, khớp INFRA.md mục 39.5). Vì vậy `F03` dùng tên `O'Brien` (có dấu nháy đơn, kiểm tra truy vấn tham số hóa không vỡ); việc chặn mẫu SQLi ở lớp WAF được ghi nhận, không tính là kiểm chứng của Backend.
+- Chống dò mã đặt lại mật khẩu (5 lần sai, 60 giây giữa hai lần gửi): kiểm chứng bằng test Backend `PasswordResetServiceTest`, không thử trên Render thật (tránh gửi email thật).
+- reCAPTCHA v3 sau 10 lần đăng nhập sai (kế hoạch mục 8.2 để "optional"): chưa làm; hôm nay chỉ audit khóa 5 lần sai / 15 phút.
+- Hết hạn khóa BruteForce sau 15 phút và hết hạn token (access 15 phút, mã thi một lần) không chờ thật trong audit; chỉ kiểm tra hành vi trước khi hết hạn và cấu hình TTL trong mã.
+
+### Dấu vết để lại sau hôm nay
+
+- Trong Neon: các user `secaudit.<thời gian>.<số>@example.com` (`26` user từ 3 lần chạy `backend_audit.py`, một số có subscription `MOCK` và kết quả nộp đề; `secaudit.f03diag@example.com` bị WAF chặn trước khi tới Backend); đã xóa sạch theo cách ở mục 7.3 hướng dẫn (`DELETE 26`, `count(*) = 0`).
+- Trong Upstash: các key `rate_limit:*`, `ai_rate_limit:*`, `login_attempts:*` tự hết hạn; bảng xếp hạng (`leaderboard:global`, `weekly`, `monthly`) có điểm của user thử: đã `ZREM` sạch cả 3 bảng (`3` thành viên mỗi bảng, trước khi xóa user ở Neon).
+- Cloudflare: `35` lần gọi LLM thành công + `9` lần gọi vượt 25s (`32 + 6` ở lượt 40 case và `3 + 3` ở lượt chạy lại 6 case 502) cho pentest; script audit không gọi LLM. Dòng log `ai_call` trên Vercel chỉ giữ 1 giờ.
+
+### Giới hạn đã biết (không sửa)
+
+- `TRUSTED_PROXY_COUNT` phụ thuộc cách Render nối `X-Forwarded-For`; nếu Render đổi cách nối hoặc thêm proxy phía trước thì phải đo lại bằng cách ở mục này (key `rate_limit:*` trên Upstash phải là IP máy đo). Giá trị sai theo hướng thiếu (quá nhỏ) làm nhiều người dùng chung một key; theo hướng thừa làm key quay về phần tử client tự viết.
+- `load-test-concurrent.js` giả `X-Forwarded-For` mỗi người dùng ảo một IP; sau bản sửa L17-09 chạy lại sẽ nhận 429 (đúng như chú thích trong file). Đã không sửa file vì chưa có lịch chạy lại load test; nếu cần đo lại thì phải đổi cách mô phỏng nhiều IP.
+- Chống replay của Server-to-Server Auth: cửa sổ 300 giây, chưa có nonce (mục 17).
+- Khóa BruteForce theo email: người khác có thể cố ý đăng nhập sai 5 lần để khóa tài khoản của bạn 15 phút (đổi lấy việc đổi IP không né được khóa; `D03` xác nhận).
+- Access token (JWT 15 phút) không bị thu hồi khi đăng xuất; chỉ refresh token bị thu hồi (`JwtAuthenticationFilter` không tra database).
+- `PAYMENT_MOCK_ENABLED` mặc định `true` nên trên Render hiện mọi tài khoản tự mua được Premium mock (đúng thiết kế demo mock-first, kế hoạch mục 13); đặt `false` thì `mock-purchase` trả 403. Gating và hết hạn Premium audit ở Tuần 18 – Ngày 7.
+- `SecurityPaths.OPEN_PATHS` vẫn chứa đường dẫn Swagger (khi springdoc tắt chúng trả 404, không lộ gì).
+- Phạm vi script: mỗi kiểm tra chạy 1 lần từ 1 máy qua Internet; script không thay cho pentest thủ công và không kiểm tra Lớp 4 trên các biến thể ngôn ngữ ngoài những mẫu đã liệt kê.
+- Các giới hạn của pentest 40 case (người soạn và chấm là một người, blacklist theo mẫu, không đo Lớp 6 và Premium gate, chưa có case cho `/ai/vocabulary` và ảnh) vẫn như mục 33; D04, D06, S07 chưa sửa; D10 không còn 502 ở vòng 3 (HTTP 200, model từ chối), còn 6 ca HTTP 502 chưa chấm ở lượt 40 case (`I01`, `I03`, `I05`, `I06`, `I07`, `I08` — lỗi `ProviderError` ~25s do L17-07; khi chạy lại 1 lần `I01`, `I05`, `I07` trả `200`, còn `I03`, `I06`, `I08` vẫn `502` chưa chấm).
 
