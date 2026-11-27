@@ -1799,3 +1799,52 @@ Số test Backend: `348` đạt (trước hôm nay: `340`). Số test AI Service
 - Phạm vi script: mỗi kiểm tra chạy 1 lần từ 1 máy qua Internet; script không thay cho pentest thủ công và không kiểm tra Lớp 4 trên các biến thể ngôn ngữ ngoài những mẫu đã liệt kê.
 - Các giới hạn của pentest 40 case (người soạn và chấm là một người, blacklist theo mẫu, không đo Lớp 6 và Premium gate, chưa có case cho `/ai/vocabulary` và ảnh) vẫn như mục 33; D04, D06, S07 chưa sửa; D10 không còn 502 ở vòng 3 (HTTP 200, model từ chối), còn 6 ca HTTP 502 chưa chấm ở lượt 40 case (`I01`, `I03`, `I05`, `I06`, `I07`, `I08` — lỗi `ProviderError` ~25s do L17-07; khi chạy lại 1 lần `I01`, `I05`, `I07` trả `200`, còn `I03`, `I06`, `I08` vẫn `502` chưa chấm).
 
+## 44. Rà soát HTTPS thật và bản build demo (Tuần 18 – Ngày 3)
+
+- Phạm vi: rà soát HTTPS của Backend (Render) và AI Service (Vercel); thử SSL Certificate Pinning (tùy chọn, kế hoạch mục 8.2); xác nhận `EncryptedSharedPreferences`; bật R8 cho bản release demo. Kế hoạch ghi Cloud Run, Caddy và VM Oracle; thực tế dự án dùng Render và Vercel tự cấp và tự gia hạn chứng chỉ nên không có Caddy hay DuckDNS để rà soát.
+- Công cụ: `tools/security-audit/https_audit.py` (chỉ đọc, không cần bí mật; đọc `BASE_URL`, `AI_SERVICE_BASE_URL`). Lệnh chạy (PowerShell, thư mục gốc repo, sau khi đặt biến): `docker run --rm -e BASE_URL -e AI_SERVICE_BASE_URL -v "${PWD}:/repo" -w /repo/tools/security-audit python:3.13-slim sh -c "pip install -q cryptography certifi && python -u https_audit.py"`. Thoát mã 1 nếu có FAIL. Ngưỡng nội bộ: chứng chỉ còn ≥ 14 ngày.
+
+### Kết quả HTTPS (ngày 27/11/2026)
+
+| | Backend (`lori-25ej.onrender.com`) | AI Service (`lori-ai-service.vercel.app`) |
+|---|---|---|
+| Chứng chỉ lá cấp bởi | `WE1` (chứng chỉ lá `onrender.com`, chuỗi qua `GTS Root R4`) | `WR1` (chứng chỉ lá `*.vercel.app`, chuỗi qua `GTS Root R1`) |
+| Ngày cấp → hết hạn | 19/11/2026 → 17/02/2027 | 31/10/2026 → 29/01/2027 |
+| Số ngày còn lại | 82 | 62 |
+| TLS thương lượng | TLSv1.3 | TLSv1.3 |
+| HTTP → HTTPS | HTTP 301 | HTTP 308 |
+| Kết quả script | 4/4 PASS | 4/4 PASS |
+
+- Gia hạn: Render tự gia hạn trước khi hết hạn (không công bố lịch), Vercel tự gia hạn 14–30 ngày trước khi hết hạn (tài liệu của từng nền tảng, nói về domain gắn vào project). Team không cấu hình gì thêm. Việc theo dõi uptime/chứng chỉ theo thời gian nằm ở Tuần 18 – Ngày 4-5.
+
+### SSL Certificate Pinning
+
+- **Đã bật** trong `RetrofitClient` cho host của `BASE_URL` (Backend trên Render): ghim khóa công khai (SPKI SHA-256) của các root CA Let's Encrypt và Google Trust Services (`GTS Root R1`, `GTS Root R3`, `GTS Root R4`, `ISRG Root X1`, `ISRG Root X2`), vì Render dùng cả hai CA (tài liệu Render). Không ghim Vercel vì app không kết nối trực tiếp tới AI Service. Kiểm tra: mã ghim đúng → đăng nhập/tải dữ liệu thành công; mã ghim sai → đăng nhập thất bại (`"Không kết nối được máy chủ. Vui lòng kiểm tra mạng và thử lại"`); Android 10 (API 29, `Pixel_4`) và Android 7.0 (API 24, `Medium_Phone`) đạt; `:app:testDebugUnitTest` đạt.
+
+### EncryptedSharedPreferences
+
+- Đã cài từ Tuần 6 (`SessionManager`). Xác nhận trên bản debug (AVD `Pixel_4`, Android 10 API 29): `shared_prefs/lori_secure_prefs.xml` chứa khóa/giá trị đã mã hóa (kèm 2 mục keyset Tink), không có `access_token`, `refresh_token` hay chuỗi `eyJ` ở `shared_prefs` và `databases`. Kết quả: đạt.
+
+### Bản build demo (R8)
+
+- `app/build.gradle.kts`: `release` có `isMinifyEnabled = true` (R8 full mode theo mặc định của AGP `9.1.1`), `proguard-rules.pro` giữ lớp DTO `data.remote.dto.**` (Gson). Chưa bật `isShrinkResources` (Tuần 19 – Ngày 1-2).
+- Ký tạm bằng debug keystore (`%USERPROFILE%\.android\debug.keystore`, bỏ tạm `ANDROID_USER_HOME` trong phiên lệnh Gradle vì mặc định shell trỏ `C:\Android\debug.keystore` khác chữ ký) để `X-App-Signature` khớp `APP_SIGNATURE` trên Render; ký release thật ở Tuần 20 – Ngày 7. Build trên máy khác thì chữ ký khác và Backend trả 403.
+- Luật thêm ngoài DTO (do `android.r8.strictFullModeForKeepRules` của AGP `9.1.1` lược bỏ constructor mặc định):
+  - `-keep class androidx.work.impl.WorkDatabase_Impl { <init>(); }` (R1 văng `NoSuchMethodException: androidx.work.impl.WorkDatabase_Impl.<init>`)
+  - `-keep class androidx.work.OverwritingInputMerger { <init>(); }` (R2 `SyncWorker` không chạy được do `WM-InputMerger: NoSuchMethodException: androidx.work.OverwritingInputMerger.<init>`)
+  - `-keep class com.example.lori.data.local.AppDatabase_Impl { <init>(); }` (R1 văng `NoSuchMethodException: com.example.lori.data.local.AppDatabase_Impl.<init>`)
+- Kiểm tra trên AVD `Pixel_4` (API 29), cài đè lên bản debug rồi cài sạch: R1–R12 `12/12 đạt`; `run-as` bị từ chối trên bản release (`run-as: package not debuggable: com.example.lori`); không có `eyJ` trong Logcat. (Khi thử R7 ban đầu gặp lỗi không phát được audio và không tải được ảnh Part 1 do project Supabase Storage bị tạm dừng sau 1 tuần không hoạt động; sau khi khôi phục lại project trong Supabase Dashboard, R7 đạt cả phát audio Media3, tải ảnh Part 1 và nộp bài.)
+- Không đổi `versionCode = 7` / `versionName = "1.4-rc1"`.
+
+### Dấu vết để lại sau hôm nay
+
+- Trong Neon (không tự xóa): tài khoản test `w18d3-pin-20261127@test.com` (đăng ký ở Phần 2.4 và dùng lại ở Phần 2.5–2.6, R1–R11, kèm 1 subscription `MOCK` Gói Năm ở R6 và 1 kết quả nộp đề `TOEIC Practice Test 1` ở R7) và tài khoản test đã đăng ký ở bước R12 `w18d3-r12-20261128@test.com`. Trong Cloudflare: 1 lần gọi LLM (R8). Trong Upstash: điểm EXP của `w18d3-pin-20261127@test.com` (`PinTest`) trên bảng xếp hạng.
+
+### Giới hạn đã biết (không sửa)
+
+- Cold start và dung lượng APK chưa đo lại sau khi bật R8 (kích thước `app-release.apk` đạt `43.065.398` byte, chưa đo Analyze APK và cold start); số ở mục 40 vẫn là của bản debug (đo lại ở Tuần 19 – Ngày 1-2).
+- Đăng nhập Google chưa kiểm trên bản R8 (AVD không có tài khoản Google).
+- Bản release hôm nay ký bằng debug keystore, không dùng để phát hành.
+- Danh sách mã ghim phụ thuộc việc Render chỉ dùng Let's Encrypt và Google Trust Services; nếu Render dùng CA khác, app đã phát hành không kết nối được tới khi phát hành bản mới (xử lý: chạy lại `https_audit.py`, cập nhật `ROOT_CA_PINS`, phát hành lại).
+- Chỉ test trên AVD (`Pixel_4` API 29 và `Medium_Phone` API 24), chưa thử điện thoại thật và mạng 4G.
+
