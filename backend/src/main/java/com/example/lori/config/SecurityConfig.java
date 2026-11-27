@@ -18,6 +18,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy;
+import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 
 /**
  * Cau hinh bao mat: stateless + JWT. Thu tu filter: ApiKeyFilter -> RateLimitFilter -> JwtAuthenticationFilter.
@@ -47,6 +49,11 @@ public class SecurityConfig {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                // Spring Security da gui X-Content-Type-Options, X-Frame-Options: DENY va Cache-Control; HSTS mac dinh chi
+                // gui khi request la HTTPS, ma sau proxy cua Render request toi Backend la HTTP nen phai cho HSTS ap dung moi request
+                .headers(headers -> headers
+                        .httpStrictTransportSecurity(hsts -> hsts.requestMatcher(AnyRequestMatcher.INSTANCE))
+                        .referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.NO_REFERRER)))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception -> exception
                         // Chua dang nhap -> 401 (mac dinh se la 403); Android se dung 401 de goi refresh token

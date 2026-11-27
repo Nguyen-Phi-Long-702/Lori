@@ -22,8 +22,10 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -183,6 +185,25 @@ class AuthControllerIntegrationTest {
         postJson("/api/auth/refresh", refreshJson(oldRefreshToken))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Invalid refresh token"));
+    }
+
+    // ===== Security Headers va Swagger =====
+
+    @Test
+    void securityHeaders_coDayDuBonHeaderTheoKeHoach() throws Exception {
+        mockMvc.perform(get("/api/users/me")
+                        .header("X-API-Key", apiKey)
+                        .header("X-App-Signature", appSignature))
+                .andExpect(header().string("X-Content-Type-Options", "nosniff"))
+                .andExpect(header().string("X-Frame-Options", "DENY"))
+                .andExpect(header().string("Referrer-Policy", "no-referrer"))
+                .andExpect(header().string("Strict-Transport-Security", containsString("max-age=31536000")));
+    }
+
+    @Test
+    void swagger_macDinhTat_tra404() throws Exception {
+        mockMvc.perform(get("/v3/api-docs")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/swagger-ui/index.html")).andExpect(status().isNotFound());
     }
 
     // ===== Ham ho tro =====
