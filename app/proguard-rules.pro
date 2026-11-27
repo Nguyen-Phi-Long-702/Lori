@@ -1,21 +1,11 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Gson đọc/ghi JSON theo tên trường của DTO (gồm cả lớp lồng nhau) nên không được đổi tên hay xóa
+-keep class com.example.lori.data.remote.dto.** { *; }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# WorkManager (androidx.work:work-runtime 2.9.1) — R1 bị văng NoSuchMethodException: androidx.work.impl.WorkDatabase_Impl.<init> do AGP 9.1 strictFullModeForKeepRules
+-keep class androidx.work.impl.WorkDatabase_Impl { <init>(); }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# WorkManager (androidx.work:work-runtime 2.9.1) — R2 SyncWorker không chạy được và báo NoSuchMethodException: androidx.work.OverwritingInputMerger.<init> do AGP 9.1 strictFullModeForKeepRules
+-keep class androidx.work.OverwritingInputMerger { <init>(); }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Room (androidx.room:room-runtime 2.6.1) — R1 bị văng NoSuchMethodException: com.example.lori.data.local.AppDatabase_Impl.<init> do AGP 9.1 strictFullModeForKeepRules
+-keep class com.example.lori.data.local.AppDatabase_Impl { <init>(); }

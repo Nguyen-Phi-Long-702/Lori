@@ -43,11 +43,13 @@ android {
             enableUnitTestCoverage = true
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            //Tạm ký bằng debug keystore để chữ ký khớp APP_SIGNATURE trên Render; ký release thật ở Tuần 20 – Ngày 7
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
