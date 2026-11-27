@@ -38,10 +38,11 @@ public class SecurityConfig {
             JwtTokenProvider jwtTokenProvider,
             ProxyManager<String> rateLimitProxyManager,
             @Value("${app.security.api-key}") String apiKey,
-            @Value("${app.security.app-signature}") String appSignature) throws Exception {
+            @Value("${app.security.app-signature}") String appSignature,
+            @Value("${app.security.trusted-proxy-count}") int trustedProxyCount) throws Exception {
 
         ApiKeyFilter apiKeyFilter = new ApiKeyFilter(apiKey, appSignature);
-        RateLimitFilter rateLimitFilter = new RateLimitFilter(rateLimitProxyManager);
+        RateLimitFilter rateLimitFilter = new RateLimitFilter(rateLimitProxyManager, trustedProxyCount);
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenProvider);
 
         http
