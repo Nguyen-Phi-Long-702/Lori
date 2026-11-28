@@ -1946,3 +1946,23 @@ Số test Backend: `348` đạt (trước hôm nay: `340`). Số test AI Service
 - Phần 5B (kiểm chứng Backend → AI Service bằng câu hỏi lạc đề) gửi các request theo đúng payload/header của collection `Lori - API v2 (Render)` qua script Python trong PowerShell theo yêu cầu người dùng thay vì bấm trực tiếp trên giao diện Postman.
 - Số đo chi phí lấy từ trang Billing/Usage của từng nền tảng tại một thời điểm; hạn mức miễn phí có thể thay đổi, kiểm tra lại khi cần.
 
+## 46. Migration, dữ liệu đề thi và smoke test endpoint trên URL cloud thật (Tuần 18 – Ngày 6)
+
+- Phạm vi: kiểm tra migration trên Neon; rà soát dữ liệu đề thi và audio/ảnh; nhập thêm đề IELTS test 2; smoke test toàn bộ endpoint của Backend (kể cả AI) trên Render/Vercel thật. Kế hoạch ghi Cloud Run/Oracle; thực tế dự án dùng Render, Vercel, Cloudflare Workers AI. Không sửa code Backend, AI Service hay Android; không có migration mới.
+
+### 46.1 Migration (ngày 28/11/2026)
+
+- `flyway_schema_history` trên Neon: 5 dòng, version 1–5, `success = t`; 15 bảng trong schema `public` (14 bảng Lori + `flyway_schema_history`). Không có migration thiếu nên không phải deploy lại.
+
+### 46.2 Dữ liệu đề thi (ngày 28/11/2026)
+
+| | Trước khi nhập | Sau khi nhập |
+|---|---|---|
+| `exam_papers` | 2 | 2 |
+| `exam_sections` | 81 | 81 |
+| `exam_questions` | 280 | 280 |
+
+- Chưa nhập đề IELTS test 2: repo nguồn không có cặp Listening + Reading band 8.0 nào khác test 001 (script đặt cứng độ khó HARD). Neon giữ 1 TOEIC + 1 IELTS.
+- `verify_exam_data.sql`: mọi `bad_rows` = 0. Kiểm tra HEAD tất cả link audio và ảnh trong DB: 68 link, `200` cả 68.
+- Đề TOEIC test 2 và 3 chưa nhập (chưa có nguồn đề); trong Neon vẫn 1 đề TOEIC.
+
