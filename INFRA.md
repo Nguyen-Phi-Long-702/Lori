@@ -84,7 +84,8 @@ File: `.github/workflows/backend-deploy.yml`, tên workflow **Backend CI/CD**.
 
 - **Kích hoạt:** push lên nhánh `main` có thay đổi trong `backend/**` hoặc chính file workflow. Thay đổi ở nơi khác (ví dụ `INFRA.md`, thư mục `app/`) **không** kích hoạt deploy.
 - **Job `build`:** `docker build` thư mục `backend` để bắt lỗi build sớm.
-- **Job `deploy`** (chạy sau `build`): gọi **Deploy Hook** của Render bằng `curl -X POST`.
+- **Job `test`** (chạy sau `build`, từ Tuần 18 – Ngày 5): `mvn -B test` trên `ubuntu-latest` với JDK 17 (Temurin); cần Docker có sẵn trên runner vì các integration test dùng Testcontainers (`postgres:16`, `redis:7-alpine`). Test đỏ thì job `deploy` không chạy.
+- **Job `deploy`** (chạy sau `test`): gọi **Deploy Hook** của Render bằng `curl -X POST`.
 - **GitHub Secret (repo Lori):** `RENDER_DEPLOY_HOOK_URL` — URL Deploy Hook lấy từ Render → service → Settings. Không để URL này trong file.
 - **Kiểm tra:** push một thay đổi nhỏ trong `backend/` → tab Actions của repo Lori chạy xanh → Render hiện một lần deploy mới.
 
@@ -1904,4 +1905,44 @@ Số test Backend: `348` đạt (trước hôm nay: `340`). Số test AI Service
 - `tools/security-audit/ai_audit.py` chạy ngày 28/11/2026 vào Vercel thật: `Tong: 28 kiem tra, 28 PASS, 0 FAIL` (S01–S21 xác thực S2S, G01–G07 Lớp 3-4; `S22` chỉ là ghi nhận `INFO` về chống phát lại, giới hạn đã biết ở mục 17). Không gọi LLM.
 - Backend (Render) → AI Service (Vercel): thực hiện theo đúng payload/header của collection Postman `Lori - API v2 (Render)` (gửi qua Python script trong PowerShell theo yêu cầu của người dùng): đăng ký user tạm `postman.1795842257715@example.com` (`201`, `1,190s`), đăng nhập (`200`, `0,890s`), `mock-purchase` MONTHLY (`201`, `0,288s`), rồi `POST /api/ai/chat` với câu hỏi lạc đề `Thời tiết hôm nay thế nào?` (lúc 12:04:20 GMT+7 ngày 28/11/2026) → `200` trong `0,775` giây, `answer` đúng câu cố định của Lớp 4 (`OFF_TOPIC_REPLY`, AI Service trả mà không gọi LLM). Câu này chỉ AI Service tạo ra nên xác nhận chữ ký HMAC do Backend ký được AI Service chấp nhận, tức `AI_SERVICE_SHARED_SECRET` trên Render và Vercel vẫn khớp. (Đã xóa user tạm khỏi Neon: `DELETE 1`, `con_lai = 0`.)
 - Lý do dùng câu hỏi lạc đề thay vì câu hỏi tiếng Anh thật: Backend chưa có endpoint chỉ gọi `ping()`, và gọi LLM chậm (p50 khoảng 20 giây, mục 40.4) hoặc timeout 25 giây dễ gây nhầm giữa lỗi S2S và lỗi LLM.
+
+### 45.4 CI/CD (GitHub Actions → Render)
+
+- Lịch sử workflow `Backend CI/CD` đến ngày 28/11/2026 (trước khi thêm job test): tổng `65` lần chạy, `0` lần lỗi (`Status -> Failure`: `0`); 10 lần gần nhất: `10/10` xanh (`47s`–`1m 5s`). Secret `RENDER_DEPLOY_HOOK_URL` có trong repo (cập nhật `Oct 4, 2026`); deploy gần nhất do Deploy Hook ở Render (`97dd012`): Live.
+- Phát hiện: workflow chỉ có `build` và `deploy`, Dockerfile build bằng `mvn -DskipTests` nên CI chưa chạy test, trong khi kế hoạch ghi "build→test→deploy". Đã thêm job `test` (`mvn -B test`, JDK 17 Temurin, `ubuntu-latest`) chạy sau `build`; `deploy` chạy sau `test` (commit `ca23e8a`). Không đổi Dockerfile.
+- Lần chạy đầu sau khi thêm job test (Run `#66`, `28/11/2026 12:25 GMT+7` / `05:25:33 UTC`, tổng `1m 57s`): `build` `44s`, `test` `1m 2s` (`Tests run: 348, Failures: 0, Errors: 0, Skipped: 0`, `BUILD SUCCESS`), `deploy` `4s`; Render deploy mới (`ca23e8a`) Live lúc `12:30 PM`, `GET /actuator/health/ping` → `200`.
+
+### 45.5 Chi phí bắt buộc $0 (ngày 28/11/2026)
+
+| Nền tảng | Gói | Thẻ/phương thức thanh toán | Hóa đơn/khoản phí | Mức dùng so với giới hạn Free |
+|---|---|---|---|---|
+| Render | Hobby (Free, workspace `My Workspace`) | Không | Không (`$0.00 USD`, hóa đơn 10/2026 `$0.00`) | `629,48` / `750` giờ (`Free Instance Hours`; băng thông `37 MB / 5 GB`; `1 / 25` service; `11 / 500` pipeline min) |
+| Neon | Free Plan | Không | Không (`$0 / tháng`, không có hóa đơn) | `20,01` / `100` CU-giờ; `40,06 MB` (`0,04 GB`) / `0,5 GB` (Billing dashboard ghi `1 GB storage` per project) |
+| Upstash | Free Tier | Không | Không (`$0.00`, không có dữ liệu hóa đơn) | `20 N` (~20 nghìn) / `500k` lệnh/tháng (Bandwidth `3 MB / 10 GB`, Storage `1 KB / 250 MB`) |
+| Vercel | Hobby (`Hobby Plan`, Active) | Không | Không (`No Invoices`) | `10.004` / `1.000.000` lần gọi; `20m 4s` / `4` CPU-giờ (`Fluid Active CPU`); `7,4` / `360` GB-giờ (`Fluid Provisioned Memory`) |
+| Cloudflare Workers AI | Workers Free (Active) | Không | Không (`No invoices`, `No data`) | `0` / `10.000` Neurons hôm nay (24h qua `682,15` Neurons) |
+| Supabase | Free Plan (`Spend cap is enabled`) | Không | Không (`No invoices`, Credit `$0.00`) | Storage `0,002` / `1 GB` (`<1%`), Egress `0,002` / `5 GB` (`<1%`); project `lori-media`: **Active** (`Healthy`) |
+| GitHub | GitHub Pro (`$0.00/tháng` ưu đãi sinh viên đến 25/12/2027) | Không | Không (`$0`, `$0.18` gross − `$0.18` discount) | Actions tháng 11/2026: `30 phút` (`Lori` public `$0.16` miễn phí, `lori-db-backup` `$0.02` / `$18.00` included compute; storage `0 / 2 GB`) |
+| Brevo | Free plan | Không | Không (`No invoices yet`) | `0` / `300` email/ngày (`300 / 300 emails left` ngày 28/11/2026) |
+| UptimeRobot | Free 50 | Không | Không (không có hóa đơn) | `2` / `50` monitor |
+
+- Kết luận: chi phí phát sinh đến ngày 28/11/2026 là `$0`; không nền tảng nào có thẻ hoặc phương thức thanh toán gắn vào và không có hóa đơn/khoản phí nào phát sinh. (Tài khoản GitHub đang hưởng gói `GitHub Pro` miễn phí `$0/tháng` theo ưu đãi sinh viên đến 25/12/2027, không gắn thẻ.)
+
+### 45.6 Dấu vết để lại sau hôm nay
+
+- Trong Neon: user `postman.1795842257715@example.com` (đăng ký, mock-purchase) đã xóa (`DELETE 1`, `count(*) = 0`). Phần khôi phục thử không đụng Neon (chỉ `SELECT`).
+- Máy Dev: container `lori-restore-test` đã xóa; file dump đã xóa khỏi `C:\lori-restore-test`.
+- Cloudflare: 0 lần gọi LLM (`ai_audit.py` và câu hỏi lạc đề không gọi LLM). Vercel Logs có các request của `ai_audit.py` và 1 request `POST /ai/chat`.
+- GitHub Actions: lần chạy `#66` từ commit workflow `ca23e8a` ở 45.4; Render có thêm 1 lần deploy `Live` từ commit đó.
+
+### 45.7 Giới hạn đã biết (không sửa)
+
+- Khôi phục thử chạy trên PostgreSQL 16 trong Docker trên máy Dev, không phải trên Neon: chưa đo thời gian khôi phục thật và chưa thử khôi phục vào một project Neon mới.
+- Số dòng của Neon được lấy tại thời điểm kiểm tra, khác thời điểm tạo file dump nên các bảng người dùng có thể lệch.
+- File dump chỉ gồm PostgreSQL: audio và ảnh đề thi ở Supabase Storage (mục 11) và bảng xếp hạng ở Upstash (mục 16) không nằm trong backup.
+- Supabase Free tạm dừng project khi ít hoạt động cơ sở dữ liệu trong 7 ngày (tài liệu Supabase), đã xảy ra ngày 27/11 (mục 44); chưa có cơ chế chống, khôi phục thủ công bằng Resume project.
+- Số liệu uptime lấy từ UptimeRobot Free (kiểm tra mỗi 5 phút từ bên ngoài): không thấy sự cố ngắn hơn 5 phút; thời gian tạm dừng monitor không có dữ liệu.
+- Job `test` cần kéo `postgres:16` và `redis:7-alpine` từ Docker Hub; lỗi mạng hoặc giới hạn kéo image làm job đỏ và chặn deploy (xử lý: chạy lại job). Test bảng xếp hạng có thể sai nếu chạy đúng lúc job reset hằng tuần (mục 35). CI chỉ chạy khi `backend/**` hoặc file workflow đổi; AI Service và app Android không có CI.
+- Phần 5B (kiểm chứng Backend → AI Service bằng câu hỏi lạc đề) gửi các request theo đúng payload/header của collection `Lori - API v2 (Render)` qua script Python trong PowerShell theo yêu cầu người dùng thay vì bấm trực tiếp trên giao diện Postman.
+- Số đo chi phí lấy từ trang Billing/Usage của từng nền tảng tại một thời điểm; hạn mức miễn phí có thể thay đổi, kiểm tra lại khi cần.
 
