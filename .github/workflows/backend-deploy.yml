@@ -21,9 +21,28 @@ jobs:
       - name: Build Docker image
         run: docker build -t lori-backend:${{ github.sha }} ./backend
 
+  test:
+    name: Run Backend tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Run tests
+        working-directory: backend
+        run: mvn -B test
+
   deploy:
     name: Deploy to Render
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render deploy hook
