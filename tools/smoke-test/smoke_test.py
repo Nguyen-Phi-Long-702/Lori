@@ -116,8 +116,12 @@ def group_public():
     status, body, seconds = send("GET", "/", base=AI_SERVICE_BASE_URL, with_key=False)
     record("PASS" if status == 200 and "Lori AI Service" in body.get("message", "") else "FAIL",
            "GET / cua AI Service", f"HTTP {status}", seconds)
-    check("GET /api/content/version", call("GET", "/api/content/version"), 200, ["version"])
-    check("GET /api/content/updates", call("GET", "/api/content/updates?sinceVersion=0"), 200, ["currentVersion"])
+
+
+def group_content(token):
+    print("== Noi dung (can dang nhap) ==")
+    check("GET /api/content/version", call("GET", "/api/content/version", token=token), 200, ["version"])
+    check("GET /api/content/updates", call("GET", "/api/content/updates?sinceVersion=0", token=token), 200, ["currentVersion"])
 
 
 def group_auth():
@@ -203,7 +207,7 @@ def group_exams(token):
     record("PASS" if status == 200 and isinstance(body, list) and len(body) == len(exams) else "FAIL",
            "GET /api/exams/results", f"HTTP {status}, {len(body) if isinstance(body, list) else 0} ket qua, can {len(exams)}", seconds)
     if result_id:
-        check("GET /api/exams/results/{id}", call("GET", f"/api/exams/results/{result_id}", token=token), 200, ["id"])
+        check("GET /api/exams/results/{id}", call("GET", f"/api/exams/results/{result_id}", token=token), 200, ["result", "items"])
     return result_id
 
 
@@ -297,6 +301,7 @@ def main():
     group_public()
     email, tokens = group_auth()
     token = tokens["accessToken"]
+    group_content(token)
     group_user_and_progress(token)
     result_id = group_exams(token)
     group_leaderboard(token)
