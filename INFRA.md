@@ -1848,3 +1848,60 @@ Số test Backend: `348` đạt (trước hôm nay: `340`). Số test AI Service
 - Danh sách mã ghim phụ thuộc việc Render chỉ dùng Let's Encrypt và Google Trust Services; nếu Render dùng CA khác, app đã phát hành không kết nối được tới khi phát hành bản mới (xử lý: chạy lại `https_audit.py`, cập nhật `ROOT_CA_PINS`, phát hành lại).
 - Chỉ test trên AVD (`Pixel_4` API 29 và `Medium_Phone` API 24), chưa thử điện thoại thật và mạng 4G.
 
+## 45. Xác nhận Cloud Demo ổn định (Tuần 18 – Ngày 4-5)
+
+- Phạm vi: kiểm tra uptime 2-3 tuần gần nhất (UptimeRobot); backup `pg_dump` hàng tuần chạy đúng lịch và khôi phục thử 1 bản; Server-to-Server Authentication Backend↔AI Service; CI/CD GitHub Actions; xác nhận chi phí bắt buộc $0. Không sửa code Backend, AI Service hay Android.
+- Kế hoạch ghi Cloud Run, Oracle Cloud và Budget Alert Google Cloud/Oracle; thực tế dự án dùng Render, Vercel, Cloudflare Workers AI và không có tài khoản Google Cloud hay Oracle Cloud (không dùng thẻ tín dụng) nên không có Budget Alert nào để kiểm tra. Việc đó được thay bằng kiểm tra gói Free và không có phương thức thanh toán trên từng nền tảng đang dùng (mục 45.5).
+
+### 45.1 Uptime (UptimeRobot, ngày 28/11/2026)
+
+| Monitor | Uptime 7 ngày | Uptime 30 ngày | Số lần Down (30 ngày) | Trạng thái lúc kiểm tra |
+|---|---|---|---|---|
+| `Lori Backend (Render)` | 100% | 100% | 0 | Up (`2d 19h 39m`), kiểm tra gần nhất `2m, 2s` trước (khoảng 11:37 GMT+7) |
+| `Lori AI Service (Vercel)` | 100% | 100% | 0 | Up (`2d 18h 41m`), kiểm tra gần nhất `2m, 10s` trước (khoảng 11:38 GMT+7) |
+
+- Khoảng số liệu và múi giờ hiển thị của UptimeRobot: UI hiển thị các khoảng `Last 24 hours`, `Last 7 days`, `Last 30 days` (`Last 365 days` khóa ở gói Free); `Timezone` trong `Account details` là `GMT/UTC (GMT + 00:00:00 )` (biểu đồ Response time trên trình duyệt hiển thị theo giờ địa phương `GMT+7`).
+- Các lần Down: không có (`0` lần Down, `0` sự cố trong 30 ngày qua trên cả hai monitor). Đối chiếu Render `Events` và Vercel `Deployments` trong 30 ngày qua cũng không có lỗi deploy hay restart bất thường nào.
+- Khoảng tạm dừng monitor có chủ ý (không tính là Down): 25/11/2026 để đo cold start Backend và đo lại AI Service (mục 40.2, 40.4). Cả hai monitor đều đã được bật lại ngày 25/11/2026 và không có monitor nào bị để Paused lúc kiểm tra.
+- Đối chiếu bằng `curl.exe` ngày 28/11/2026: `GET /actuator/health/ping` của Backend → `200`; `GET /` của AI Service → `{"message":"Hello from Lori AI Service"}`.
+
+### 45.2 Backup Neon hàng tuần
+
+- Repo `lori-db-backup` vẫn **Private**. `.github/workflows/neon-backup.yml` khớp mô tả mục 6 (lịch `17 20 * * 6`, `pg_dump` trong `postgres:16`, `-Fc --no-owner --no-acl`, kiểm tra bằng `pg_restore --list` trước khi commit).
+- Các lần chạy từ 31/10/2026 đến 28/11/2026 (bộ lọc `Status: Failure`: `0` lần lỗi trong toàn bộ `8` lần chạy của workflow `Neon Backup`):
+
+| Ngày giờ chạy (UTC) | Event | Kết quả | Thời lượng | File tạo ra |
+|---|---|---|---|---|
+| 2026-10-31 23:22:27 | schedule | thành công | 39s | `lori_db_20261031_232231.dump` (107.406 byte) |
+| 2026-11-07 23:37:51 | schedule | thành công | 43s | `lori_db_20261107_233759.dump` (113.543 byte) |
+| 2026-11-14 23:54:07 | schedule | thành công | 39s | `lori_db_20261114_235412.dump` (114.711 byte) |
+| 2026-11-22 00:19:06 | schedule | thành công | 37s | `lori_db_20261122_001911.dump` (117.124 byte) |
+
+- Kết luận lịch: đủ 4/4 lần theo lịch trong khoảng 31/10–21/11 (lần thứ Bảy 21/11 chạy trễ sang 00:19 UTC ngày 22/11; 4 lần trước đó từ 04/10 đến 24/10 cũng thành công 4/4; lần thứ Bảy 28/11 lịch 20:17 UTC chưa tới tại thời điểm kiểm tra).
+- Khôi phục thử (ngày 28/11/2026): file `lori_db_20261122_001911.dump` (117.124 byte) → PostgreSQL 16 tạm trong Docker trên máy Dev bằng `pg_restore --no-owner --no-acl --exit-on-error`, mã thoát `0`; `flyway_schema_history` có version 1-5, `success = t`. Số dòng từng bảng (bản khôi phục / Neon tại thời điểm kiểm tra):
+
+| Bảng | Bản khôi phục | Neon |
+|---|---|---|
+| `users` | 48 | 61 |
+| `refresh_tokens` | 114 | 189 |
+| `user_progress` | 24 | 26 |
+| `subscriptions` | 27 | 30 |
+| `exam_papers` | 2 | 2 |
+| `exam_sections` | 81 | 81 |
+| `exam_questions` | 280 | 280 |
+| `exam_results` | 5 | 7 |
+| `user_study_days` | 9 | 12 |
+| `user_learning_profile` | 5 | 6 |
+| `user_weakness_record` | 11 | 13 |
+| `ai_feedback_metadata` | 0 | 0 |
+| `ai_generated_exercise` | 60 | 60 |
+| `ai_evaluation_result` | 1 | 2 |
+
+- Nhận xét: nhóm đề thi (`exam_papers` = 2, `exam_sections` = 81, `exam_questions` = 280) khớp hoàn toàn giữa bản khôi phục và Neon; `flyway_schema_history` ở cả hai đều có version 1-5 với `success = t`; các bảng người dùng và `ai_evaluation_result` khác nhau là do dữ liệu phát sinh sau thời điểm tạo file dump (22/11/2026). Kết luận: file dump khôi phục được (đạt đủ 3 điều kiện).
+
+### 45.3 Server-to-Server Authentication Backend↔AI Service
+
+- `tools/security-audit/ai_audit.py` chạy ngày 28/11/2026 vào Vercel thật: `Tong: 28 kiem tra, 28 PASS, 0 FAIL` (S01–S21 xác thực S2S, G01–G07 Lớp 3-4; `S22` chỉ là ghi nhận `INFO` về chống phát lại, giới hạn đã biết ở mục 17). Không gọi LLM.
+- Backend (Render) → AI Service (Vercel): thực hiện theo đúng payload/header của collection Postman `Lori - API v2 (Render)` (gửi qua Python script trong PowerShell theo yêu cầu của người dùng): đăng ký user tạm `postman.1795842257715@example.com` (`201`, `1,190s`), đăng nhập (`200`, `0,890s`), `mock-purchase` MONTHLY (`201`, `0,288s`), rồi `POST /api/ai/chat` với câu hỏi lạc đề `Thời tiết hôm nay thế nào?` (lúc 12:04:20 GMT+7 ngày 28/11/2026) → `200` trong `0,775` giây, `answer` đúng câu cố định của Lớp 4 (`OFF_TOPIC_REPLY`, AI Service trả mà không gọi LLM). Câu này chỉ AI Service tạo ra nên xác nhận chữ ký HMAC do Backend ký được AI Service chấp nhận, tức `AI_SERVICE_SHARED_SECRET` trên Render và Vercel vẫn khớp. (Đã xóa user tạm khỏi Neon: `DELETE 1`, `con_lai = 0`.)
+- Lý do dùng câu hỏi lạc đề thay vì câu hỏi tiếng Anh thật: Backend chưa có endpoint chỉ gọi `ping()`, và gọi LLM chậm (p50 khoảng 20 giây, mục 40.4) hoặc timeout 25 giây dễ gây nhầm giữa lỗi S2S và lỗi LLM.
+
