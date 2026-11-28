@@ -1966,3 +1966,42 @@ Số test Backend: `348` đạt (trước hôm nay: `340`). Số test AI Service
 - `verify_exam_data.sql`: mọi `bad_rows` = 0. Kiểm tra HEAD tất cả link audio và ảnh trong DB: 68 link, `200` cả 68.
 - Đề TOEIC test 2 và 3 chưa nhập (chưa có nguồn đề); trong Neon vẫn 1 đề TOEIC.
 
+### 46.3 Smoke test endpoint trên URL cloud thật (ngày 28/11/2026)
+
+- Công cụ: `tools/smoke-test/smoke_test.py` (chạy vào Render và Vercel thật, 1 tài khoản thử Premium mock, mỗi endpoint 1 lần). Lệnh chạy (PowerShell, thư mục gốc repo, sau khi đặt biến): `docker run --rm -e BASE_URL -e API_KEY -e APP_SIGNATURE -e AI_SERVICE_BASE_URL -v "${PWD}:/repo" -w /repo/tools/smoke-test python:3.12-slim python -u smoke_test.py`. Thoát mã 1 nếu có FAIL. Kết quả ghi vào `tools/smoke-test/results/smoke-20261128-083529.md`.
+- Lần chạy 1 (`2026-11-28 08:15:44 UTC`): `50` kiểm tra, `42` PASS, `7` FAIL, `1` KNOWN. Trong đó `4` FAIL ở AI (`vocabulary`, `analyze-quiz`, `analyze-exam`, `generate-exercise`, đều `HTTP 503` sau 3 lần thử) được Vercel Logs xác nhận là `error=ProviderError` (`TimeoutError` tại `25024–25058 ms`, lỗi `L17-07`); `3` FAIL còn lại do script `smoke_test.py` đặt `GET /api/content/version`, `GET /api/content/updates` ở nhóm không đăng nhập (Backend yêu cầu JWT nên trả `401`) và kiểm tra trường `id` ở top-level của `GET /api/exams/results/{id}` (Backend trả `{"result": {"id": ...}, "items": [...]}`). Đã sửa 2 chỗ trong `smoke_test.py` (không sửa code Backend), xóa file kết quả lần 1 và chạy lại.
+- Kết quả lần cuối (`2026-11-28 08:35:29 UTC`, chạy lần 2): `50` kiểm tra, `47` PASS, `2` FAIL, `1` KNOWN.
+
+| Nhóm | Số kiểm tra | PASS |
+|---|---|---|
+| Không cần đăng nhập (health, AI Service `GET /`) | 3 | 3 |
+| Auth | 6 | 6 |
+| Nội dung (`/api/content/*`, cần đăng nhập) | 2 | 2 |
+| Người dùng, thanh toán mock, tiến trình | 9 | 9 |
+| Đề thi (2 đề) | 11 | 11 |
+| Bảng xếp hạng | 6 | 6 |
+| Dịch | 1 | 0 (KNOWN) |
+| AI qua Backend → AI Service (8 endpoint) | 9 | 7 |
+| Đổi mật khẩu, đăng nhập lại, đăng xuất | 3 | 3 |
+
+- Các dòng không đạt (2 dòng AI sau 3 lần thử):
+  - `POST /api/ai/analyze-exam (lan thu 3)` — `HTTP 503` (`26.2s`)
+  - `POST /api/ai/generate-exercise (lan thu 3)` — `HTTP 503` (`25.6s`)
+  - Nguyên nhân: trùng khớp mẫu `L17-07` (`SelfHostedLlmProvider` hết 25s chờ Cloudflare → AI Service `502` → Backend `503`, đã xác nhận ở Vercel Logs của lần chạy 1; chưa kiểm tra lại Vercel Logs riêng cho lần chạy 2), giữ nguyên để sửa ở **Tuần 19 – Ngày 1-2**. Ngoài ra ở lần chạy 1, Vercel Logs của `/ai/identify-image` ghi nhận cảnh báo `L17-08` (`example: null, exampleVi: null`), cũng xử lý ở Tuần 19 – Ngày 1-2.
+- `POST /api/translate` trả `503` vì LibreTranslate chưa chạy trên Render (mục 12): ghi nhận `KNOWN`, không phải lỗi mới.
+
+### 46.4 Dấu vết để lại sau hôm nay
+
+- Neon: đã xóa các user `w18d6-smoke-<thời gian>@example.com` sau cả 2 lần chạy (`DELETE 1` mỗi lần, `count(*) = 0`); không thêm đề mới (giữ 1 TOEIC + 1 IELTS).
+- Upstash: đã `ZREM` các user thử khỏi `leaderboard:global`, `leaderboard:weekly`, `leaderboard:monthly` (`1`, `1`, `1` cho cả 2 user thử).
+- Cloudflare: lần chạy 1 gọi `9` lần chính + `9` lần thử lại (`18` lượt `ai_call` ghi trên Vercel Logs); lần chạy 2 gọi `9` lần chính + `7` lần thử lại (`conversation` +1, `vocabulary` +2, `analyze-exam` +2, `generate-exercise` +2). Tổng 2 lần chạy: `34` lượt gọi LLM (trong hạn mức 10.000 Neurons/ngày).
+- Supabase: không thêm file audio mới (chưa nhập đề IELTS test 2).
+
+### 46.5 Giới hạn đã biết (không sửa)
+
+- Smoke test chỉ kiểm tra HTTP status và các trường chính của phản hồi, không kiểm tra chất lượng câu trả lời AI (đã có Evaluation Dataset ở mục 41) và không kiểm tra user Free bị chặn (audit gating ở Tuần 18 – Ngày 7).
+- `POST /api/auth/google` chỉ thử token sai (`401`); đăng nhập Google thật cần ID Token thật nên không tự động hóa.
+- `POST /api/auth/forgot-password` chỉ thử email chưa đăng ký (`204`, không gửi thư thật); luồng nhận mã qua email Brevo chưa thử hôm nay.
+- Mỗi endpoint chạy 1 lần từ 1 máy qua Internet: không thay thế load test (mục 40) và phụ thuộc tình trạng Render/Vercel/Cloudflare tại thời điểm chạy; endpoint AI có thể lỗi `503` (AI Service `502`) ngẫu nhiên do `L17-07`.
+- Chỉ có 1 đề TOEIC trong dữ liệu; 2 đề TOEIC còn lại của kế hoạch Tuần 5 chưa có nguồn.
+
